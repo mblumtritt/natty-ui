@@ -1,0 +1,6 @@
+tmp/
+pkg/
+local/
+doc/
+.yardoc/
+Gemfile.lock

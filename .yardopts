@@ -1,0 +1,7 @@
+--readme README.md
+--title 'TODO: Documentation'
+--charset utf-8
+--markup markdown
+--tag comment
+--hide-tag comment
+'lib/**/*.rb' - 'README.md'
