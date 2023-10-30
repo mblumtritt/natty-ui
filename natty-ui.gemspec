@@ -5,13 +5,19 @@ require_relative 'lib/natty-ui/version'
 Gem::Specification.new do |spec|
   spec.name = 'natty-ui'
   spec.version = NattyUI::VERSION
-  spec.summary = 'The new gem NattyUI.'
+  spec.summary =
+    'This is the beautiful, nice, nifty, fancy, neat, pretty, cool, lovely, ' \
+      'natty user interface you like to have for your CLI.'
   spec.description = <<~DESCRIPTION
-    Todo: write a helpful and catchy description
+    This is the beautiful, nice, nifty, fancy, neat, pretty, cool, lovely,
+    natty user interface you like to have for your command line interfaces
+    (CLI).
+    Here you find elegant, simple and beautiful tools that enhance your
+    command line application functionally and aesthetically.
   DESCRIPTION
 
   spec.author = 'Mike Blumtritt'
-  # spec.license = 'BSD-3-Clause'
+  spec.license = 'BSD-3-Clause'
   spec.homepage = 'https://github.com/mblumtritt/natty-ui'
   spec.metadata['source_code_uri'] = spec.homepage
   spec.metadata['bug_tracker_uri'] = "#{spec.homepage}/issues"
@@ -19,9 +25,7 @@ Gem::Specification.new do |spec|
   spec.metadata['rubygems_mfa_required'] = 'true'
 
   spec.required_ruby_version = '>= 3.0'
-  # spec.add_runtime_dependency 'TODO: add dependencies'
 
-  spec.files = Dir['lib/**/*']
-  # spec.executables = %w[command]
-  # spec.extra_rdoc_files = %w[README.md LICENSE]
+  spec.files = Dir['lib/**/*'] + Dir['examples/**/*']
+  spec.extra_rdoc_files = %w[README.md LICENSE]
 end
