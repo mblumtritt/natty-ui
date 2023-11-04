@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'unicode/display_width'
 require_relative 'natty-ui/wrapper'
 require_relative 'natty-ui/ansi_wrapper'
 
@@ -35,10 +36,7 @@ module NattyUI
       unless valid_out?(stream)
         raise(TypeError, "writable IO required  - #{stream.inspect}")
       end
-      if ansi == true || (ansi == :auto && stream.tty?)
-        return AnsiWrapper.new(stream)
-      end
-      Wrapper.new(stream)
+      wrapper_class(stream, ansi).__send__(:new, stream)
     end
 
     # Test if the given `stream` can be used for output
@@ -62,13 +60,60 @@ module NattyUI
     rescue StandardError
       false
     end
+
+    # Calculate monospace (display) width of given String.
+    # It respects Unicode character sizes inclusive emoji.
+    #
+    # @param [#to_s] str String to calculate
+    # @return [Integer] the display size
+    def display_width(str)
+      str = str.to_s
+      return 0 if str.empty?
+      ret = Unicode::DisplayWidth.of(str, 1)
+      ret -= emoji_extra_width_of(str) if defined?(Unicode::Emoji)
+      [ret, 0].max
+    end
+
+    private
+
+    def wrapper_class(stream, ansi)
+      if (ansi == true) ||
+           ((ansi == :auto) && (ENV['ANSI'] != '0') && stream.tty?)
+        AnsiWrapper
+      else
+        Wrapper
+      end
+    end
+
+    def emoji_extra_width_of(string)
+      ret = 0
+      string.scan(Unicode::Emoji::REGEX) do |emoji|
+        ret += 2 * emoji.scan(EMOJI_MODIFIER_REGEX).size
+        emoji.scan(EMOKI_ZWJ_REGEX) do |zwj_succ|
+          ret += Unicode::DisplayWidth.of(zwj_succ, 1, {})
+        end
+      end
+      ret
+    end
+
+    def stderr_is_stdout?
+      STDOUT.tty? && STDERR.tty? && STDOUT.pos == STDERR.pos
+    rescue IOError, SystemCallError
+      false
+    end
   end
 
-  # Instance for output to standard output.
-  StdOut = new(::STDOUT)
+  if defined?(Unicode::Emoji)
+    EMOJI_MODIFIER_REGEX = /[#{Unicode::Emoji::EMOJI_MODIFIERS.pack('U*')}]/
+    EMOKI_ZWJ_REGEX = /(?<=#{[Unicode::Emoji::ZWJ].pack('U')})./
+    private_constant :EMOJI_MODIFIER_REGEX, :EMOKI_ZWJ_REGEX
+  end
 
-  # Instance for output to standard error output.
-  StdErr = new(::STDERR)
+  # Instance for standard output.
+  StdOut = new(STDOUT)
 
-  self.in_stream = ::STDIN
+  # Instance for standard error output.
+  StdErr = stderr_is_stdout? ? StdOut : new(STDERR)
+
+  self.in_stream = STDIN
 end

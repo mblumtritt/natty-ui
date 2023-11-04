@@ -173,7 +173,7 @@ module NattyUI
       # @example Combined attributes:
       #   Ansi[:bold, :italic, :bright_white, :on_0000cc]
       #
-      # @param attributes [Symbol, String] attribute names to be used
+      # @param attributes [Array<Symbol, String>] attribute names to be used
       # @return [String] combined ANSI attributes
       def [](*attributes)
         return '' if attributes.empty?
@@ -181,10 +181,8 @@ module NattyUI
           attributes
             .map do |arg|
               case arg
-              when Symbol
+              when Symbol, String
                 ATTRIBUTES[arg] || named_color(arg) || invalid_argument(arg)
-              when String
-                named_color(arg) || invalid_argument(arg)
               when (0..255)
                 "38;5;#{arg}"
               when (256..512)
@@ -200,7 +198,11 @@ module NattyUI
       private
 
       def invalid_argument(name)
-        raise(ArgumentError, "unknown Ansi attribute name - #{name}", caller(1))
+        raise(
+          ArgumentError,
+          "unknown Ansi attribute name - '#{name}'",
+          caller(1)
+        )
       end
 
       def named_color(value)
@@ -240,164 +242,164 @@ module NattyUI
       end
     end
 
-    ATTRIBUTES = {
-      reset: 0,
-      # ---
-      bold: 1,
-      faint: 2,
-      italic: 3,
-      underline: 4,
-      # ---
-      slow_blink: 5,
-      blink: 5,
-      # ---
-      rapid_blink: 6,
-      # ---
-      invert: 7,
-      reverse: 7,
-      # ---
-      conceal: 8,
-      hide: 8,
-      # ---
-      strike: 9,
-      # ---
-      primary_font: 10,
-      default_font: 10,
-      # ---
-      font1: 11,
-      font2: 12,
-      font3: 13,
-      font4: 14,
-      font5: 15,
-      font6: 16,
-      font7: 17,
-      font8: 18,
-      font9: 19,
-      fraktur: 20,
-      # ---
-      double_underline: 21,
-      doubly: 21,
-      bold_off: 21,
-      # ---
-      normal: 22,
-      # ---
-      italic_off: 23,
-      fraktur_off: 23,
-      # ---
-      underline_off: 24,
-      blink_off: 25,
-      # ---
-      proportional: 26,
-      spacing: 26,
-      # ---
-      invert_off: 27,
-      reverse_off: 27,
-      # ---
-      reveal: 28,
-      # ---
-      strike_off: 29,
-      # ---
-      proportional_off: 50,
-      spacing_off: 50,
-      # ---
-      framed: 51,
-      encircled: 52,
-      overlined: 53,
-      framed_off: 54,
-      encircled_off: 54,
-      overlined_off: 55,
-      # foreground colors
-      black: 30,
-      red: 31,
-      green: 32,
-      yellow: 33,
-      blue: 34,
-      magenta: 35,
-      cyan: 36,
-      white: 37,
-      default: 39,
-      bright_black: 90,
-      bright_red: 91,
-      bright_green: 92,
-      bright_yellow: 93,
-      bright_blue: 94,
-      bright_magenta: 95,
-      bright_cyan: 96,
-      bright_white: 97,
-      # background colors
-      on_black: 40,
-      on_red: 41,
-      on_green: 42,
-      on_yellow: 43,
-      on_blue: 44,
-      on_magenta: 45,
-      on_cyan: 46,
-      on_white: 47,
-      on_default: 49,
-      on_bright_black: 100,
-      on_bright_red: 101,
-      on_bright_green: 102,
-      on_bright_yellow: 103,
-      on_bright_blue: 104,
-      on_bright_magenta: 105,
-      on_bright_cyan: 106,
-      on_bright_white: 107,
-      # foreground colors
-      fg_black: 30,
-      fg_red: 31,
-      fg_green: 32,
-      fg_yellow: 33,
-      fg_blue: 34,
-      fg_magenta: 35,
-      fg_cyan: 36,
-      fg_white: 37,
-      fg_default: 39,
-      fg_bright_black: 90,
-      fg_bright_red: 91,
-      fg_bright_green: 92,
-      fg_bright_yellow: 93,
-      fg_bright_blue: 94,
-      fg_bright_magenta: 95,
-      fg_bright_cyan: 96,
-      fg_bright_white: 97,
-      # background colors
-      bg_black: 40,
-      bg_red: 41,
-      bg_green: 42,
-      bg_yellow: 43,
-      bg_blue: 44,
-      bg_magenta: 45,
-      bg_cyan: 46,
-      bg_white: 47,
-      bg_default: 49,
-      bg_bright_black: 100,
-      bg_bright_red: 101,
-      bg_bright_green: 102,
-      bg_bright_yellow: 103,
-      bg_bright_blue: 104,
-      bg_bright_magenta: 105,
-      bg_bright_cyan: 106,
-      bg_bright_white: 107,
-      # underline colors
-      ul_black: '58;2;0;0;0',
-      ul_red: '58;2;128;0;0',
-      ul_green: '58;2;0;128;0',
-      ul_yellow: '58;2;128;128;0',
-      ul_blue: '58;2;0;0;128',
-      ul_magenta: '58;2;128;0;128',
-      ul_cyan: '58;2;0;128;128',
-      ul_white: '58;2;128;128;128',
-      ul_default: '59',
-      ul_bright_black: '58;2;64;64;64',
-      ul_bright_red: '58;2;255;0;0',
-      ul_bright_green: '58;2;0;255;0',
-      ul_bright_yellow: '58;2;255;255;0',
-      ul_bright_blue: '58;2;0;0;255',
-      ul_bright_magenta: '58;2;255;0;255',
-      ul_bright_cyan: '58;2;0;255;255',
-      ul_bright_white: '58;2;255;255;255'
-    }.compare_by_identity.freeze
-
+    ATTRIBUTES =
+      {
+        reset: 0,
+        # ---
+        bold: 1,
+        faint: 2,
+        italic: 3,
+        underline: 4,
+        # ---
+        slow_blink: 5,
+        blink: 5,
+        # ---
+        rapid_blink: 6,
+        # ---
+        invert: 7,
+        reverse: 7,
+        # ---
+        conceal: 8,
+        hide: 8,
+        # ---
+        strike: 9,
+        # ---
+        primary_font: 10,
+        default_font: 10,
+        # ---
+        font1: 11,
+        font2: 12,
+        font3: 13,
+        font4: 14,
+        font5: 15,
+        font6: 16,
+        font7: 17,
+        font8: 18,
+        font9: 19,
+        fraktur: 20,
+        # ---
+        double_underline: 21,
+        doubly: 21,
+        bold_off: 21,
+        # ---
+        normal: 22,
+        # ---
+        italic_off: 23,
+        fraktur_off: 23,
+        # ---
+        underline_off: 24,
+        blink_off: 25,
+        # ---
+        proportional: 26,
+        spacing: 26,
+        # ---
+        invert_off: 27,
+        reverse_off: 27,
+        # ---
+        reveal: 28,
+        # ---
+        strike_off: 29,
+        # ---
+        proportional_off: 50,
+        spacing_off: 50,
+        # ---
+        framed: 51,
+        encircled: 52,
+        overlined: 53,
+        framed_off: 54,
+        encircled_off: 54,
+        overlined_off: 55,
+        # foreground colors
+        black: 30,
+        red: 31,
+        green: 32,
+        yellow: 33,
+        blue: 34,
+        magenta: 35,
+        cyan: 36,
+        white: 37,
+        default: 39,
+        bright_black: 90,
+        bright_red: 91,
+        bright_green: 92,
+        bright_yellow: 93,
+        bright_blue: 94,
+        bright_magenta: 95,
+        bright_cyan: 96,
+        bright_white: 97,
+        # background colors
+        on_black: 40,
+        on_red: 41,
+        on_green: 42,
+        on_yellow: 43,
+        on_blue: 44,
+        on_magenta: 45,
+        on_cyan: 46,
+        on_white: 47,
+        on_default: 49,
+        on_bright_black: 100,
+        on_bright_red: 101,
+        on_bright_green: 102,
+        on_bright_yellow: 103,
+        on_bright_blue: 104,
+        on_bright_magenta: 105,
+        on_bright_cyan: 106,
+        on_bright_white: 107,
+        # foreground colors
+        fg_black: 30,
+        fg_red: 31,
+        fg_green: 32,
+        fg_yellow: 33,
+        fg_blue: 34,
+        fg_magenta: 35,
+        fg_cyan: 36,
+        fg_white: 37,
+        fg_default: 39,
+        fg_bright_black: 90,
+        fg_bright_red: 91,
+        fg_bright_green: 92,
+        fg_bright_yellow: 93,
+        fg_bright_blue: 94,
+        fg_bright_magenta: 95,
+        fg_bright_cyan: 96,
+        fg_bright_white: 97,
+        # background colors
+        bg_black: 40,
+        bg_red: 41,
+        bg_green: 42,
+        bg_yellow: 43,
+        bg_blue: 44,
+        bg_magenta: 45,
+        bg_cyan: 46,
+        bg_white: 47,
+        bg_default: 49,
+        bg_bright_black: 100,
+        bg_bright_red: 101,
+        bg_bright_green: 102,
+        bg_bright_yellow: 103,
+        bg_bright_blue: 104,
+        bg_bright_magenta: 105,
+        bg_bright_cyan: 106,
+        bg_bright_white: 107,
+        # underline colors
+        ul_black: '58;2;0;0;0',
+        ul_red: '58;2;128;0;0',
+        ul_green: '58;2;0;128;0',
+        ul_yellow: '58;2;128;128;0',
+        ul_blue: '58;2;0;0;128',
+        ul_magenta: '58;2;128;0;128',
+        ul_cyan: '58;2;0;128;128',
+        ul_white: '58;2;128;128;128',
+        ul_default: '59',
+        ul_bright_black: '58;2;64;64;64',
+        ul_bright_red: '58;2;255;0;0',
+        ul_bright_green: '58;2;0;255;0',
+        ul_bright_yellow: '58;2;255;255;0',
+        ul_bright_blue: '58;2;0;0;255',
+        ul_bright_magenta: '58;2;255;0;255',
+        ul_bright_cyan: '58;2;0;255;255',
+        ul_bright_white: '58;2;255;255;255'
+      }.tap { |ret| ret.merge!(ret.transform_keys(&:to_s)).freeze }
     private_constant :ATTRIBUTES
   end
 end

@@ -6,56 +6,13 @@ require_relative 'ansi'
 
 module NattyUI
   class AnsiWrapper < Wrapper
-    class Progression < Wrapper::Progression
-      protected
-
-      PREFIX = "#{Ansi[39]}➔".freeze
-      BAR_COLOR = Ansi[39, 295].freeze
-      BAR_BACK = Ansi[236, 492].freeze
-      BAR_INK = Ansi[:bold, 255, :on_default].freeze
-      CHARS = '─╲│╱'
-
-      private_constant :PREFIX, :BAR_COLOR, :BAR_BACK, :BAR_INK, :CHARS
-
-      def draw(clear)
-        @wrapper.stream << "#{Ansi.line_clear if clear}#{PREFIX} #{@message} "
-        return draw_bar if @max_value
-        unless @value.zero?
-          @wrapper.stream << BAR_INK << CHARS[@value.to_i % CHARS.size]
-        end
-      ensure
-        (@wrapper.stream << Ansi.reset).flush
-      end
-
-      def draw_bar
-        pc = @value / @max_value
-        cn = (30 * pc).to_i
-        @wrapper.stream << "#{BAR_COLOR}#{'█' * cn}" \
-          "#{BAR_BACK}#{'•' * (30 - cn)}#{BAR_INK} " \
-          "#{format('%.0f/%.0f (%.2f%%)', @value, @max_value, pc * 100)}"
-      end
-
-      def clear_on_end = (@wrapper.stream << Ansi.line_clear)
-    end
-
-    private_constant :Progression
-
     def ansi? = true
-    def screen_size = @stream.winsize
-    def screen_rows = @stream.winsize[0]
-    def screen_columns = @stream.winsize[-1]
-
-    def with(*attributes)
-      return to_proc(__method__, *attributes) unless block_given?
-      @stream << (attributes = Ansi[*attributes])
-      yield(self)
-    ensure
-      @stream << Ansi.reset unless attributes.empty?
-      @stream.flush
-    end
 
     def page
-      return flush unless block_given?
+      unless block_given?
+        @stream.flush
+        return self
+      end
       (@stream << PAGE_BEGIN).flush
       begin
         yield(self)
@@ -64,54 +21,151 @@ module NattyUI
       end
     end
 
+    def temporary
+      unless block_given?
+        @stream.flush
+        return self
+      end
+      count = @lines_written
+      begin
+        yield(self)
+      ensure
+        count = @lines_written - count
+        if count.nonzero?
+          @stream << Ansi.cursor_line_up(count) << Ansi.screen_erase_below
+        end
+        @stream.flush
+      end
+    end
+
     protected
 
-    def create_progression(message, max_value)
-      Progression.new(self, message, max_value)
+    def embellish(obj)
+      return if obj.nil? || obj.empty?
+      reset = false
+      ret =
+        obj
+          .to_s
+          .gsub(RE_EMBED) do
+            match = Regexp.last_match[2]
+            match.delete_prefix!('/') or next reset = Ansi[*match.split]
+            match.empty? or next "{{:#{match}:}}"
+            reset = false
+            Ansi.reset
+          end
+      reset ? "#{ret}#{Ansi.reset}" : ret
     end
 
-    def _section(symbol, msg, *args)
-      @stream << "#{Ansi[:bold, :italic, COLORS[symbol]]}#{symbol}" \
-        "#{Ansi[:bold_off, :italic_off]} #{msg}#{Ansi.reset}\n"
-      each_line(*args) { |s| @stream << '  ' << s << "\n" } unless args.empty?
-      flush
-    end
+    class Message < Message
+      protected
 
-    def begin_query(question, choices)
-      @stream << "#{QUERY_PREFIX} #{question}#{Ansi.reset}\n"
-      choices.each_pair do |key, msg|
-        @stream << "  #{QUERY_KEY}#{key}#{QUERY_MSG} #{msg}#{Ansi.reset}\n"
+      def title_attr(symbol)
+        color = COLORS[symbol]
+        if color
+          {
+            prefix:
+              "#{Ansi[:bold, :italic, color]}#{
+                symbol
+              }#{Ansi[:reset, :bold, color]} ",
+            suffix: Ansi.reset
+          }
+        else
+          { prefix: "#{Ansi[:bold, 231]}#{symbol} ", suffix: Ansi.reset }
+        end
       end
-      @stream << QUERY_SUFFIX
-      @stream.flush
-      choices.size + 1
+
+      COLORS = {
+        '•' => 231,
+        'i' => 117,
+        '!' => 220,
+        'X' => 196,
+        '✓' => 46,
+        'F' => 198,
+        '▶︎' => 220,
+        '➔' => 117
+      }.freeze
     end
 
-    def end_query(lines)
-      @stream << Ansi.cursor_line_up(lines) << Ansi.screen_erase_below
-      @stream.flush
+    class Section < Section
+      def initialize(parent, prefix_attr: nil, **opts)
+        super
+        return unless @prefix && prefix_attr
+        @prefix = Ansi.embellish(@prefix, *prefix_attr)
+      end
     end
 
-    def begin_asking(question)
-      (@stream << "#{QUERY_PREFIX} #{question} #{Ansi.reset}").flush
-      true
+    class Task < Message
+      include NattyUI::Wrapper::TaskMixin
+
+      protected
+
+      def cleanup
+        count = @wrapper.lines_written - @count
+        if count.nonzero?
+          (
+            wrapper.stream << Ansi.cursor_line_up(count) <<
+              Ansi.screen_erase_below
+          ).flush
+        end
+      end
     end
 
-    def end_asking(_) = (@stream << Ansi.line_clear).flush
+    class Heading < Heading
+      protected
 
-    COLORS = { '•' => 231, 'i' => 39, '!' => 220, 'X' => 196, '✓' => 46 }.freeze
+      def enclose(weight)
+        prefix, suffix = super
+        ["#{PREFIX}#{prefix}#{MSG}", "#{PREFIX}#{suffix}#{Ansi.reset}"]
+      end
+
+      PREFIX = Ansi[39].freeze
+      MSG = Ansi[:bold, 231].freeze
+    end
+
+    class Framed < Framed
+      protected
+
+      def components(type)
+        top_start, top_suffix, left, bottom = super
+        [
+          "#{Ansi[39]}#{top_start}#{Ansi[:bold, 231]}",
+          "#{Ansi[:reset, 39]}#{top_suffix}#{Ansi.reset}",
+          Ansi.embellish(left, 39),
+          Ansi.embellish(bottom, 39)
+        ]
+      end
+    end
+
+    class Ask < Ask
+      protected
+
+      def query(question)
+        (wrapper.stream << "#{prefix}#{PREFIX} #{question} #{Ansi.reset}").flush
+      end
+
+      def finish
+        (wrapper.stream << Ansi.line_clear).flush
+      end
+
+      PREFIX = "#{Ansi[:bold, :italic, 220]}▶︎#{Ansi[:reset, 220]}".freeze
+    end
+
+    class Query < Query
+      protected
+
+      def query(question, choices)
+        super
+        wrapper.stream << "#{prefix}#{PROMPT} "
+      end
+
+      PROMPT = Ansi.embellish(':', :bold, 220).freeze
+    end
 
     PAGE_BEGIN =
       "#{Ansi.reset}#{Ansi.cursor_save_pos}#{Ansi.screen_save}" \
         "#{Ansi.cursor_home}#{Ansi.screen_erase}".freeze
     PAGE_END =
       "#{Ansi.screen_restore}#{Ansi.cursor_restore_pos}#{Ansi.reset}".freeze
-
-    QUERY_PREFIX =
-      "#{Ansi[:bold, :italic, 220]}▶︎#{Ansi[:bold_off, :italic_off]}".freeze
-    QUERY_SUFFIX = "#{Ansi[:bold, 220]}▶︎#{Ansi.reset}".freeze
-    QUERY_KEY = Ansi[:bold, :underline, 231].freeze
-    QUERY_MSG = Ansi[:reset, 255].freeze
   end
 
   private_constant :AnsiWrapper

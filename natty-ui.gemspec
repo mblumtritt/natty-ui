@@ -25,6 +25,8 @@ Gem::Specification.new do |spec|
   spec.metadata['rubygems_mfa_required'] = 'true'
 
   spec.required_ruby_version = '>= 3.0'
+  spec.add_runtime_dependency 'unicode-display_width', '>= 2.5'
+  # spec.add_runtime_dependency 'unicode-emoji', '>= 3.4'
 
   spec.files = Dir['lib/**/*'] + Dir['examples/**/*']
   spec.extra_rdoc_files = %w[README.md LICENSE]
