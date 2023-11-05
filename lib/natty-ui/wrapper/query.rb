@@ -4,6 +4,44 @@ require_relative 'element'
 
 module NattyUI
   class Wrapper
+    module Features
+      # Request a choice from user.
+      #
+      # @example Select by Index
+      #   choice = sec.query(
+      #     'Which fruits do you prefer?',
+      #     'Apples',
+      #     'Bananas',
+      #     'Cherries'
+      #   )
+      #   # => '1' or '2' or '3' or nil if user aborted
+      #
+      # @example Select by given char
+      #   choice = sec.query(
+      #     'Which fruits do you prefer?',
+      #     a: 'Apples',
+      #     b: 'Bananas',
+      #     c: 'Cherries'
+      #   )
+      #   # => 'a' or 'b' or 'c' or nil if user aborted
+      #
+      # @param question [#to_s] Question to display
+      # @param choices [#to_s] choices selectable via index (0..9)
+      # @param result  [Symbol] defines how the result ist returned
+      # @param kw_choices [{Char => #to_s}] choices selectable with given char
+      # @return [Char] when `result` is configured as `:char`
+      # @return [#to_s] when `result` is configured as `:choice`
+      # @return [[Char, #to_s]] when `result` is configured as `:both`
+      # @return [nil] when input was aborted with `ESC`, `^C` or `^D`
+      def query(question, *choices, result: :char, **kw_choices)
+        _element(:Query, question, choices, kw_choices, result)
+      end
+    end
+
+    #
+    # An {Element} to request a user choice.
+    #
+    # @see Features#query
     class Query < Element
       protected
 
@@ -47,7 +85,5 @@ module NattyUI
           .transform_values! { |v| v.to_s.tr("\r\n", ' ') }
       end
     end
-
-    private_constant :Query
   end
 end

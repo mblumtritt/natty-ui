@@ -14,7 +14,7 @@ This is the beautiful, nice, nifty, fancy, neat, pretty, cool, lovely, natty use
 
 Here you find elegant, simple and beautiful tools that enhance your command line application functionally and aesthetically.
 
-## Example
+![illustration](./resources/sample.png)
 
 ## Installation
 
@@ -55,6 +55,8 @@ require 'natty-ui'
 
 Since I did not complete the tests and not all my ideas are already implemented I have this Todo list:
 
+- add samples to README
+- add more samples to help
 - add more tests
 - simple prompt
 - password prompt

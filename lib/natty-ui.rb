@@ -8,6 +8,10 @@ require_relative 'natty-ui/ansi_wrapper'
 # Module to create beautiful, nice, nifty, fancy, neat, pretty, cool, lovely,
 # natty user interfaces for your CLI.
 #
+# It creates {Wrapper} instances which can optionally support ANSI. The UI
+# consists of {Wrapper::Element}s and {Wrapper::Section}s for different
+# {Wrapper::Features}.
+#
 module NattyUI
   class << self
     # @see .valid_in?

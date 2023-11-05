@@ -11,8 +11,8 @@ UI.space
 # just simulate some work
 def something = sleep(0.5)
 
-# simulate task steps
-def simulate_steps(task)
+# simulate assembling task steps
+def assemble(task)
   task.msg 'Collect files...'
   something
   task.msg 'Compile files...'
@@ -27,21 +27,18 @@ end
 
 UI.framed('Tasks') do |sec|
   sec.puts 'Tasks are sections to visualize step by step processing.'
-  sec.task('Assemble assets') { |task| simulate_steps(task) }
+  sec.task('Assemble assets') { |task| assemble(task) }
   sec.space
 
   sec.puts 'If such a task failed the logged messages are kept:'
-  sec.task('Assemble assets') do |task|
-    simulate_steps(task)
-    task.failed
-
-    This code here is never reached!
-  end
+  assembling = sec.task('Assemble assets')
+  assemble(assembling)
+  assembling.failed
   sec.space
 
   sec.puts 'You can add some more description when failed:'
   sec.task('Assemble assets') do |task|
-    simulate_steps(task)
+    assemble(task)
     task.failed('Unable to store results', <<~ERROR)
       Server reported Invalid credentials
       Check your credentials and try again...
@@ -53,8 +50,8 @@ UI.framed('Tasks') do |sec|
 
   sec.puts 'You can also add a description when all was fine:'
   sec.task('Assemble assets') do |task|
-    simulate_steps(task)
-    task.ok('Assets assembled', <<~INFO)
+    assemble(task)
+    task.done('Assets assembled', <<~INFO)
       Your assets are ready on server now.
     INFO
 

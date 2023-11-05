@@ -2,12 +2,16 @@
 
 require 'stringio'
 require_relative 'wrapper/ask'
+require_relative 'wrapper/framed'
+require_relative 'wrapper/heading'
+require_relative 'wrapper/message'
 require_relative 'wrapper/query'
 require_relative 'wrapper/section'
+require_relative 'wrapper/task'
 
 module NattyUI
   #
-  # Helper class to wrap an output stream.
+  # Helper class to wrap an output stream and implement all {Features}.
   #
   class Wrapper
     include Features

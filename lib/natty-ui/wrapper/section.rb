@@ -4,9 +4,37 @@ require_relative 'element'
 
 module NattyUI
   class Wrapper
+    module Features
+      # Creates a default section and prints given arguments as lines
+      # into the section.
+      #
+      # @param [Array<#to_s>] args objects to print
+      # @yieldparam [Section] section the created section
+      # @return [Object] the result of the code block
+      # @return [Section] itself, when no code block is given
+      def section(*args, &block)
+        _section(:Section, args, prefix: '  ', suffix: '  ', &block)
+      end
+      alias sec section
+
+      # Creates a quotation section and prints given arguments as lines
+      # into the section.
+      #
+      # @param (see #section)
+      # @yieldparam (see #section)
+      # @return (see #section)
+      def quote(*args, &block)
+        _section(:Section, args, prefix: '▍ ', prefix_attr: 39, &block)
+      end
+    end
+
     #
-    # Helper class representing a output section.
+    # Visual element to keep text lines together.
     #
+    # A section can contain other elements and sections.
+    #
+    # @see Features#section
+    # @see Features#quote
     class Section < Element
       # Close the section.
       #
@@ -63,121 +91,5 @@ module NattyUI
         nil
       end
     end
-
-    class Message < Section
-      protected
-
-      def initialize(parent, title:, symbol:, **opts)
-        parent.puts(title, **title_attr(symbol))
-        super(parent, prefix: ' ' * (NattyUI.display_width(symbol) + 1), **opts)
-      end
-
-      def title_attr(symbol)
-        { prefix: "#{symbol} " }
-      end
-    end
-    private_constant :Message
-
-    class Heading < Section
-      protected
-
-      def initialize(parent, title:, weight:, **opts)
-        prefix, suffix = enclose(weight)
-        parent.puts(title, prefix: prefix, suffix: suffix)
-        super(parent, **opts)
-      end
-
-      def enclose(weight)
-        enclose = ENCLOSE[weight]
-        return "#{enclose} ", " #{enclose}" if enclose
-        raise(ArgumentError, "invalid heading weight - #{weight}")
-      end
-
-      ENCLOSE = {
-        1 => '═══════',
-        2 => '━━━━━',
-        3 => '━━━',
-        4 => '───',
-        5 => '──'
-      }.compare_by_identity.freeze
-    end
-    private_constant :Heading
-
-    class Framed < Section
-      protected
-
-      def initialize(parent, title:, type:, **opts)
-        top_start, top_suffix, left, bottom = components(type)
-        parent.puts(" #{title} ", prefix: top_start, suffix: top_suffix)
-        @bottom = bottom
-        super(parent, prefix: "#{left} ", **opts)
-      end
-
-      def finish = parent.puts(@bottom)
-
-      def components(type)
-        COMPONENTS[type] || raise(ArgumentError, "invalid frame type - #{type}")
-      end
-
-      COMPONENTS = {
-        rounded: %w[╭── ───── │ ╰──────────],
-        simple: %w[┌── ───── │ └──────────],
-        heavy: %w[┏━━ ━━━━━ ┃ ┗━━━━━━━━━━],
-        semi: %w[┍━━ ━━━━━ │ ┕━━━━━━━━━━],
-        double: %w[╔══ ═════ ║ ╚══════════]
-      }.compare_by_identity.freeze
-    end
-    private_constant :Framed
-
-    # Extension for task section states.
-    #
-    # @see Features.task
-    #
-    module TaskMixin
-      # @attribute [r] ok?
-      # @return [Boolean] whether the task completed sucessfully
-      def ok? = (@status == :ok)
-
-      # @attribute [r] failed?
-      # @return [Boolean] whether the task failed
-      def failed? = (@status == :failed)
-
-      # @!visibility private
-      def completed(*args)
-        @args = args unless args.empty?
-        _close(:ok)
-      end
-      alias done completed
-      alias ok completed
-
-      # @!visibility private
-      def failed(*args)
-        @args = args unless args.empty?
-        _close(:failed)
-      end
-
-      protected
-
-      def initialize(parent, title:, **opts)
-        @parent = parent
-        @count = wrapper.lines_written
-        @args = [title]
-        super(parent, title: title, symbol: '➔', **opts)
-      end
-
-      def finish
-        return @parent.failed(*@args) if failed?
-        @status = :ok if @status == :closed
-        cleanup
-        @parent.completed(*@args)
-      end
-
-      def cleanup = nil
-    end
-
-    class Task < Message
-      include TaskMixin
-    end
-    private_constant :Task
   end
 end

@@ -95,18 +95,17 @@ module NattyUI
     end
 
     class Task < Message
-      include NattyUI::Wrapper::TaskMixin
+      include NattyUI::Wrapper::TaskAttributes
 
       protected
 
       def cleanup
         count = @wrapper.lines_written - @count
-        if count.nonzero?
-          (
-            wrapper.stream << Ansi.cursor_line_up(count) <<
-              Ansi.screen_erase_below
-          ).flush
-        end
+        return if count <= 0
+        (
+          wrapper.stream << Ansi.cursor_line_up(count) <<
+            Ansi.screen_erase_below
+        ).flush
       end
     end
 
@@ -143,9 +142,7 @@ module NattyUI
         (wrapper.stream << "#{prefix}#{PREFIX} #{question} #{Ansi.reset}").flush
       end
 
-      def finish
-        (wrapper.stream << Ansi.line_clear).flush
-      end
+      def finish = (wrapper.stream << Ansi.line_clear).flush
 
       PREFIX = "#{Ansi[:bold, :italic, 220]}▶︎#{Ansi[:reset, 220]}".freeze
     end
