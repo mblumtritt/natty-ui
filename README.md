@@ -16,6 +16,10 @@ Here you find elegant, simple and beautiful tools that enhance your command line
 
 ![illustration](./resources/sample.png)
 
+## Examples
+
+Have a look at the [examples](./examples/) directory to get an impression of the current feature set.
+
 ## Installation
 
 You can install the gem in your system with
