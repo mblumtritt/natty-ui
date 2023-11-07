@@ -3,36 +3,36 @@
 require_relative 'element'
 
 module NattyUI
-  class Wrapper
-    module Features
-      # Ask a yes/no question from user.
-      #
-      # The defaults for `yes` and `no` will work for
-      # Afrikaans, Dutch, English, French, German, Italian, Polish, Portuguese,
-      # Romanian, Spanish and Swedish.
-      #
-      # The default for `yes` includes `ENTER` and `RETURN` key
-      #
-      # @example
-      #   case sec.ask('Do you like the NattyUI gem?')
-      #   when true
-      #     sec.info('Yeah!!')
-      #   when false
-      #     sec.write("That's pitty!")
-      #   else
-      #     sec.failed('You should have an opinion!')
-      #   end
-      #
-      # @param question [#to_s] Question to display
-      # @param yes [#to_s] chars which will be used to answer 'Yes'
-      # @param no [#to_s] chars which will be used to answer 'No'
-      # @return [Boolean] whether the answer is yes or no
-      # @return [nil] when input was aborted with `ESC`, `^C` or `^D`
-      def ask(question, yes: "jotsyd\r\n", no: 'n')
-        _element(:Ask, question, yes, no)
-      end
+  module Features
+    # Ask a yes/no question from user.
+    #
+    # The defaults for `yes` and `no` will work for
+    # Afrikaans, Dutch, English, French, German, Italian, Polish, Portuguese,
+    # Romanian, Spanish and Swedish.
+    #
+    # The default for `yes` includes `ENTER` and `RETURN` key
+    #
+    # @example
+    #   case sec.ask('Do you like the NattyUI gem?')
+    #   when true
+    #     sec.info('Yeah!!')
+    #   when false
+    #     sec.write("That's pitty!")
+    #   else
+    #     sec.failed('You should have an opinion!')
+    #   end
+    #
+    # @param question [#to_s] Question to display
+    # @param yes [#to_s] chars which will be used to answer 'Yes'
+    # @param no [#to_s] chars which will be used to answer 'No'
+    # @return [Boolean] whether the answer is yes or no
+    # @return [nil] when input was aborted with `ESC`, `^C` or `^D`
+    def ask(question, yes: "jotsyd\r\n", no: 'n')
+      _element(:Ask, question, yes, no)
     end
+  end
 
+  class Wrapper
     #
     # An {Element} to ask user input for yes/no queries.
     #
@@ -43,9 +43,9 @@ module NattyUI
       def _call(question, yes, no)
         yes, no = grab(yes, no)
         query(question)
-        ret = read(yes, no)
+        read(yes, no)
+      ensure
         finish
-        ret
       end
 
       def query(question)

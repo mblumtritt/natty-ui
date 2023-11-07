@@ -3,41 +3,41 @@
 require_relative 'element'
 
 module NattyUI
-  class Wrapper
-    module Features
-      # Request a choice from user.
-      #
-      # @example Select by Index
-      #   choice = sec.query(
-      #     'Which fruits do you prefer?',
-      #     'Apples',
-      #     'Bananas',
-      #     'Cherries'
-      #   )
-      #   # => '1' or '2' or '3' or nil if user aborted
-      #
-      # @example Select by given char
-      #   choice = sec.query(
-      #     'Which fruits do you prefer?',
-      #     a: 'Apples',
-      #     b: 'Bananas',
-      #     c: 'Cherries'
-      #   )
-      #   # => 'a' or 'b' or 'c' or nil if user aborted
-      #
-      # @param question [#to_s] Question to display
-      # @param choices [#to_s] choices selectable via index (0..9)
-      # @param result  [Symbol] defines how the result ist returned
-      # @param kw_choices [{Char => #to_s}] choices selectable with given char
-      # @return [Char] when `result` is configured as `:char`
-      # @return [#to_s] when `result` is configured as `:choice`
-      # @return [[Char, #to_s]] when `result` is configured as `:both`
-      # @return [nil] when input was aborted with `ESC`, `^C` or `^D`
-      def query(question, *choices, result: :char, **kw_choices)
-        _element(:Query, question, choices, kw_choices, result)
-      end
+  module Features
+    # Request a choice from user.
+    #
+    # @example Select by Index
+    #   choice = sec.query(
+    #     'Which fruits do you prefer?',
+    #     'Apples',
+    #     'Bananas',
+    #     'Cherries'
+    #   )
+    #   # => '1' or '2' or '3' or nil if user aborted
+    #
+    # @example Select by given char
+    #   choice = sec.query(
+    #     'Which fruits do you prefer?',
+    #     a: 'Apples',
+    #     b: 'Bananas',
+    #     c: 'Cherries'
+    #   )
+    #   # => 'a' or 'b' or 'c' or nil if user aborted
+    #
+    # @param question [#to_s] Question to display
+    # @param choices [#to_s] choices selectable via index (0..9)
+    # @param result  [Symbol] defines how the result ist returned
+    # @param kw_choices [{Char => #to_s}] choices selectable with given char
+    # @return [Char] when `result` is configured as `:char`
+    # @return [#to_s] when `result` is configured as `:choice`
+    # @return [[Char, #to_s]] when `result` is configured as `:both`
+    # @return [nil] when input was aborted with `ESC`, `^C` or `^D`
+    def query(question, *choices, result: :char, **kw_choices)
+      _element(:Query, question, choices, kw_choices, result)
     end
+  end
 
+  class Wrapper
     #
     # An {Element} to request a user choice.
     #
@@ -49,22 +49,18 @@ module NattyUI
         choices = grab(choices, kw_choices)
         return if choices.empty?
         wrapper.temporary do
-          query(question, choices)
-          read_(choices, result_typye)
+          __section(
+            @parent,
+            :Message,
+            choices.map { |k, v| "#{k} #{v}" },
+            title: question,
+            symbol: '▶︎'
+          )
+          read(choices, result_typye)
         end
       end
 
-      def query(question, choices)
-        __section(
-          @parent,
-          :Message,
-          choices.map { |k, v| "#{k} #{v}" },
-          title: question,
-          symbol: '▶︎'
-        )
-      end
-
-      def read_(choices, result_typye)
+      def read(choices, result_typye)
         while true
           char = NattyUI.in_stream.getch
           return if "\3\4\e".include?(char)

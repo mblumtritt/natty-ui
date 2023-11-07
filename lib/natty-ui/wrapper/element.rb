@@ -22,6 +22,12 @@ module NattyUI
       # @return [Boolean] whether its closed or not
       def closed? = (@status != nil)
 
+      # Close the element.
+      #
+      # @return [Element] itself when used without a code block
+      # @return [nil] when used with a code block
+      def close = _close(:closed)
+
       alias _to_s to_s
       private :_to_s
 
@@ -52,6 +58,14 @@ module NattyUI
         @status = state
         finish
         @raise ? raise(BREAK) : self
+      end
+
+      def _call
+        @raise = true
+        yield(self)
+        close unless closed?
+      rescue BREAK
+        nil
       end
 
       BREAK = Class.new(StandardError)

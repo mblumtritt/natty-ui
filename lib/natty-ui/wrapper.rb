@@ -5,6 +5,7 @@ require_relative 'wrapper/ask'
 require_relative 'wrapper/framed'
 require_relative 'wrapper/heading'
 require_relative 'wrapper/message'
+require_relative 'wrapper/progress'
 require_relative 'wrapper/query'
 require_relative 'wrapper/section'
 require_relative 'wrapper/task'
@@ -68,6 +69,7 @@ module NattyUI
       @stream.flush
       self
     end
+    alias add puts
 
     # Add at least one empty line
     #
@@ -87,9 +89,9 @@ module NattyUI
     # to the top left screen corner. It restores the screen after the block.
     #
     # @example
-    #   UI.page do |ui|
-    #     ui.puts('Hello World')
-    #     sleep 10
+    #   UI.page do |page|
+    #     page.info('This message will disappear in 5 seconds!')
+    #     sleep 5
     #   end
     #
     # @yield [Wrapper] itself
@@ -106,7 +108,9 @@ module NattyUI
     # the given block ended.
     #
     # @example
-    #   UI.temporary do |ui|
+    #   UI.temporary do |temp|
+    #     temp.info('This message will disappear in 5 seconds!')
+    #     sleep 5
     #   end
     #
     # @yield [Wrapper] itself
@@ -127,16 +131,15 @@ module NattyUI
 
     protected
 
-    def wrapper = self
-    def prefix = nil
-    alias suffix prefix
-
     def initialize(stream)
       @stream = stream
       @lines_written = 0
       @ws = ansi? && stream.respond_to?(:winsize) && stream.winsize
     end
 
+    def wrapper = self
+    def prefix = nil
+    alias suffix prefix
     def embellish(obj) = obj&.to_s&.gsub(RE_EMBED, '')
 
     RE_EMBED = /({{:((?~:}})):}})/

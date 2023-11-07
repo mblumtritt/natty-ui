@@ -10,7 +10,7 @@ require_relative 'natty-ui/ansi_wrapper'
 #
 # It creates {Wrapper} instances which can optionally support ANSI. The UI
 # consists of {Wrapper::Element}s and {Wrapper::Section}s for different
-# {Wrapper::Features}.
+# {Features}.
 #
 module NattyUI
   class << self

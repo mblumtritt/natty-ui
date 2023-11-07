@@ -10,12 +10,37 @@ UI.space
 
 # just simulate some work
 def something = sleep(0.5)
+def some = sleep(0.15)
+
+UI.framed('Pogress Indicators') do |sec|
+  progress = sec.progress('Propgress with max_value', max_value: 11)
+  11.times do
+    progress.step
+    some
+  end
+  progress.done 'Propgress ok'
+
+  progress = sec.progress('Simple propgress')
+  20.times do
+    progress.step
+    some
+  end
+  progress.done 'Propgress ok'
+end
 
 # simulate assembling task steps
 def assemble(task)
   task.msg 'Collect files...'
   something
-  task.msg 'Compile files...'
+  task.msg 'Compile files...' do |msg|
+    msg.puts 'Lala'
+    something
+    msg.puts 'Lala'
+    something
+    msg.puts 'Lala'
+    something
+  end
+
   something
   task.msg 'Compressing...'
   something
@@ -57,39 +82,4 @@ UI.framed('Tasks') do |sec|
 
     This code here is never reached!
   end
-end
-
-__END__
-
-UI.write('Natty UI Pgrogress Bar Demo')
-
-UI.progress('Basic Task') do |progression|
-  10.times do
-    something
-    progression.step
-  end
-end
-
-UI.progress('Task with named steps') do |progression|
-  10.times do |i|
-    something
-    progression.message = "This is the #{i + 1}th step"
-  end
-  progression.done('Task done')
-end
-
-UI.progress('Task percentage view', max_value: 10) do |progression|
-  10.times do |i|
-    something
-    progression.value = i
-  end
-end
-
-UI.progress('All combined', max_value: 10) do |progression|
-  9.times do |i|
-    something
-    progression.step(message: "This is the #{i + 1}th step", value: i)
-  end
-  progression.failed('Errro found', 'Sorry, but the task failed')
-  raise(NotImplementedError, 'This code will never be reached!')
 end

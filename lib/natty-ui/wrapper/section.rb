@@ -3,31 +3,31 @@
 require_relative 'element'
 
 module NattyUI
-  class Wrapper
-    module Features
-      # Creates a default section and prints given arguments as lines
-      # into the section.
-      #
-      # @param [Array<#to_s>] args objects to print
-      # @yieldparam [Section] section the created section
-      # @return [Object] the result of the code block
-      # @return [Section] itself, when no code block is given
-      def section(*args, &block)
-        _section(:Section, args, prefix: '  ', suffix: '  ', &block)
-      end
-      alias sec section
-
-      # Creates a quotation section and prints given arguments as lines
-      # into the section.
-      #
-      # @param (see #section)
-      # @yieldparam (see #section)
-      # @return (see #section)
-      def quote(*args, &block)
-        _section(:Section, args, prefix: '▍ ', prefix_attr: 39, &block)
-      end
+  module Features
+    # Creates a default section and prints given arguments as lines
+    # into the section.
+    #
+    # @param [Array<#to_s>] args objects to print
+    # @yieldparam [Wrapper::Section] section the created section
+    # @return [Object] the result of the code block
+    # @return [Wrapper::Section] itself, when no code block is given
+    def section(*args, &block)
+      _section(:Section, args, prefix: '  ', suffix: '  ', &block)
     end
+    alias sec section
 
+    # Creates a quotation section and prints given arguments as lines
+    # into the section.
+    #
+    # @param (see #section)
+    # @yieldparam (see #section)
+    # @return (see #section)
+    def quote(*args, &block)
+      _section(:Section, args, prefix: '▍ ', prefix_attr: 39, &block)
+    end
+  end
+
+  class Wrapper
     #
     # Visual element to keep text lines together.
     #
@@ -73,22 +73,29 @@ module NattyUI
         self
       end
 
+      # @note The screen manipulation is only available in ANSI mode see {#ansi?}
+      #
+      # Resets the part of the screen written below the current output line when
+      # the given block ended.
+      #
+      # @example
+      #   section.temporary do |temp|
+      #     temp.info('This message will disappear in 5 seconds!')
+      #     sleep 5
+      #   end
+      #
+      # @yield [Section] itself
+      # @return [Object] block result
+      def temporary
+        block_given? ? yield(self) : self
+      end
+
       protected
 
       def initialize(parent, prefix: nil, suffix: nil, **_)
         super(parent)
         @prefix = prefix
         @suffix = suffix
-      end
-
-      private
-
-      def _call
-        @raise = true
-        yield(self)
-        close unless closed?
-      rescue BREAK
-        nil
       end
     end
   end

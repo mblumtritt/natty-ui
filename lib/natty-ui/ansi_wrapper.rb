@@ -87,25 +87,30 @@ module NattyUI
     end
 
     class Section < Section
+      def temporary
+        stream = wrapper.stream
+        unless block_given?
+          stream.flush
+          return self
+        end
+        count = wrapper.lines_written
+        begin
+          yield(self)
+        ensure
+          count = wrapper.lines_written - count
+          if count.nonzero?
+            stream << Ansi.cursor_line_up(count) << Ansi.screen_erase_below
+          end
+          stream.flush
+        end
+      end
+
+      protected
+
       def initialize(parent, prefix_attr: nil, **opts)
         super
         return unless @prefix && prefix_attr
         @prefix = Ansi.embellish(@prefix, *prefix_attr)
-      end
-    end
-
-    class Task < Message
-      include NattyUI::Wrapper::TaskAttributes
-
-      protected
-
-      def cleanup
-        count = @wrapper.lines_written - @count
-        return if count <= 0
-        (
-          wrapper.stream << Ansi.cursor_line_up(count) <<
-            Ansi.screen_erase_below
-        ).flush
       end
     end
 
@@ -135,11 +140,37 @@ module NattyUI
       end
     end
 
+    class Task < Message
+      include ProgressAttributes
+
+      protected
+
+      def initialize(parent, title:, **opts)
+        @parent = parent
+        @count = wrapper.lines_written
+        @final_text = [title]
+        super(parent, title: title, symbol: '➔', **opts)
+      end
+
+      def finish
+        return @parent.failed(*@final_text) if failed?
+        @status = :ok if @status == :closed
+        count = @wrapper.lines_written - @count
+        if count.positive?
+          (
+            wrapper.stream << Ansi.cursor_line_up(count) <<
+              Ansi.screen_erase_below
+          ).flush
+        end
+        @parent.completed(*@final_text)
+      end
+    end
+
     class Ask < Ask
       protected
 
       def query(question)
-        (wrapper.stream << "#{prefix}#{PREFIX} #{question} #{Ansi.reset}").flush
+        (wrapper.stream << "#{prefix}#{PREFIX} #{question}#{Ansi.reset} ").flush
       end
 
       def finish = (wrapper.stream << Ansi.line_clear).flush
@@ -150,12 +181,56 @@ module NattyUI
     class Query < Query
       protected
 
-      def query(question, choices)
-        super
+      def read(choices, result_typye)
         wrapper.stream << "#{prefix}#{PROMPT} "
+        super
       end
 
       PROMPT = Ansi.embellish(':', :bold, 220).freeze
+    end
+
+    class Progress < Progress
+      protected
+
+      def draw_title(title)
+        @prefix = "#{prefix}#{TITLE_PREFIX}#{title}#{Ansi.reset} "
+        (wrapper.stream << @prefix).flush
+        @prefix = "#{Ansi.line_clear}#{@prefix}"
+        if @max_value
+          @prefix << BAR_COLOR
+        else
+          @prefix << INDICATOR_ATTRIBUTE
+          @indicator = 0
+        end
+      end
+
+      TITLE_PREFIX = "#{Ansi[:bold, :italic, 117]}➔#{Ansi[:reset, 117]} ".freeze
+      INDICATOR_ATTRIBUTE = Ansi[:bold, 220].freeze
+      BAR_COLOR = Ansi[39, 295].freeze
+      BAR_BACK = Ansi[236, 492].freeze
+      BAR_INK = Ansi[:bold, 255, :on_default].freeze
+
+      def draw_final = (wrapper.stream << Ansi.line_clear).flush
+
+      def redraw
+        (wrapper.stream << @prefix << (@max_value ? fullbar : indicator)).flush
+      end
+
+      def indicator = '─╲│╱'[(@indicator += 1) % 4]
+
+      def fullbar
+        percent = @value / @max_value
+        count = (30 * percent).to_i
+        "#{'█' * count}#{BAR_BACK}#{'▁' * (30 - count)}" \
+          "#{BAR_INK} #{
+            format(
+              '%<value>.0f/%<max_value>.0f (%<percent>.2f%%)',
+              value: @value,
+              max_value: @max_value,
+              percent: percent * 100
+            )
+          }"
+      end
     end
 
     PAGE_BEGIN =
