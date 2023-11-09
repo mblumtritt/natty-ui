@@ -1,14 +1,10 @@
-# NattyUI
+# NattyUI ![version](https://img.shields.io/gem/v/natty-ui?label=)
 
 This is the beautiful, nice, nifty, fancy, neat, pretty, cool, lovely, natty user interface you like to have for your command line interfaces (CLI).
 
-<!-- TODO: ![version](https://img.shields.io/gem/v/natty-ui?label=) -->
-
-<!-- TODO:
 - Gem: [rubygems.org](https://rubygems.org/gems/natty-ui)
 - Source: [github.com](https://github.com/mblumtritt/natty-ui)
 - Help: [rubydoc.info](https://rubydoc.info/gems/natty-ui/NattyUI)
--->
 
 ## Description
 
@@ -62,9 +58,7 @@ or see the non-ANSI version
 NO_COLOR=1 ruby ./examples/basic.rb
 ```
 
-<!-- TODO:
-link to NattyUI Features for more features!
- -->
+There are much more **[features](https://rubydoc.info/gems/natty-ui/NattyUI/Features)**!
 
 ### NO_COLOR Convention
 
