@@ -154,7 +154,7 @@ module NattyUI
     def initialize(stream)
       @stream = stream
       @lines_written = 0
-      @ws = stream.winsize&.size == 2
+      @ws = stream.respond_to?(:winsize) && stream.winsize&.size == 2
     rescue Errno::ENOTTY
       @ws = false
     end

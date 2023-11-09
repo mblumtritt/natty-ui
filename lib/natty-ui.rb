@@ -74,7 +74,7 @@ module NattyUI
       return '' if str.empty?
       reset = false
       ret =
-        str.gsub(RE_EMBED) do
+        str.gsub(/(\[\[((?~\]\]))\]\])/) do
           match = Regexp.last_match[2]
           unless match.delete_prefix!('/')
             ansi = Ansi.try_convert(match)
@@ -91,7 +91,18 @@ module NattyUI
     #
     # @param [#to_s] str string to edit
     # @return ]String] edited string
-    def plain(str) = str&.to_s&.gsub(RE_EMBED, '')
+    def plain(str)
+      str
+        .to_s
+        .gsub(/(\[\[((?~\]\]))\]\])/) do
+          match = Regexp.last_match[2]
+          unless match.delete_prefix!('/')
+            ansi = Ansi.try_convert(match)
+            next ansi ? nil : "[[#{match}]]"
+          end
+          match.empty? ? nil : "[[#{match}]]"
+        end
+    end
 
     # Calculate monospace (display) width of given String.
     # It respects Unicode character sizes inclusive emoji.
@@ -130,9 +141,6 @@ module NattyUI
     rescue IOError, SystemCallError
       false
     end
-
-    RE_EMBED = /(\[\[((?~\]\]))\]\])/
-    private_constant :RE_EMBED
   end
 
   if defined?(Unicode::Emoji)

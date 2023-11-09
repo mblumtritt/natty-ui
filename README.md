@@ -17,6 +17,8 @@ Here you find elegant, simple and beautiful tools that enhance your command line
 You can simply decorate your text with named ANSI attributes and colors
 
 ```ruby
+UI = NattyUI::StdOut
+
 UI.puts "[[bold]]Hello [[ff7bfd]]World[[/]]!"
 ```
 
@@ -44,11 +46,7 @@ end
 
 or use progression displays like progress bars and much much more!
 
-![illustration](./examples/illustration.svg)
-
-<!-- TODO:
-https://raw.githubusercontent.com/mblumtritt/natty-ui/main/examples/illustration.svg
--->
+![illustration](https://raw.githubusercontent.com/mblumtritt/natty-ui/main/examples/illustration.svg)
 
 ### But there is more!
 
