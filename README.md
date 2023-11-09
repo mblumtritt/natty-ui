@@ -12,13 +12,65 @@ This is the beautiful, nice, nifty, fancy, neat, pretty, cool, lovely, natty use
 
 ## Description
 
-Here you find elegant, simple and beautiful tools that enhance your command line application functionally and aesthetically.
+Here you find elegant, simple and beautiful tools that enhance your command line application functionally and look.
 
-![illustration](./resources/sample.png)
+You can simply decorate your text with named ANSI attributes and colors
 
-## Examples
+```ruby
+UI.puts "[[bold]]Hello [[ff7bfd]]World[[/]]!"
+```
+
+or use different types of messages
+
+```ruby
+UI.info 'NattyUI installed'
+UI.warning 'Nice gem found!'
+```
+
+and headings
+
+```ruby
+UI.h1 'The Main Title (TMT)'
+UI.h2 'A Subtitle'
+```
+
+and framed sections
+
+```ruby
+UI.framed 'Text Below In Frame' do |framed|
+  framed.puts 'This is the text'
+end
+```
+
+or use progression displays like progress bars and much much more!
+
+![illustration](./examples/illustration.svg)
+
+<!-- TODO:
+https://raw.githubusercontent.com/mblumtritt/natty-ui/main/examples/illustration.svg
+-->
+
+### But there is more!
 
 Have a look at the [examples](./examples/) directory to get an impression of the current feature set.
+
+```sh
+ruby ./examples/basic.rb
+```
+
+or see the non-ANSI version
+
+```sh
+NO_COLOR=1 ruby ./examples/basic.rb
+```
+
+<!-- TODO:
+link to NattyUI Features for more features!
+ -->
+
+### NO_COLOR Convention
+
+NattyUI follows the [NO_COLOR convention](https://no-color.org).
 
 ## Installation
 
@@ -53,7 +105,13 @@ require 'unicode/emoji'
 require 'natty-ui'
 ```
 
-**Hint**: The compromise of not automatically supporting emojis results from the fact that not all terminals can output all emojis correctly. You can easily check this yourself by printing "👨‍👩‍👦 👩‍❤️‍👨".
+**Hint**: The compromise of not automatically supporting emojis results from the fact that not all terminals can output all emojis correctly. You can easily check this yourself by
+
+```sh
+echo "👨‍👩‍👦 👩‍❤️‍👨"
+```
+
+in your terminal window.
 
 ## TODO
 

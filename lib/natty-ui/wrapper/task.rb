@@ -19,6 +19,32 @@ module NattyUI
     end
   end
 
+  module TaskMethods
+    protected
+
+    def initialize(parent, title:, **opts)
+      @parent = parent
+      @temp = wrapper.temporary
+      @final_text = [title]
+      super(parent, title: title, symbol: :task, **opts)
+    end
+
+    def finish
+      unless failed?
+        @status = :completed if @status == :closed
+        @temp.call
+      end
+      __section(
+        @parent,
+        :Message,
+        @final_text,
+        title: @final_text.shift,
+        symbol: @status
+      )
+    end
+  end
+  private_constant :TaskMethods
+
   class Wrapper
     #
     # A {Message} container to visualize the progression of a task.
@@ -26,21 +52,7 @@ module NattyUI
     # @see Features.task
     class Task < Message
       include ProgressAttributes
-
-      protected
-
-      def initialize(parent, title:, **opts)
-        @parent = parent
-        @count = wrapper.lines_written
-        @final_text = [title]
-        super(parent, title: title, symbol: '➔', **opts)
-      end
-
-      def finish
-        return @parent.failed(*@final_text) if failed?
-        @status = :ok if @status == :closed
-        @parent.completed(*@final_text)
-      end
+      include TaskMethods
     end
   end
 end

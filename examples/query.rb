@@ -5,6 +5,8 @@ require_relative '../lib/natty-ui'
 
 UI = NattyUI::StdOut
 
+UI.space
+
 UI.framed('NattyUI Query Demo') do |sec|
   unless sec.ask('Do you like to continute? (Y|n)')
     sec.failed('aborted')

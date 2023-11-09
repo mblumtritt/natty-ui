@@ -113,12 +113,20 @@ module NattyUI
     #     sleep 5
     #   end
     #
-    # @yield [Wrapper] itself
-    # @return [Object] block result
+    # @overload temporary
+    #   @return [Proc] a function to reset the screen
+    #
+    # @overload temporary
+    #   @yield [Wrapper] itself
+    #   @return [Object] block result
     def temporary
-      block_given? ? yield(self) : self
-    ensure
-      @stream.flush
+      func = temp_func
+      return func unless block_given?
+      begin
+        yield(self)
+      ensure
+        func.call
+      end
     end
 
     # @!endgroup
@@ -131,19 +139,29 @@ module NattyUI
 
     protected
 
+    def embellish(obj)
+      obj = NattyUI.plain(obj)
+      obj.empty? ? nil : obj
+    end
+
+    def temp_func
+      lambda do
+        @stream.flush
+        self
+      end
+    end
+
     def initialize(stream)
       @stream = stream
       @lines_written = 0
-      @ws = ansi? && stream.respond_to?(:winsize) && stream.winsize
+      @ws = stream.winsize&.size == 2
+    rescue Errno::ENOTTY
+      @ws = false
     end
 
     def wrapper = self
     def prefix = nil
     alias suffix prefix
-    def embellish(obj) = obj&.to_s&.gsub(RE_EMBED, '')
-
-    RE_EMBED = /({{:((?~:}})):}})/
-    private_constant :RE_EMBED
 
     private_class_method :new
   end

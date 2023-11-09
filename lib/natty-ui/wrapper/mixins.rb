@@ -4,16 +4,16 @@ module NattyUI
   #
   # Additional attributes for progression elements.
   #
-  # Progression elements have additional states ({#ok?}, {#failed?}) and can be
-  # closed/finalized with calling {Features#completed} or {Features#failed}.
+  # Progression elements have additional states ({#completed?}, {#failed?}) and
+  # can be closed with calling {Features#completed} or {Features#failed}.
   #
   # @see Wrapper::Progress
   # @see Wrapper::Task
   #
   module ProgressAttributes
-    # @attribute [r] ok?
+    # @attribute [r] completed?
     # @return [Boolean] whether the task completed sucessfully
-    def ok? = (@status == :ok)
+    def completed? = (@status == :completed)
 
     # @attribute [r] failed?
     # @return [Boolean] whether the task failed
@@ -22,7 +22,7 @@ module NattyUI
     # @!visibility private
     def completed(*args)
       @final_text = args unless args.empty?
-      _close(:ok)
+      _close(:completed)
     end
     alias done completed
     alias ok completed

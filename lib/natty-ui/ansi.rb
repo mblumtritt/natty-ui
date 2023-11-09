@@ -195,6 +195,31 @@ module NattyUI
         }m"
       end
 
+      # Try to combine given ANSI `attributes`. The `attributes` have to be a
+      # string containing attributes separated by space char (" ").
+      #
+      # @example Valid Attribute String
+      #   Ansi.try_convert('bold italic blink red on#00ff00')
+      #   # => ANSI attribute string for bold, italic text which blinks red on
+      #   #    green background
+      #
+      # @example Invalid Attribute String
+      #   Ansi.try_convert('cool bold on green')
+      #   # => nil
+      #
+      # @param attributes [#to_s] attributes separated by space char (" ")
+      # @return [String] combined ANSI attributes
+      # @return [nil] when string does not contain valid attributes
+      def try_convert(attributes)
+        attributes = attributes.to_s.split
+        return if attributes.empty?
+        "\e[#{
+          attributes
+            .map { |arg| ATTRIBUTES[arg] || named_color(arg) || return }
+            .join(';')
+        }m"
+      end
+
       private
 
       def invalid_argument(name)

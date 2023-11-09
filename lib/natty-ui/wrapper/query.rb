@@ -54,7 +54,7 @@ module NattyUI
             :Message,
             choices.map { |k, v| "#{k} #{v}" },
             title: question,
-            symbol: '▶︎'
+            symbol: :query
           )
           read(choices, result_typye)
         end

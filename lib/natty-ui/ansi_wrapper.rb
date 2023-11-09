@@ -21,69 +21,53 @@ module NattyUI
       end
     end
 
-    def temporary
-      unless block_given?
-        @stream.flush
-        return self
-      end
-      count = @lines_written
-      begin
-        yield(self)
-      ensure
-        count = @lines_written - count
-        if count.nonzero?
-          @stream << Ansi.cursor_line_up(count) << Ansi.screen_erase_below
-        end
-        @stream.flush
-      end
-    end
-
     protected
 
     def embellish(obj)
-      return if obj.nil? || obj.empty?
-      reset = false
-      ret =
-        obj
-          .to_s
-          .gsub(RE_EMBED) do
-            match = Regexp.last_match[2]
-            match.delete_prefix!('/') or next reset = Ansi[*match.split]
-            match.empty? or next "{{:#{match}:}}"
-            reset = false
-            Ansi.reset
-          end
-      reset ? "#{ret}#{Ansi.reset}" : ret
+      obj = NattyUI.embellish(obj)
+      obj.empty? ? nil : obj
+    end
+
+    def temp_func
+      count = @lines_written
+      lambda do
+        count = @lines_written - count
+        if count.nonzero?
+          @stream << Ansi.cursor_line_up(count) << Ansi.screen_erase_below
+          @lines_written -= count
+        end
+        @stream.flush
+        self
+      end
     end
 
     class Message < Message
       protected
 
-      def title_attr(symbol)
+      def title_attr(str, symbol)
         color = COLORS[symbol]
         if color
           {
             prefix:
-              "#{Ansi[:bold, :italic, color]}#{
-                symbol
-              }#{Ansi[:reset, :bold, color]} ",
+              "#{Ansi[:bold, :italic, color]}#{str}" \
+                "#{Ansi[:reset, :bold, color]} ",
             suffix: Ansi.reset
           }
         else
-          { prefix: "#{Ansi[:bold, 231]}#{symbol} ", suffix: Ansi.reset }
+          { prefix: "#{Ansi[:bold, 231]}#{str} ", suffix: Ansi.reset }
         end
       end
 
       COLORS = {
-        '•' => 231,
-        'i' => 117,
-        '!' => 220,
-        'X' => 196,
-        '✓' => 46,
-        'F' => 198,
-        '▶︎' => 220,
-        '➔' => 117
-      }.freeze
+        default: 231,
+        information: 117,
+        warning: 220,
+        error: 196,
+        completed: 46,
+        failed: 198,
+        query: 220,
+        task: 117
+      }.compare_by_identity.freeze
     end
 
     class Section < Section
@@ -140,32 +124,6 @@ module NattyUI
       end
     end
 
-    class Task < Message
-      include ProgressAttributes
-
-      protected
-
-      def initialize(parent, title:, **opts)
-        @parent = parent
-        @count = wrapper.lines_written
-        @final_text = [title]
-        super(parent, title: title, symbol: '➔', **opts)
-      end
-
-      def finish
-        return @parent.failed(*@final_text) if failed?
-        @status = :ok if @status == :closed
-        count = @wrapper.lines_written - @count
-        if count.positive?
-          (
-            wrapper.stream << Ansi.cursor_line_up(count) <<
-              Ansi.screen_erase_below
-          ).flush
-        end
-        @parent.completed(*@final_text)
-      end
-    end
-
     class Ask < Ask
       protected
 
@@ -187,6 +145,11 @@ module NattyUI
       end
 
       PROMPT = Ansi.embellish(':', :bold, 220).freeze
+    end
+
+    class Task < Message
+      include ProgressAttributes
+      include TaskMethods
     end
 
     class Progress < Progress

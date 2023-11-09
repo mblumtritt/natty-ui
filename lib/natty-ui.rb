@@ -65,10 +65,38 @@ module NattyUI
       false
     end
 
+    # Translate embedded attribute descriptions into ANSI control codes.
+    #
+    # @param [#to_s] str string to edit
+    # @return ]String] edited string
+    def embellish(str)
+      str = str.to_s
+      return '' if str.empty?
+      reset = false
+      ret =
+        str.gsub(RE_EMBED) do
+          match = Regexp.last_match[2]
+          unless match.delete_prefix!('/')
+            ansi = Ansi.try_convert(match)
+            next ansi ? reset = ansi : "[[#{match}]]"
+          end
+          match.empty? or next "[[#{match}]]"
+          reset = false
+          Ansi.reset
+        end
+      reset ? "#{ret}#{Ansi.reset}" : ret
+    end
+
+    # Remove embedded attribute descriptions from given string.
+    #
+    # @param [#to_s] str string to edit
+    # @return ]String] edited string
+    def plain(str) = str&.to_s&.gsub(RE_EMBED, '')
+
     # Calculate monospace (display) width of given String.
     # It respects Unicode character sizes inclusive emoji.
     #
-    # @param [#to_s] str String to calculate
+    # @param [#to_s] str string to calculate
     # @return [Integer] the display size
     def display_width(str)
       str = str.to_s
@@ -81,12 +109,9 @@ module NattyUI
     private
 
     def wrapper_class(stream, ansi)
-      if (ansi == true) ||
-           ((ansi == :auto) && (ENV['ANSI'] != '0') && stream.tty?)
-        AnsiWrapper
-      else
-        Wrapper
-      end
+      return AnsiWrapper if ansi == true
+      return Wrapper if ansi == false || ENV.key?('NO_COLOR')
+      stream.tty? ? AnsiWrapper : Wrapper
     end
 
     def emoji_extra_width_of(string)
@@ -105,6 +130,9 @@ module NattyUI
     rescue IOError, SystemCallError
       false
     end
+
+    RE_EMBED = /(\[\[((?~\]\]))\]\])/
+    private_constant :RE_EMBED
   end
 
   if defined?(Unicode::Emoji)

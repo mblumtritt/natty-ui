@@ -13,7 +13,7 @@ module NattyUI
     # @yieldparam [Wrapper::Message] section the created section
     # @return [Object] the result of the code block
     # @return [Wrapper::Message] itself, when no code block is given
-    def message(title, *args, symbol: '•', &block)
+    def message(title, *args, symbol: :default, &block)
       _section(:Message, args, title: title, symbol: symbol, &block)
     end
     alias msg message
@@ -26,7 +26,7 @@ module NattyUI
     # @yieldparam (see #message)
     # @return (see #message)
     def information(title, *args, &block)
-      _section(:Message, args, title: title, symbol: 'i', &block)
+      _section(:Message, args, title: title, symbol: :information, &block)
     end
     alias info information
 
@@ -37,7 +37,7 @@ module NattyUI
     # @yieldparam (see #message)
     # @return (see #message)
     def warning(title, *args, &block)
-      _section(:Message, args, title: title, symbol: '!', &block)
+      _section(:Message, args, title: title, symbol: :warning, &block)
     end
     alias warn warning
 
@@ -48,7 +48,7 @@ module NattyUI
     # @yieldparam (see #message)
     # @return (see #message)
     def error(title, *args, &block)
-      _section(:Message, args, title: title, symbol: 'X', &block)
+      _section(:Message, args, title: title, symbol: :error, &block)
     end
     alias err error
 
@@ -61,7 +61,7 @@ module NattyUI
     # @yieldparam (see #message)
     # @return (see #message)
     def completed(title, *args, &block)
-      _section(:Message, args, title: title, symbol: '✓', &block)
+      _section(:Message, args, title: title, symbol: :completed, &block)
     end
     alias done completed
     alias ok completed
@@ -76,7 +76,7 @@ module NattyUI
     # @yieldparam (see #message)
     # @return (see #message)
     def failed(title, *args, &block)
-      _section(:Message, args, title: title, symbol: 'F', &block)
+      _section(:Message, args, title: title, symbol: :failed, &block)
     end
   end
 
@@ -94,13 +94,23 @@ module NattyUI
       protected
 
       def initialize(parent, title:, symbol:, **opts)
-        parent.puts(title, **title_attr(symbol))
-        super(parent, prefix: ' ' * (NattyUI.display_width(symbol) + 1), **opts)
+        parent.puts(title, **title_attr(str = as_symbol_str(symbol), symbol))
+        super(parent, prefix: ' ' * (NattyUI.display_width(str) + 1), **opts)
       end
 
-      def title_attr(symbol)
-        { prefix: "#{symbol} " }
-      end
+      def title_attr(str, _symbol) = { prefix: "#{str} " }
+      def as_symbol_str(symbol) = (SYMBOL[symbol] || symbol)
+
+      SYMBOL = {
+        default: '•',
+        information: 'i',
+        warning: '!',
+        error: 'X',
+        completed: '✓',
+        failed: 'F',
+        query: '▶︎',
+        task: '➔'
+      }.compare_by_identity.freeze
     end
   end
 end

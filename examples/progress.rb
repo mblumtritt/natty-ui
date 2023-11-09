@@ -5,42 +5,41 @@ require_relative '../lib/natty-ui'
 
 UI = NattyUI::StdOut
 
+UI.space
 UI.h1 'NattyUI Progress Indication Demo'
 UI.space
 
 # just simulate some work
-def something = sleep(0.5)
+def something = sleep(0.4)
 def some = sleep(0.15)
 
 UI.framed('Pogress Indicators') do |sec|
-  progress = sec.progress('Propgress with max_value', max_value: 11)
+  progress = sec.progress('Progress with max_value', max_value: 11)
   11.times do
     progress.step
-    some
+    something
   end
-  progress.done 'Propgress ok'
+  progress.done 'Progress ok'
 
-  progress = sec.progress('Simple propgress')
+  progress = sec.progress('Simple progress')
   20.times do
     progress.step
     some
   end
-  progress.done 'Propgress ok'
+  progress.done 'All fine'
 end
 
 # simulate assembling task steps
 def assemble(task)
   task.msg 'Collect files...'
   something
-  task.msg 'Compile files...' do |msg|
-    msg.puts 'Lala'
-    something
-    msg.puts 'Lala'
-    something
-    msg.puts 'Lala'
-    something
+  task.task 'Compile files...' do |subtask|
+    %w[readme.txt main.css main.html sub.html].each do |name|
+      subtask.msg "Compile file [[bright_yellow]]./source/#{name}[[/]]..."
+      something
+    end
+    subtask.done 'Files compiled.'
   end
-
   something
   task.msg 'Compressing...'
   something
