@@ -44,7 +44,7 @@ or use progression displays like progress bars.
 
 🚀 There are much more [features](https://rubydoc.info/gems/natty-ui/NattyUI/Features)!
 
-📕 See the [online help](https://rubydoc.info/gems/natty-ui/NattyUI) for more details or have a look at the [examples](./examples/) directory to get an impression of the current feature set (see also XXX).
+📕 See the [online help](https://rubydoc.info/gems/natty-ui/NattyUI) for more details or have a look at the [examples](./examples/) directory to get an impression of the current feature set.
 
 ![illustration](https://raw.githubusercontent.com/mblumtritt/natty-ui/main/examples/illustration.svg)
 
