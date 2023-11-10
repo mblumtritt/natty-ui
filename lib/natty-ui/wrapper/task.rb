@@ -15,7 +15,7 @@ module NattyUI
     # @return [Object] the result of the code block
     # @return [Wrapper::Task] itself, when no code block is given
     def task(title, *args, &block)
-      _section(:Task, args, title: title, &block)
+      _section(self, :Task, args, title: title, &block)
     end
   end
 
@@ -34,7 +34,7 @@ module NattyUI
         @status = :completed if @status == :closed
         @temp.call
       end
-      __section(
+      _section(
         @parent,
         :Message,
         @final_text,

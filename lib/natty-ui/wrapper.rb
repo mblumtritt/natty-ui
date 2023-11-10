@@ -77,7 +77,7 @@ module NattyUI
     # @return [Wrapper] itself
     def space(lines = 1)
       lines = [lines.to_i, 1].max
-      @stream.puts(*Array.new(lines))
+      @stream << ("\n" * lines)
       @lines_written += lines
       @stream.flush
       self

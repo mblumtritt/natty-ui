@@ -12,7 +12,7 @@ module NattyUI
     # @return [Object] the result of the code block
     # @return [Wrapper::Section] itself, when no code block is given
     def section(*args, &block)
-      _section(:Section, args, prefix: '  ', suffix: '  ', &block)
+      _section(self, :Section, args, prefix: '  ', suffix: '  ', &block)
     end
     alias sec section
 
@@ -23,7 +23,7 @@ module NattyUI
     # @yieldparam (see #section)
     # @return (see #section)
     def quote(*args, &block)
-      _section(:Section, args, prefix: '▍ ', prefix_attr: 39, &block)
+      _section(self, :Section, args, prefix: '▍ ', prefix_attr: 39, &block)
     end
   end
 
@@ -66,7 +66,7 @@ module NattyUI
       # @return [Section] itself
       def space(lines = 1)
         @parent.puts(
-          *Array.new([lines.to_i, 1].max),
+          "\n" * ([lines.to_i, 1].max - 1),
           prefix: @prefix,
           suffix: @suffix
         )
@@ -86,9 +86,7 @@ module NattyUI
       #
       # @yield [Section] itself
       # @return [Object] block result
-      def temporary
-        block_given? ? yield(self) : self
-      end
+      def temporary = block_given? ? yield(self) : self
 
       protected
 

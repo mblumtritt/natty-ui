@@ -46,16 +46,16 @@ module NattyUI
 
       def title_attr(str, symbol)
         color = COLORS[symbol]
-        if color
-          {
-            prefix:
+        {
+          prefix:
+            if color
               "#{Ansi[:bold, :italic, color]}#{str}" \
-                "#{Ansi[:reset, :bold, color]} ",
-            suffix: Ansi.reset
-          }
-        else
-          { prefix: "#{Ansi[:bold, 231]}#{str} ", suffix: Ansi.reset }
-        end
+                "#{Ansi[:reset, :bold, color]} "
+            else
+              "#{Ansi[:bold, 231]}#{str} "
+            end,
+          suffix: Ansi.reset
+        }
       end
 
       COLORS = {
@@ -167,12 +167,6 @@ module NattyUI
         end
       end
 
-      TITLE_PREFIX = "#{Ansi[:bold, :italic, 117]}➔#{Ansi[:reset, 117]} ".freeze
-      INDICATOR_ATTRIBUTE = Ansi[:bold, 220].freeze
-      BAR_COLOR = Ansi[39, 295].freeze
-      BAR_BACK = Ansi[236, 492].freeze
-      BAR_INK = Ansi[:bold, 255, :on_default].freeze
-
       def draw_final = (wrapper.stream << Ansi.line_clear).flush
 
       def redraw
@@ -194,6 +188,12 @@ module NattyUI
             )
           }"
       end
+
+      TITLE_PREFIX = "#{Ansi[:bold, :italic, 117]}➔#{Ansi[:reset, 117]} ".freeze
+      INDICATOR_ATTRIBUTE = Ansi[:bold, 220].freeze
+      BAR_COLOR = Ansi[39, 295].freeze
+      BAR_BACK = Ansi[236, 492].freeze
+      BAR_INK = Ansi[:bold, 255, :on_default].freeze
     end
 
     PAGE_BEGIN =

@@ -40,29 +40,13 @@ UI.framed 'Text Below In Frame' do |framed|
 end
 ```
 
-or use progression displays like progress bars and much much more!
+or use progression displays like progress bars.
+
+🚀 There are much more [features](https://rubydoc.info/gems/natty-ui/NattyUI/Features)!
+
+📕 See the [online help](https://rubydoc.info/gems/natty-ui/NattyUI) for more details or have a look at the [examples](./examples/) directory to get an impression of the current feature set (see also XXX).
 
 ![illustration](https://raw.githubusercontent.com/mblumtritt/natty-ui/main/examples/illustration.svg)
-
-### But there is more!
-
-Have a look at the [examples](./examples/) directory to get an impression of the current feature set.
-
-```sh
-ruby ./examples/basic.rb
-```
-
-or see the non-ANSI version
-
-```sh
-NO_COLOR=1 ruby ./examples/basic.rb
-```
-
-There are much more **[features](https://rubydoc.info/gems/natty-ui/NattyUI/Features)**!
-
-### NO_COLOR Convention
-
-NattyUI follows the [NO_COLOR convention](https://no-color.org).
 
 ## Installation
 
@@ -84,32 +68,28 @@ After that you only need one line of code to have everything together
 require 'natty-ui'
 ```
 
-## Unicode Support
+## Run Examples
 
-Unicode is generally supported. This means that for the calculation of screen outputs the different width of characters is considered. For this the wonderful Gem [unicode/display_width](https://github.com/janlelis/unicode-display_width) is used.
-
-To be able to use Unicode characters that consist of multiple combinations (like some emoji), you have to explicitly load the Gem unicode/emoji _before_ NattyUI. It is not included automatically, because in most cases it is not needed (and we can save the overhead most of the time).
-
-If you need the full beauty of Unicode just load it in that order:
-
-```ruby
-require 'unicode/emoji'
-require 'natty-ui'
-```
-
-**Hint**: The compromise of not automatically supporting emojis results from the fact that not all terminals can output all emojis correctly. You can easily check this yourself by
+You can execute the examples by
 
 ```sh
-echo "👨‍👩‍👦 👩‍❤️‍👨"
+ruby ./examples/basic.rb
 ```
 
-in your terminal window.
+or see the non-ANSI version
+
+```sh
+NO_COLOR=1 ruby ./examples/basic.rb
+```
+
+## NO_COLOR Convention
+
+NattyUI follows the [NO_COLOR convention](https://no-color.org).
 
 ## TODO
 
 Since I did not complete the tests and not all my ideas are already implemented I have this Todo list:
 
-- add samples to README
 - add more samples to help
 - add more tests
 - simple prompt

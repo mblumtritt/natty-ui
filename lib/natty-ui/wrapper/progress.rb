@@ -14,7 +14,7 @@ module NattyUI
     # @param [##to_f] max_value maximum value of the progress
     # @return [Wrapper::Progress] the created progress element
     def progress(title, max_value: nil)
-      _section(:Progress, nil, title: title, max_value: max_value)
+      _section(self, :Progress, nil, title: title, max_value: max_value)
     end
   end
 

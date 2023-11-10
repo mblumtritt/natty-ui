@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'unicode/display_width'
+require 'reline'
 require_relative 'natty-ui/wrapper'
 require_relative 'natty-ui/ansi_wrapper'
 
@@ -71,7 +71,7 @@ module NattyUI
     # @return ]String] edited string
     def embellish(str)
       str = str.to_s
-      return '' if str.empty?
+      return +'' if str.empty?
       reset = false
       ret =
         str.gsub(/(\[\[((?~\]\]))\]\])/) do
@@ -111,10 +111,7 @@ module NattyUI
     # @return [Integer] the display size
     def display_width(str)
       str = str.to_s
-      return 0 if str.empty?
-      ret = Unicode::DisplayWidth.of(str, 1)
-      ret -= emoji_extra_width_of(str) if defined?(Unicode::Emoji)
-      [ret, 0].max
+      str.empty? ? 0 : Reline::Unicode.calculate_width(str)
     end
 
     private
@@ -125,28 +122,11 @@ module NattyUI
       stream.tty? ? AnsiWrapper : Wrapper
     end
 
-    def emoji_extra_width_of(string)
-      ret = 0
-      string.scan(Unicode::Emoji::REGEX) do |emoji|
-        ret += 2 * emoji.scan(EMOJI_MODIFIER_REGEX).size
-        emoji.scan(EMOKI_ZWJ_REGEX) do |zwj_succ|
-          ret += Unicode::DisplayWidth.of(zwj_succ, 1, {})
-        end
-      end
-      ret
-    end
-
     def stderr_is_stdout?
       STDOUT.tty? && STDERR.tty? && STDOUT.pos == STDERR.pos
     rescue IOError, SystemCallError
       false
     end
-  end
-
-  if defined?(Unicode::Emoji)
-    EMOJI_MODIFIER_REGEX = /[#{Unicode::Emoji::EMOJI_MODIFIERS.pack('U*')}]/
-    EMOKI_ZWJ_REGEX = /(?<=#{[Unicode::Emoji::ZWJ].pack('U')})./
-    private_constant :EMOJI_MODIFIER_REGEX, :EMOKI_ZWJ_REGEX
   end
 
   # Instance for standard output.

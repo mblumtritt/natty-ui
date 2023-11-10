@@ -14,7 +14,7 @@ module NattyUI
     # @return [Object] the result of the code block
     # @return [Wrapper::Message] itself, when no code block is given
     def message(title, *args, symbol: :default, &block)
-      _section(:Message, args, title: title, symbol: symbol, &block)
+      _section(self, :Message, args, title: title, symbol: symbol, &block)
     end
     alias msg message
 
@@ -26,7 +26,7 @@ module NattyUI
     # @yieldparam (see #message)
     # @return (see #message)
     def information(title, *args, &block)
-      _section(:Message, args, title: title, symbol: :information, &block)
+      _section(self, :Message, args, title: title, symbol: :information, &block)
     end
     alias info information
 
@@ -37,7 +37,7 @@ module NattyUI
     # @yieldparam (see #message)
     # @return (see #message)
     def warning(title, *args, &block)
-      _section(:Message, args, title: title, symbol: :warning, &block)
+      _section(self, :Message, args, title: title, symbol: :warning, &block)
     end
     alias warn warning
 
@@ -48,7 +48,7 @@ module NattyUI
     # @yieldparam (see #message)
     # @return (see #message)
     def error(title, *args, &block)
-      _section(:Message, args, title: title, symbol: :error, &block)
+      _section(self, :Message, args, title: title, symbol: :error, &block)
     end
     alias err error
 
@@ -61,7 +61,7 @@ module NattyUI
     # @yieldparam (see #message)
     # @return (see #message)
     def completed(title, *args, &block)
-      _section(:Message, args, title: title, symbol: :completed, &block)
+      _section(self, :Message, args, title: title, symbol: :completed, &block)
     end
     alias done completed
     alias ok completed
@@ -76,7 +76,7 @@ module NattyUI
     # @yieldparam (see #message)
     # @return (see #message)
     def failed(title, *args, &block)
-      _section(:Message, args, title: title, symbol: :failed, &block)
+      _section(self, :Message, args, title: title, symbol: :failed, &block)
     end
   end
 

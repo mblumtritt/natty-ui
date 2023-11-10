@@ -7,7 +7,8 @@ module NattyUI
     # Creates frame-enclosed section with a highlighted `title` and
     # prints given additional arguments as lines into the section.
     #
-    # When no block is given, the section must be closed, see {Section#close}.
+    # When no block is given, the section must be closed, see
+    # {Wrapper::Element#close}.
     #
     # @param [#to_s] title object to print as section title
     # @param [Array<#to_s>] args more objects to print
@@ -17,7 +18,7 @@ module NattyUI
     # @return [Object] the result of the code block
     # @return [Wrapper::Framed] itself, when no code block is given
     def framed(title, *args, type: :rounded, &block)
-      _section(:Framed, args, title: title, type: type, &block)
+      _section(self, :Framed, args, title: title, type: type, &block)
     end
   end
 

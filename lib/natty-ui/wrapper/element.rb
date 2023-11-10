@@ -32,9 +32,7 @@ module NattyUI
       private :_to_s
 
       # @!visibility private
-      def inspect
-        "#{_to_s[..-2]} status=#{@status}}}>"
-      end
+      def inspect = "#{_to_s[..-2]} status=#{@status}}}>"
 
       protected
 
@@ -49,9 +47,7 @@ module NattyUI
         @wrapper
       end
 
-      def initialize(parent)
-        @parent = parent
-      end
+      def initialize(parent) = (@parent = parent)
 
       def _close(state)
         return self if @status

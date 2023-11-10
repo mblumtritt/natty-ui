@@ -49,7 +49,7 @@ module NattyUI
         choices = grab(choices, kw_choices)
         return if choices.empty?
         wrapper.temporary do
-          __section(
+          _section(
             @parent,
             :Message,
             choices.map { |k, v| "#{k} #{v}" },

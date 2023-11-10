@@ -5,6 +5,8 @@ require_relative '../lib/natty-ui'
 
 UI = NattyUI::StdOut
 
+UI.space
+
 UI.h1 'NattyUI Basic Feature Demo', <<~TEXT
 
   This is a short demo of the basic features of [[i117 bold]]NattyUI[[/]].
