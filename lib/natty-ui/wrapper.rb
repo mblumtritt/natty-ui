@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'stringio'
 require_relative 'wrapper/ask'
 require_relative 'wrapper/framed'
 require_relative 'wrapper/heading'
@@ -49,21 +48,18 @@ module NattyUI
     #
     # @overload puts(...)
     #   @param [#to_s] ... objects to print
+    #   @comment @param [Integer, nil] max_width maximum line width
     #   @comment @param [#to_s, nil] prefix line prefix
     #   @comment @param [#to_s, nil] suffix line suffix
     #   @return [Wrapper] itself
-    def puts(*args, prefix: nil, suffix: nil)
+    def puts(*args, max_width: nil, prefix: nil, suffix: nil)
       if args.empty?
         @stream.puts(embellish("#{prefix}#{suffix}"))
         @lines_written += 1
       else
-        StringIO.open do |io|
-          io.puts(*args)
-          io.rewind
-          io.each(chomp: true) do |line|
-            @stream.puts(embellish("#{prefix}#{line}#{suffix}"))
-            @lines_written += 1
-          end
+        NattyUI.each_line(*args, max_width: max_width) do |line|
+          @stream.puts(embellish("#{prefix}#{line}#{suffix}"))
+          @lines_written += 1
         end
       end
       @stream.flush

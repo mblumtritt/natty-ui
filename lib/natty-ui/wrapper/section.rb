@@ -46,13 +46,15 @@ module NattyUI
       #
       # @overload puts(...)
       #   @param [#to_s] ... objects to print
+      #   @comment @param [Integer, nil] max_width maximum line width
       #   @comment @param [#to_s, nil] prefix line prefix
       #   @comment @param [#to_s, nil] suffix line suffix
       #   @return [Section] itself
-      def puts(*args, prefix: nil, suffix: nil)
+      def puts(*args, max_width: nil, prefix: nil, suffix: nil)
         return self if @status
         @parent.puts(
           *args,
+          max_width: max_width,
           prefix: prefix ? "#{@prefix}#{prefix}" : @prefix,
           suffix: suffix ? "#{@suffix}#{suffix}" : @suffix
         )
