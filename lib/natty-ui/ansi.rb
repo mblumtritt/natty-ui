@@ -182,7 +182,7 @@ module NattyUI
             .map do |arg|
               case arg
               when Symbol, String
-                ATTRIBUTES[arg] || named_color(arg) || invalid_argument(arg)
+                ATTRIBUTES[arg] || color(arg) || invalid_argument(arg)
               when (0..255)
                 "38;5;#{arg}"
               when (256..512)
@@ -215,7 +215,7 @@ module NattyUI
         return if attributes.empty?
         "\e[#{
           attributes
-            .map { |arg| ATTRIBUTES[arg] || named_color(arg) || return }
+            .map { |arg| ATTRIBUTES[arg] || color(arg) || return }
             .join(';')
         }m"
       end
@@ -230,8 +230,14 @@ module NattyUI
         )
       end
 
-      def named_color(value)
+      def color(value)
         case value
+        when /\A(fg_|fg:|fg)?([[:xdigit:]]{2})\z/
+          "38;5;#{Regexp.last_match(2).hex}"
+        when /\A(bg_|bg:|bg|on_|on:|on)([[:xdigit:]]{2})\z/
+          "48;5;#{Regexp.last_match(2).hex}"
+        when /\A(ul_|ul:|ul)([[:xdigit:]]{2})\z/
+          "58;5;#{Regexp.last_match(2).hex}"
         when /\A(fg_|fg:|fg)?#?([[:xdigit:]]{3})\z/
           hex_rgb_short(38, Regexp.last_match(2))
         when /\A(fg_|fg:|fg)?#?([[:xdigit:]]{6})\z/
@@ -244,18 +250,7 @@ module NattyUI
           hex_rgb_short(58, Regexp.last_match(2))
         when /\A(ul_|ul:|ul)#?([[:xdigit:]]{6})\z/
           hex_rgb(58, Regexp.last_match(2))
-        when /\A(fg_|fg:|fg)?i([[:digit:]]{1,3})\z/
-          number(38, Regexp.last_match(2))
-        when /\A(bg_|bg:|bg|on_|on:|on)i([[:digit:]]{1,3})\z/
-          number(48, Regexp.last_match(2))
-        when /\A(ul_|ul:|ul)i([[:digit:]]{1,3})\z/
-          number(58, Regexp.last_match(2))
         end
-      end
-
-      def number(base, str)
-        index = str.to_i
-        "#{base};5;#{index}" if index >= 0 && index <= 255
       end
 
       def hex_rgb_short(base, str)
@@ -282,7 +277,6 @@ module NattyUI
         rapid_blink: 6,
         # ---
         invert: 7,
-        reverse: 7,
         # ---
         conceal: 8,
         hide: 8,
@@ -319,7 +313,6 @@ module NattyUI
         spacing: 26,
         # ---
         invert_off: 27,
-        reverse_off: 27,
         # ---
         reveal: 28,
         # ---
