@@ -11,7 +11,7 @@ module NattyUI
     # or {#failed}.
     #
     # @param (see #information)
-    # @yieldparam [Wrapper::Task] section the created section
+    # @yieldparam [Wrapper::Task] task the created section
     # @return [Object] the result of the code block
     # @return [Wrapper::Task] itself, when no code block is given
     def task(title, *args, &block)

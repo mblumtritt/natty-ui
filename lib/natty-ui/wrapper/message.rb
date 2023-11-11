@@ -10,7 +10,7 @@ module NattyUI
     # @param [#to_s] title object to print as section title
     # @param [Array<#to_s>] args more objects to print
     # @param [#to_s] symbol symbol/prefix used for the title
-    # @yieldparam [Wrapper::Message] section the created section
+    # @yieldparam [Wrapper::Message] message the created section
     # @return [Object] the result of the code block
     # @return [Wrapper::Message] itself, when no code block is given
     def message(title, *args, symbol: :default, &block)

@@ -14,7 +14,7 @@ module NattyUI
     # @param [Array<#to_s>] args more objects to print
     # @param [Symbol] type frame type;
     #   valid types are `:rounded`, `:simple`, `:heavy`, `:semi`, `:double`
-    # @yieldparam [Wrapper::Framed] section the created section
+    # @yieldparam [Wrapper::Framed] framed the created section
     # @return [Object] the result of the code block
     # @return [Wrapper::Framed] itself, when no code block is given
     def framed(title, *args, type: :rounded, &block)

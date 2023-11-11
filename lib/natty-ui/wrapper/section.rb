@@ -29,7 +29,7 @@ module NattyUI
 
   class Wrapper
     #
-    # Visual element to keep text lines together.
+    # Visual {Element} to keep text lines together.
     #
     # A section can contain other elements and sections.
     #
