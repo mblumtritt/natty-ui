@@ -1,6 +1,13 @@
 # frozen_string_literal: true
 
-require 'reline'
+require 'readline'
+unless defined?(Reline)
+  # only load the Reline::Unicode part
+  module Reline
+    def self.ambiguous_width = 1
+  end
+  require 'reline/unicode'
+end
 require_relative 'natty-ui/wrapper'
 require_relative 'natty-ui/ansi_wrapper'
 
