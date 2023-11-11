@@ -27,13 +27,13 @@ module NattyUI
     # @return [[Integer, Integer]] screen size as rows and columns
     def screen_size
       return @stream.winsize if @ws
-      [ENV['LINES'].to_i.nonzero? || 25, ENV['COLUMNS'].to_i.nonzero? || 80]
+      [ENV['LINES'].to_i.nonzero? || 24, ENV['COLUMNS'].to_i.nonzero? || 80]
     end
 
     # @attribute [r] screen_rows
     # @return [Integer] number of screen rows
     def screen_rows
-      @ws ? @stream.winsize[0] : (ENV['LINES'].to_i.nonzero? || 25)
+      @ws ? @stream.winsize[0] : (ENV['LINES'].to_i.nonzero? || 24)
     end
 
     # @attribute [r] screen_columns
