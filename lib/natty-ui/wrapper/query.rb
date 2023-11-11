@@ -24,6 +24,8 @@ module NattyUI
     #   )
     #   # => 'a' or 'b' or 'c' or nil if user aborted
     #
+    # @see NattyUI.in_stream
+    #
     # @param question [#to_s] Question to display
     # @param choices [#to_s] choices selectable via index (0..9)
     # @param result  [Symbol] defines how the result ist returned

@@ -3,6 +3,7 @@
 require 'readline'
 unless defined?(Reline)
   # only load the Reline::Unicode part
+  # @!visibility private
   module Reline
     def self.ambiguous_width = 1
   end
