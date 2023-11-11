@@ -45,10 +45,11 @@ module NattyUI
     # @!group Tool functions
 
     # Print given arguments as lines to the output stream.
+    # Optionally limit the line width to given `max_width`.
     #
-    # @overload puts(...)
+    # @overload puts(..., max_width: nil)
     #   @param [#to_s] ... objects to print
-    #   @comment @param [Integer, nil] max_width maximum line width
+    #   @param [Integer, nil] max_width maximum line width
     #   @comment @param [#to_s, nil] prefix line prefix
     #   @comment @param [#to_s, nil] suffix line suffix
     #   @return [Wrapper] itself

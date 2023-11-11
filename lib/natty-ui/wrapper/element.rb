@@ -24,8 +24,7 @@ module NattyUI
 
       # Close the element.
       #
-      # @return [Element] itself when used without a code block
-      # @return [nil] when used with a code block
+      # @return [Element] itself
       def close = _close(:closed)
 
       alias _to_s to_s
