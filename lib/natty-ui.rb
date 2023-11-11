@@ -154,6 +154,23 @@ module NattyUI
       nil
     end
 
+    # Read user input line from {.in_stream}.
+    #
+    # @see .valid_out?
+    #
+    # @param [#to_s] prompt input prompt
+    # @param [IO] stream writeable IO used to display output
+    # @return [String] user input line
+    # @return [nil] when user interrputed input with `^C` or `^D`
+    def readline(prompt = nil, stream: StdOut.stream)
+      Readline.output = stream
+      Readline.input = @in_stream
+      Readline.readline(prompt.to_s)
+    rescue Interrupt
+      stream.puts
+      nil
+    end
+
     private
 
     def wrapper_class(stream, ansi)
