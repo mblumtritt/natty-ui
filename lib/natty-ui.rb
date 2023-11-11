@@ -114,6 +114,38 @@ module NattyUI
       str.empty? ? 0 : Reline::Unicode.calculate_width(str)
     end
 
+    # Convert given arguments into strings and yield each line.
+    # Optionally limit the line width to given `max_width`.
+    #
+    # @overload each_line(..., max_width: nil)
+    #   @param [#to_s] ... objects to print
+    #   @param [#to_i, nil] max_width maximum line width
+    #   @yieldparam [String] line string line
+    #   @return [nil]
+    # @overload each_line(..., max_width: nil)
+    #   @param [#to_s] ... objects to print
+    #   @param [#to_i, nil] max_width maximum line width
+    #   @return [Enumerator] line enumerator
+    def each_line(*strs, max_width: nil, &block)
+      return to_enum(__method__, *strs, max_width: max_width) unless block
+      unless max_width
+        strs.each { |str| str.to_s.each_line(chomp: true, &block) }
+        return nil
+      end
+      max_width = max_width.to_i
+      return if max_width <= 0
+      strs.each do |str|
+        str
+          .to_s
+          .each_line(chomp: true) do |line|
+            Reline::Unicode.split_by_width(line, max_width)[0].each do |part|
+              yield(part) if part
+            end
+          end
+      end
+      nil
+    end
+
     private
 
     def wrapper_class(stream, ansi)
