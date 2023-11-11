@@ -1,6 +1,14 @@
 # frozen_string_literal: true
 
-require 'reline'
+require 'readline'
+unless defined?(Reline)
+  # only load the Reline::Unicode part
+  # @!visibility private
+  module Reline
+    def self.ambiguous_width = 1
+  end
+  require 'reline/unicode'
+end
 require_relative 'natty-ui/wrapper'
 require_relative 'natty-ui/ansi_wrapper'
 
@@ -112,6 +120,55 @@ module NattyUI
     def display_width(str)
       str = str.to_s
       str.empty? ? 0 : Reline::Unicode.calculate_width(str)
+    end
+
+    # Convert given arguments into strings and yield each line.
+    # Optionally limit the line width to given `max_width`.
+    #
+    # @overload each_line(..., max_width: nil)
+    #   @param [#to_s] ... objects to print
+    #   @param [#to_i, nil] max_width maximum line width
+    #   @yieldparam [String] line string line
+    #   @return [nil]
+    # @overload each_line(..., max_width: nil)
+    #   @param [#to_s] ... objects to print
+    #   @param [#to_i, nil] max_width maximum line width
+    #   @return [Enumerator] line enumerator
+    def each_line(*strs, max_width: nil, &block)
+      return to_enum(__method__, *strs, max_width: max_width) unless block
+      unless max_width
+        strs.each { |str| str.to_s.each_line(chomp: true, &block) }
+        return nil
+      end
+      max_width = max_width.to_i
+      return if max_width <= 0
+      strs.each do |str|
+        str
+          .to_s
+          .each_line(chomp: true) do |line|
+            Reline::Unicode.split_by_width(line, max_width)[0].each do |part|
+              yield(part) if part
+            end
+          end
+      end
+      nil
+    end
+
+    # Read user input line from {.in_stream}.
+    #
+    # @see .valid_out?
+    #
+    # @param [#to_s] prompt input prompt
+    # @param [IO] stream writeable IO used to display output
+    # @return [String] user input line
+    # @return [nil] when user interrputed input with `^C` or `^D`
+    def readline(prompt = nil, stream: StdOut.stream)
+      Readline.output = stream
+      Readline.input = @in_stream
+      Readline.readline(prompt.to_s)
+    rescue Interrupt
+      stream.puts
+      nil
     end
 
     private

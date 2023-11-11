@@ -7,7 +7,7 @@ module NattyUI
     # Creates section with a H1 title.
     #
     # @param (see #information)
-    # @yieldparam [Wrapper::Heading] section the created section
+    # @yieldparam [Wrapper::Heading] heading the created section
     # @return [Object] the result of the code block
     # @return [Wrapper::Heading] itself, when no code block is given
     def h1(title, *args, &block)

@@ -22,6 +22,8 @@ module NattyUI
     #     sec.failed('You should have an opinion!')
     #   end
     #
+    # @see NattyUI.in_stream
+    #
     # @param question [#to_s] Question to display
     # @param yes [#to_s] chars which will be used to answer 'Yes'
     # @param no [#to_s] chars which will be used to answer 'No'

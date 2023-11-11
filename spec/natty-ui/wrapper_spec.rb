@@ -25,22 +25,18 @@ RSpec.describe 'NattyUI::Wrapper' do
   end
 
   context 'when stream supports #winsize' do
-    before do
-      allow(stream).to receive(:winsize).and_return(
-        %i[winsize_first winsize_last]
-      )
-    end
+    before { allow(stream).to receive(:winsize).and_return([111, 112]) }
 
     it '#screen_size returns winsize' do
-      expect(ui.screen_size).to eq %i[winsize_first winsize_last]
+      expect(ui.screen_size).to eq [111, 112]
     end
 
     it '#screen_rows returns the first winsize member' do
-      expect(ui.screen_rows).to be :winsize_first
+      expect(ui.screen_rows).to be 111
     end
 
     it '#screen_columns returns the first winsize member' do
-      expect(ui.screen_columns).to be :winsize_last
+      expect(ui.screen_columns).to be 112
     end
   end
 
@@ -59,7 +55,7 @@ RSpec.describe 'NattyUI::Wrapper' do
 
     context 'when ENV is not configured' do
       it '#screen_rows returns a constant' do
-        expect(ui.screen_rows).to be 25
+        expect(ui.screen_rows).to be 24
       end
 
       it '#screen_columns returns a constant' do
@@ -68,7 +64,7 @@ RSpec.describe 'NattyUI::Wrapper' do
     end
 
     it '#screen_size returns a constant' do
-      expect(ui.screen_size).to eq [25, 80]
+      expect(ui.screen_size).to eq [24, 80]
     end
   end
 

@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'stringio'
 require_relative 'wrapper/ask'
 require_relative 'wrapper/framed'
 require_relative 'wrapper/heading'
@@ -28,13 +27,13 @@ module NattyUI
     # @return [[Integer, Integer]] screen size as rows and columns
     def screen_size
       return @stream.winsize if @ws
-      [ENV['LINES'].to_i.nonzero? || 25, ENV['COLUMNS'].to_i.nonzero? || 80]
+      [ENV['LINES'].to_i.nonzero? || 24, ENV['COLUMNS'].to_i.nonzero? || 80]
     end
 
     # @attribute [r] screen_rows
     # @return [Integer] number of screen rows
     def screen_rows
-      @ws ? @stream.winsize[0] : (ENV['LINES'].to_i.nonzero? || 25)
+      @ws ? @stream.winsize[0] : (ENV['LINES'].to_i.nonzero? || 24)
     end
 
     # @attribute [r] screen_columns
@@ -46,24 +45,22 @@ module NattyUI
     # @!group Tool functions
 
     # Print given arguments as lines to the output stream.
+    # Optionally limit the line width to given `max_width`.
     #
-    # @overload puts(...)
+    # @overload puts(..., max_width: nil)
     #   @param [#to_s] ... objects to print
+    #   @param [Integer, nil] max_width maximum line width
     #   @comment @param [#to_s, nil] prefix line prefix
     #   @comment @param [#to_s, nil] suffix line suffix
     #   @return [Wrapper] itself
-    def puts(*args, prefix: nil, suffix: nil)
+    def puts(*args, max_width: nil, prefix: nil, suffix: nil)
       if args.empty?
         @stream.puts(embellish("#{prefix}#{suffix}"))
         @lines_written += 1
       else
-        StringIO.open do |io|
-          io.puts(*args)
-          io.rewind
-          io.each(chomp: true) do |line|
-            @stream.puts(embellish("#{prefix}#{line}#{suffix}"))
-            @lines_written += 1
-          end
+        NattyUI.each_line(*args, max_width: max_width) do |line|
+          @stream.puts(embellish("#{prefix}#{line}#{suffix}"))
+          @lines_written += 1
         end
       end
       @stream.flush
@@ -154,7 +151,7 @@ module NattyUI
     def initialize(stream)
       @stream = stream
       @lines_written = 0
-      @ws = stream.respond_to?(:winsize) && stream.winsize&.size == 2
+      @ws = stream.respond_to?(:winsize) && stream.winsize&.all?(&:positive?)
     rescue Errno::ENOTTY
       @ws = false
     end

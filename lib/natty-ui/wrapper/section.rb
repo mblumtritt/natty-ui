@@ -29,7 +29,7 @@ module NattyUI
 
   class Wrapper
     #
-    # Visual element to keep text lines together.
+    # Visual {Element} to keep text lines together.
     #
     # A section can contain other elements and sections.
     #
@@ -38,21 +38,23 @@ module NattyUI
     class Section < Element
       # Close the section.
       #
-      # @return [Section] itself when used without a code block
-      # @return [nil] when used with a code block
+      # @return [Section] itself
       def close = _close(:closed)
 
       # Print given arguments as lines into the section.
+      # Optionally limit the line width to given `max_width`.
       #
-      # @overload puts(...)
+      # @overload puts(..., max_width: nil)
       #   @param [#to_s] ... objects to print
+      #   @param [Integer, nil] max_width maximum line width
       #   @comment @param [#to_s, nil] prefix line prefix
       #   @comment @param [#to_s, nil] suffix line suffix
       #   @return [Section] itself
-      def puts(*args, prefix: nil, suffix: nil)
+      def puts(*args, max_width: nil, prefix: nil, suffix: nil)
         return self if @status
         @parent.puts(
           *args,
+          max_width: max_width,
           prefix: prefix ? "#{@prefix}#{prefix}" : @prefix,
           suffix: suffix ? "#{@suffix}#{suffix}" : @suffix
         )
