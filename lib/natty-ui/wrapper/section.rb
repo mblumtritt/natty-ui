@@ -68,7 +68,7 @@ module NattyUI
       # @return [Section] itself
       def space(lines = 1)
         @parent.puts(
-          "\n" * ([lines.to_i, 1].max - 1),
+          "\n" * ([lines.to_i, 1].max),
           prefix: @prefix,
           suffix: @suffix
         )
