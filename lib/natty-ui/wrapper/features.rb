@@ -13,7 +13,7 @@ module NattyUI
       size = NattyUI.display_width(NattyUI.plain(symbol.to_s))
       return self if size.zero?
       puts(
-        symbol * (wrapper.screen_columns / size),
+        symbol * (available_width / size),
         prefix: Ansi[39],
         suffix: Ansi.reset
       )

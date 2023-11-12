@@ -160,6 +160,12 @@ module NattyUI
     def prefix = nil
     alias suffix prefix
 
+    def prefix_width = 0
+    alias suffix_width prefix_width
+    alias width prefix_width
+
+    alias available_width screen_columns
+
     private_class_method :new
   end
 end
