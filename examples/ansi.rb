@@ -56,25 +56,26 @@ UI.h2 '8-bit Colors' do |sec|
   sec.space
   sec.puts 'There are 256 pre-defined color which can be used by their index:'
   sec.space
+
   colors_std = 0.upto(15).map { |i| hex(i) }
   colors216 = 16.upto(231).lazy.map { |i| hex(i) }
   colors_gray1 = 232.upto(243).map { |i| hex(i) }
   colors_gray2 = 244.upto(255).map { |i| hex(i) }
 
-  sec.puts " #{colors_std.map { |i| "[[#{i}]] #{i} [[/]]" }.join}"
+  sec.puts colors_std.map { |i| "[[#{i}]] #{i} [[/]]" }.join
   colors216.each_slice(18) do |slice|
-    sec.puts " #{slice.map { |i| "[[#{i}]] #{i} [[/]]" }.join}"
+    sec.puts slice.map { |i| "[[#{i}]] #{i} [[/]]" }.join
   end
-  sec.puts(" #{colors_gray1.map { |i| "[[#{i}]] #{i} [[/]]" }.join}")
-  sec.puts(" #{colors_gray2.map { |i| "[[#{i}]] #{i} [[/]]" }.join}")
+  sec.puts colors_gray1.map { |i| "[[#{i}]] #{i} [[/]]" }.join
+  sec.puts colors_gray2.map { |i| "[[#{i}]] #{i} [[/]]" }.join
 
   sec.space
-  sec.puts " #{colors_std.map { |i| "[[on:#{i}]] #{i} [[/]]" }.join}"
+  sec.puts colors_std.map { |i| "[[on:#{i}]] #{i} [[/]]" }.join
   colors216.each_slice(18) do |slice|
-    sec.puts " #{slice.map { |i| "[[on:#{i}]] #{i} [[/]]" }.join}"
+    sec.puts slice.map { |i| "[[on:#{i}]] #{i} [[/]]" }.join
   end
-  sec.puts(" #{colors_gray1.map { |i| "[[on:#{i}]] #{i} [[/]]" }.join}")
-  sec.puts(" #{colors_gray2.map { |i| "[[on:#{i}]] #{i} [[/]]" }.join}")
+  sec.puts colors_gray1.map { |i| "[[on:#{i}]] #{i} [[/]]" }.join
+  sec.puts colors_gray2.map { |i| "[[on:#{i}]] #{i} [[/]]" }.join
 end
 
 UI.space
@@ -86,13 +87,13 @@ UI.h2 '24-bit colors' do |sec|
 
   TEXT
 
-  some_grb = DATA.readlines(chomp: true).freeze
+  some_rgb = DATA.readlines(chomp: true).lazy.each_slice(8)
 
-  some_grb.each_slice(8) do |slice|
+  some_rgb.each do |slice|
     sec.puts slice.map { |v| " [[#{v}]]#{v}[[/]] " }.join
   end
   sec.space
-  some_grb.each_slice(8) do |slice|
+  some_rgb.each do |slice|
     sec.puts slice.map { |v| " [[on:#{v}]]#{v}[[/]] " }.join
   end
 end
