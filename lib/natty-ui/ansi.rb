@@ -139,7 +139,7 @@ module NattyUI
       #
       # To use RGB ANSI colors (24-bit colors) specify 3-digit or 6-digit
       # hexadecimal values `000`...`fff` or `000000`...`ffffff`.
-      # This represent the `RRGGBB` values (or {RGB} for short version) like you
+      # This represent the `RRGGBB` values (or `RGB` for short version) like you
       # may known from CSS color notation.
       #
       # To use a color as background color prefix the color attribute with `bg_`
