@@ -36,7 +36,7 @@ module NattyUI
       protected
 
       def prefix = "#{@parent.__send__(:prefix)}#{@prefix}"
-      def suffix = "#{@parent.__send__(:suffix)}#{@suffix}"
+      def suffix = "#{@suffix}#{@parent.__send__(:suffix)}"
       def prefix_width = _blemish_width(prefix)
       def suffix_width = _blemish_width(suffix)
       def available_width = wrapper.screen_columns - prefix_width - suffix_width

@@ -56,7 +56,7 @@ module NattyUI
           *args,
           max_width: max_width,
           prefix: prefix ? "#{@prefix}#{prefix}" : @prefix,
-          suffix: suffix ? "#{@suffix}#{suffix}" : @suffix
+          suffix: suffix ? "#{suffix}#{@suffix}" : @suffix
         )
         self
       end
