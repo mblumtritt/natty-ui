@@ -68,7 +68,7 @@ module NattyUI
       def cursor_line_up(lines = nil) = "\e[#{lines}F"
 
       # @param columns [Integer] number of columns
-      # @return [String] ANSI code to move the cursor to giben column
+      # @return [String] ANSI code to move the cursor to given column
       def cursor_column(columns = nil) = "\e[#{columns}G"
 
       # @return [String] ANSI code to hide the cursor
@@ -119,18 +119,18 @@ module NattyUI
       # `fraktur_off`, `underline_off`, `blink_off`, `proportional`, `spacing`,
       # `invert_off`, `reverse_off`, `reveal`, `strike_off`, `proportional_off`,
       # `spacing_off`, `framed`, `encircled`, `overlined`, `framed_off`,
-      # `encircled_off`, `overlined_off`
+      # `encircled_off`, `overlined_off`.
       #
       # Colors can specified by their name for ANSI 3-bit and 4-bit colors:
       # `black`, `red`, `green`, `yellow`, `blue`, `magenta`, `cyan`, `white`,
       # `default`, `bright_black`, `bright_red`, `bright_green`, `bright_yellow`,
-      # `bright_blue`, `bright_magenta`, `bright_cyan`, `bright_white`
+      # `bright_blue`, `bright_magenta`, `bright_cyan`, `bright_white`.
       #
       # For 8-bit ANSI colors use 2-digit hexadecimal values `00`...`ff`.
       #
       # To use RGB ANSI colors (24-bit colors) specify 3-digit or 6-digit
       # hexadecimal values `000`...`fff` or `000000`...`ffffff`.
-      # This represent the `RRGGBB` values (or RGB for short version) like you
+      # This represent the `RRGGBB` values (or {RGB} for short version) like you
       # may known from CSS color notation.
       #
       # To use a color as background color prefix the color attribute with `bg_`
@@ -138,16 +138,16 @@ module NattyUI
       #
       # To use a color as underline color prefix the color attribute with `ul_`.
       #
-      # To make it more clear a color attribute have to be used as fereground
+      # To make it more clear a color attribute have to be used as foreground
       # color the color value can be prefixed with `fg_`.
       #
       # @example Valid Foreground Color Attributes
       #   Ansi[:yellow]
-      #   Ansi["#fab"]
-      #   Ansi["#00aa00"]
+      #   Ansi['#fab']
+      #   Ansi['#00aa00']
       #   Ansi[:fg_fab]
       #   Ansi[:fg_00aa00]
-      #   Ansi[:#af]
+      #   Ansi[:af]
       #   Ansi[:fg_af]
       #
       # @example Valid Background Color Attributes
@@ -164,7 +164,7 @@ module NattyUI
       #   Ansi[:on_af]
       #
       # @example Valid Underline Color Attributes
-      #   Ansi[:underline, :yellow]
+      #   Ansi[:underline, :ul_yellow]
       #   Ansi[:underline, :ul_fab]
       #   Ansi[:underline, :ul_00aa00]
       #   Ansi[:underline, 'ul#00aa00']
@@ -233,11 +233,11 @@ module NattyUI
 
       def color(value)
         case value
-        when /\A(fg_|fg:|fg)?#?([[:xdigit:]]{2})\z/
+        when /\A(fg_|fg:|fg)?([[:xdigit:]]{2})\z/
           "38;5;#{Regexp.last_match(2).hex}"
-        when /\A(bg_|bg:|bg|on_|on:|on)#?([[:xdigit:]]{2})\z/
+        when /\A(bg_|bg:|bg|on_|on:|on)([[:xdigit:]]{2})\z/
           "48;5;#{Regexp.last_match(2).hex}"
-        when /\A(ul_|ul:|ul)([[:xdigit:]]#?{2})\z/
+        when /\A(ul_|ul:|ul)([[:xdigit:]]{2})\z/
           "58;5;#{Regexp.last_match(2).hex}"
         when /\A(fg_|fg:|fg)?#?([[:xdigit:]]{3})\z/
           hex_rgb_short(38, Regexp.last_match(2))

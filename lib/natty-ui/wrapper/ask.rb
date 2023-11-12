@@ -17,7 +17,7 @@ module NattyUI
     #   when true
     #     sec.info('Yeah!!')
     #   when false
-    #     sec.write("That's pitty!")
+    #     sec.write("That's pity!")
     #   else
     #     sec.failed('You should have an opinion!')
     #   end

@@ -2,7 +2,7 @@
 
 module NattyUI
   #
-  # Mix-in for output functionality.
+  # Features of {NattyUI} - methods to display natty elements.
   #
   module Features
     # Print a horizontal rule

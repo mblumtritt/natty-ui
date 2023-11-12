@@ -12,7 +12,7 @@ module NattyUI
   #
   module ProgressAttributes
     # @attribute [r] completed?
-    # @return [Boolean] whether the task completed sucessfully
+    # @return [Boolean] whether the task completed successfully
     def completed? = (@status == :completed)
 
     # @attribute [r] failed?

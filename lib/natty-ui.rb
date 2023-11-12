@@ -161,7 +161,7 @@ module NattyUI
     # @param [#to_s] prompt input prompt
     # @param [IO] stream writeable IO used to display output
     # @return [String] user input line
-    # @return [nil] when user interrputed input with `^C` or `^D`
+    # @return [nil] when user interrupted input with `^C` or `^D`
     def readline(prompt = nil, stream: StdOut.stream)
       Readline.output = stream
       Readline.input = @in_stream

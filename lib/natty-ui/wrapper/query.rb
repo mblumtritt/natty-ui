@@ -28,7 +28,7 @@ module NattyUI
     #
     # @param question [#to_s] Question to display
     # @param choices [#to_s] choices selectable via index (0..9)
-    # @param result  [Symbol] defines how the result ist returned
+    # @param result  [Symbol] defines how the result will be returned
     # @param kw_choices [{Char => #to_s}] choices selectable with given char
     # @return [Char] when `result` is configured as `:char`
     # @return [#to_s] when `result` is configured as `:choice`
