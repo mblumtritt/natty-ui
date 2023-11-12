@@ -5,6 +5,20 @@ module NattyUI
   # Mix-in for output functionality.
   #
   module Features
+    # Print a horizontal rule
+    #
+    # @param [#to_s] symbol string to build the horizontal rule
+    # @return [Wrapper, Wrapper::Element] itself
+    def hr(symbol = '═')
+      size = NattyUI.display_width(NattyUI.plain(symbol.to_s))
+      return self if size.zero?
+      puts(
+        symbol * (wrapper.screen_columns / size),
+        prefix: Ansi[39],
+        suffix: Ansi.reset
+      )
+    end
+
     protected
 
     def _element(type, *args)
