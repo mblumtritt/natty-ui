@@ -45,9 +45,9 @@ UI.h2 'Feature: Sections' do |sec|
 
   sec.puts 'You can stack all kinds of sections together:'
   sec.space
-  sec.framed('Simple Framed Section', type: :simple) do |f1|
-    f1.framed('Heavy Framed Section', type: :heavy) do |f2|
-      f2.framed('Semi Framed Section', type: :semi) do |f3|
+  sec.framed('Rouned Frame') do |f1|
+    f1.framed('Heavy Framed', type: :heavy) do |f2|
+      f2.framed('Simple Frame', type: :simple) do |f3|
         f3.framed('Double Framed Section', type: :double) do |f4|
           f4.message(
             '[[fff400]]Frames are nice',

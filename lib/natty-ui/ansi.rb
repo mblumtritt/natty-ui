@@ -71,6 +71,8 @@ module NattyUI
       # @return [String] ANSI code to move the cursor to given column
       def cursor_column(columns = nil) = "\e[#{columns}G"
 
+      def cursor_right_aligned = "\e[9999G\e[D\e[C"
+
       # @return [String] ANSI code to hide the cursor
       def cursor_hide = "\e[?25l"
 
