@@ -107,6 +107,15 @@ module NattyUI
         attributes.empty? ? "#{obj}" : "#{attributes}#{obj}#{"\e[0m" if reset}"
       end
 
+      # Remove ANSI attribtes from given string.
+      # This will only remove attributes and colors, not other control codes.
+      #
+      # @see embellish
+      #
+      # @param str [#to_s] string to be modified
+      # @return [String] string without ANSI attributes
+      def blemish(str) = str.to_s.gsub(/(\x1b\[(?~m)m)/, '')
+
       # Combine given ANSI `attributes`.
       #
       # ANSI attribute names are:
