@@ -29,4 +29,12 @@ UI.framed('NattyUI Query Demo') do |sec|
     exit(false)
   end
   sec.info("Your choice: #{choice}")
+
+  answer = sec.request 'Are you okay?'
+  unless answer
+    sec.failed('aborted')
+    sec.close
+    exit(false)
+  end
+  sec.info("Your answer: #{answer}")
 end

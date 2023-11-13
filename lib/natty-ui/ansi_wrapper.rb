@@ -169,6 +169,14 @@ module NattyUI
       PREFIX = "#{Ansi[:bold, :italic, 220]}▶︎#{Ansi[:reset, 220]}".freeze
     end
 
+    class Request < Request
+      def prompt(question) = "#{prefix}#{PREFIX} #{question}#{Ansi.reset} "
+      def finish = (wrapper.stream << FINISH).flush
+
+      PREFIX = "#{Ansi[:bold, :italic, 220]}▶︎#{Ansi[:reset, 220]}".freeze
+      FINISH = (Ansi.cursor_line_up + Ansi.line_erase_to_end).freeze
+    end
+
     class Query < Query
       protected
 

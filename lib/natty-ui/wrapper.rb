@@ -6,6 +6,7 @@ require_relative 'wrapper/heading'
 require_relative 'wrapper/message'
 require_relative 'wrapper/progress'
 require_relative 'wrapper/query'
+require_relative 'wrapper/request'
 require_relative 'wrapper/section'
 require_relative 'wrapper/task'
 
