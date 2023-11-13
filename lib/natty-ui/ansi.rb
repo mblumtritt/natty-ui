@@ -60,17 +60,21 @@ module NattyUI
       def cursor_left(columns = nil) = "\e[#{columns}D"
 
       # @param lines [Integer] number of lines
-      # @return [String] ANSI code to move the cursor to beginning of the line some lines down
+      # @return [String] ANSI code to move the cursor to beginning of the line
+      #   some lines down
       def cursor_line_down(lines = nil) = "\e[#{lines}E"
 
       # @param lines [Integer] number of lines
-      # @return [String] ANSI code to move the cursor to beginning of the line some lines up
+      # @return [String] ANSI code to move the cursor to beginning of the line
+      #   some lines up
       def cursor_line_up(lines = nil) = "\e[#{lines}F"
 
       # @param columns [Integer] number of columns
       # @return [String] ANSI code to move the cursor to given column
       def cursor_column(columns = nil) = "\e[#{columns}G"
 
+      # @return [String] ANSI code poition the cursor on right hand side of the
+      #   terminal
       def cursor_right_aligned = "\e[9999G\e[D\e[C"
 
       # @return [String] ANSI code to hide the cursor
@@ -134,8 +138,9 @@ module NattyUI
       #
       # Colors can specified by their name for ANSI 3-bit and 4-bit colors:
       # `black`, `red`, `green`, `yellow`, `blue`, `magenta`, `cyan`, `white`,
-      # `default`, `bright_black`, `bright_red`, `bright_green`, `bright_yellow`,
-      # `bright_blue`, `bright_magenta`, `bright_cyan`, `bright_white`.
+      # `default`, `bright_black`, `bright_red`, `bright_green`,
+      # `bright_yellow`, `bright_blue`, `bright_magenta`, `bright_cyan`,
+      # `bright_white`.
       #
       # For 8-bit ANSI colors use 2-digit hexadecimal values `00`...`ff`.
       #
