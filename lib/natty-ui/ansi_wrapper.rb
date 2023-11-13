@@ -190,7 +190,7 @@ module NattyUI
 
       def draw_title(title)
         @prefix = "#{prefix}#{TITLE_PREFIX}#{title}#{Ansi.reset} "
-        (wrapper.stream << @prefix).flush
+        (wrapper.stream << @prefix << Ansi.cursor_hide).flush
         @prefix = "#{Ansi.line_clear}#{@prefix}"
         if @max_value
           @prefix << BAR_COLOR
@@ -200,26 +200,22 @@ module NattyUI
         end
       end
 
-      def draw_final = (wrapper.stream << Ansi.line_clear).flush
+      def draw_final = (wrapper.stream << ERASE).flush
 
       def redraw
         (wrapper.stream << @prefix << (@max_value ? fullbar : indicator)).flush
       end
 
       def indicator = '─╲│╱'[(@indicator += 1) % 4]
+      # def indicator = '⣷⣯⣟⡿⢿⣻⣽⣾'[(@indicator += 1) % 8]
 
       def fullbar
         percent = @value / @max_value
         count = (30 * percent).to_i
+        mv = max_value.to_i.to_s
         "#{'█' * count}#{BAR_BACK}#{'▁' * (30 - count)}" \
-          "#{BAR_INK} #{
-            format(
-              '%<value>.0f/%<max_value>.0f (%<percent>.2f%%)',
-              value: @value,
-              max_value: @max_value,
-              percent: percent * 100
-            )
-          }"
+          "#{BAR_INK} #{value.to_i.to_s.rjust(mv.size)}/#{mv} " \
+          "(#{(percent * 100).round(2).to_s.rjust(6)})"
       end
 
       TITLE_PREFIX = "#{Ansi[:bold, :italic, 117]}➔#{Ansi[:reset, 117]} ".freeze
@@ -227,6 +223,7 @@ module NattyUI
       BAR_COLOR = Ansi[39, 295].freeze
       BAR_BACK = Ansi[236, 492].freeze
       BAR_INK = Ansi[:bold, 255, :on_default].freeze
+      ERASE = (Ansi.line_clear + Ansi.cursor_show).freeze
     end
 
     PAGE_BEGIN =
