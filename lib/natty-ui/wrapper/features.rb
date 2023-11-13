@@ -12,11 +12,9 @@ module NattyUI
     def hr(symbol = '═')
       size = NattyUI.display_width(NattyUI.plain(symbol.to_s))
       return self if size.zero?
-      puts(
-        symbol * (available_width / size),
-        prefix: Ansi[39],
-        suffix: Ansi.reset
-      )
+      msg = symbol * ((available_width - 1) / size)
+      return puts(msg, prefix: Ansi[39], suffix: Ansi.reset) if wrapper.ansi?
+      puts(msg)
     end
 
     protected
