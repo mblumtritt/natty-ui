@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'features'
+require_relative '../features'
 
 module NattyUI
   class Wrapper
@@ -50,10 +50,6 @@ module NattyUI
       end
 
       def initialize(parent) = (@parent = parent)
-
-      def _blemish_width(str)
-        str.empty? ? 0 : NattyUI.display_width(Ansi.blemish(str))
-      end
 
       def _close(state)
         return self if @status

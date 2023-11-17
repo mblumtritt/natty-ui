@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
-require 'io/console'
-require_relative 'wrapper'
 require_relative 'ansi'
+require_relative 'wrapper'
 
 module NattyUI
   class AnsiWrapper < Wrapper

@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
+require 'io/console'
 require_relative 'wrapper/ask'
 require_relative 'wrapper/framed'
 require_relative 'wrapper/heading'
+require_relative 'wrapper/list_in_columns'
 require_relative 'wrapper/message'
 require_relative 'wrapper/progress'
 require_relative 'wrapper/query'
