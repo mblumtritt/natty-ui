@@ -67,9 +67,9 @@ module NattyUI
 
       def grab(yes, no)
         yes = yes.to_s.chars.uniq
+        raise(ArgumentError, ':yes can not be empty') if yes.empty?
         no = no.to_s.chars.uniq
-        raise(ArgumentError, ':yes can not be emoty') if yes.empty?
-        raise(ArgumentError, ':no can not be emoty') if no.empty?
+        raise(ArgumentError, ':no can not be empty') if no.empty?
         return yes, no if (yes & no).empty?
         raise(ArgumentError, 'chars in :yes and :no can not be intersect')
       end

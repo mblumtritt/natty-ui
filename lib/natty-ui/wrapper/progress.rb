@@ -35,11 +35,11 @@ module NattyUI
         @max_value = [0, max_value.to_f].max if max_value
         @value = 0
         @progress = 0
-        draw_title(title)
+        draw(title)
       end
 
-      def draw_title(title) = (wrapper.stream << prefix << "➔ #{title} ").flush
-      def draw_final = (wrapper.stream << "\n")
+      def draw(title) = (wrapper.stream << prefix << "➔ #{title} ").flush
+      def end_draw = (wrapper.stream << "\n")
 
       def redraw
         return (wrapper.stream << '.').flush unless @max_value
@@ -50,10 +50,15 @@ module NattyUI
       end
 
       def finish
-        draw_final
+        end_draw
         return @parent.failed(*@final_text) if failed?
-        @status = :ok if @status == :closed
-        @parent.completed(*@final_text)
+        _section(
+          @parent,
+          :Message,
+          @final_text,
+          title: @final_text.shift,
+          symbol: @status = :completed
+        )
       end
     end
   end

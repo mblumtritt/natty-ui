@@ -80,7 +80,7 @@ module NattyUI
           .to_h
           .merge!(kw_choices)
           .transform_keys! { |k| [k.to_s[0], ' '].max }
-          .transform_values! { |v| v.to_s.tr("\r\n", ' ') }
+          .transform_values! { |v| v.to_s.tr("\r\n\t", ' ') }
       end
     end
   end

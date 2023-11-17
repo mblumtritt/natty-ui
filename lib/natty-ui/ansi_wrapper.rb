@@ -117,10 +117,7 @@ module NattyUI
         title = title.to_s.tr("\r\n", '')
         topl, topr, botl, botr, hor, vert = *components(type)
         width = available_width
-        rcount = [
-          width - NattyUI.display_width(NattyUI.plain(title)) - 6,
-          0
-        ].max
+        rcount = [width - _plain_width(title) - 6, 0].max
         parent.puts(
           "#{COLOR}#{topl}#{hor}#{hor}#{Ansi.reset} " \
             "#{TITLE_ATTR}#{title}#{Ansi.reset} " \
@@ -195,7 +192,7 @@ module NattyUI
     class Progress < Progress
       protected
 
-      def draw_title(title)
+      def draw(title)
         @prefix = "#{prefix}#{TITLE_PREFIX}#{title}#{Ansi.reset} "
         (wrapper.stream << @prefix << Ansi.cursor_hide).flush
         @prefix = "#{Ansi.line_clear}#{@prefix}"
@@ -207,12 +204,11 @@ module NattyUI
         end
       end
 
-      def draw_final = (wrapper.stream << ERASE).flush
-
       def redraw
         (wrapper.stream << @prefix << (@max_value ? fullbar : indicator)).flush
       end
 
+      def end_draw = (wrapper.stream << ERASE).flush
       def indicator = '─╲│╱'[(@indicator += 1) % 4]
       # def indicator = '⣷⣯⣟⡿⢿⣻⣽⣾'[(@indicator += 1) % 8]
 

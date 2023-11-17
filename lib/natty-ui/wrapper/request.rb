@@ -9,9 +9,7 @@ module NattyUI
     # @param question [#to_s] Question to display
     # @return [String] the user input
     # @return [nil] when input was aborted with `^C` or `^D`
-    def request(question)
-      _element(:Request, question)
-    end
+    def request(question) = _element(:Request, question)
   end
 
   class Wrapper
