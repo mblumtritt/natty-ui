@@ -73,13 +73,13 @@ require 'natty-ui'
 You can execute the examples by
 
 ```sh
-ruby ./examples/basic.rb
+bundle exec ruby ./examples/basic.rb
 ```
 
 or see the non-ANSI version
 
 ```sh
-NO_COLOR=1 ruby ./examples/basic.rb
+NO_COLOR=1 bundle exec ruby ./examples/basic.rb
 ```
 
 ## NO_COLOR Convention
