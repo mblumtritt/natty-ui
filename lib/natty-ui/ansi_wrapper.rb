@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
-require 'io/console'
-require_relative 'wrapper'
 require_relative 'ansi'
+require_relative 'wrapper'
 
 module NattyUI
   class AnsiWrapper < Wrapper
@@ -110,18 +109,48 @@ module NattyUI
       MSG = Ansi[:bold, 231].freeze
     end
 
-    class Framed < Framed
+    class Framed < Section
       protected
 
-      def components(type)
-        top_start, top_suffix, left, bottom = super
-        [
-          "#{Ansi[39]}#{top_start}#{Ansi[:bold, 231]}",
-          "#{Ansi[:reset, 39]}#{top_suffix}#{Ansi.reset}",
-          Ansi.embellish(left, 39),
-          Ansi.embellish(bottom, 39)
-        ]
+      def initialize(parent, title:, type:, **opts)
+        @parent = parent
+        title = title.to_s.tr("\r\n", '')
+        topl, topr, botl, botr, hor, vert = *components(type)
+        width = available_width
+        rcount = [width - _plain_width(title) - 6, 0].max
+        parent.puts(
+          "#{COLOR}#{topl}#{hor}#{hor}#{Ansi.reset} " \
+            "#{TITLE_ATTR}#{title}#{Ansi.reset} " \
+            "#{COLOR}#{hor * rcount}#{topr}#{Ansi.reset}"
+        )
+        @bottom = "#{COLOR}#{botl}#{hor * (width - 2)}#{botr}#{Ansi.reset}"
+        vert = "#{COLOR}#{vert}#{Ansi.reset}"
+        super(
+          parent,
+          prefix: "#{vert} ",
+          suffix:
+            "#{Ansi.cursor_right_aligned}" \
+              "#{Ansi.cursor_left(suffix_width)}#{vert}",
+          **opts
+        )
       end
+
+      def suffix = "#{super} "
+      def finish = parent.puts(@bottom)
+
+      def components(type)
+        COMPONENTS[type] || raise(ArgumentError, "invalid frame type - #{type}")
+      end
+
+      COLOR = Ansi[39].freeze
+      TITLE_ATTR = Ansi[:bold, 231].freeze
+      COMPONENTS = {
+        rounded: %w[╭ ╮ ╰ ╯ ─ │],
+        simple: %w[┌ ┐ └ ┘ ─ │],
+        heavy: %w[┏ ┓ ┗ ┛ ━ ┃],
+        semi: %w[┍ ┑ ┕ ┙ ━ │],
+        double: %w[╔ ╗ ╚ ╝ ═ ║]
+      }.compare_by_identity.freeze
     end
 
     class Ask < Ask
@@ -134,6 +163,14 @@ module NattyUI
       def finish = (wrapper.stream << Ansi.line_clear).flush
 
       PREFIX = "#{Ansi[:bold, :italic, 220]}▶︎#{Ansi[:reset, 220]}".freeze
+    end
+
+    class Request < Request
+      def prompt(question) = "#{prefix}#{PREFIX} #{question}#{Ansi.reset} "
+      def finish = (wrapper.stream << FINISH).flush
+
+      PREFIX = "#{Ansi[:bold, :italic, 220]}▶︎#{Ansi[:reset, 220]}".freeze
+      FINISH = (Ansi.cursor_line_up + Ansi.line_erase_to_end).freeze
     end
 
     class Query < Query
@@ -155,9 +192,9 @@ module NattyUI
     class Progress < Progress
       protected
 
-      def draw_title(title)
+      def draw(title)
         @prefix = "#{prefix}#{TITLE_PREFIX}#{title}#{Ansi.reset} "
-        (wrapper.stream << @prefix).flush
+        (wrapper.stream << @prefix << Ansi.cursor_hide).flush
         @prefix = "#{Ansi.line_clear}#{@prefix}"
         if @max_value
           @prefix << BAR_COLOR
@@ -167,26 +204,21 @@ module NattyUI
         end
       end
 
-      def draw_final = (wrapper.stream << Ansi.line_clear).flush
-
       def redraw
         (wrapper.stream << @prefix << (@max_value ? fullbar : indicator)).flush
       end
 
+      def end_draw = (wrapper.stream << ERASE).flush
       def indicator = '─╲│╱'[(@indicator += 1) % 4]
+      # def indicator = '⣷⣯⣟⡿⢿⣻⣽⣾'[(@indicator += 1) % 8]
 
       def fullbar
         percent = @value / @max_value
         count = (30 * percent).to_i
+        mv = max_value.to_i.to_s
         "#{'█' * count}#{BAR_BACK}#{'▁' * (30 - count)}" \
-          "#{BAR_INK} #{
-            format(
-              '%<value>.0f/%<max_value>.0f (%<percent>.2f%%)',
-              value: @value,
-              max_value: @max_value,
-              percent: percent * 100
-            )
-          }"
+          "#{BAR_INK} #{value.to_i.to_s.rjust(mv.size)}/#{mv} " \
+          "(#{(percent * 100).round(2).to_s.rjust(6)})"
       end
 
       TITLE_PREFIX = "#{Ansi[:bold, :italic, 117]}➔#{Ansi[:reset, 117]} ".freeze
@@ -194,6 +226,7 @@ module NattyUI
       BAR_COLOR = Ansi[39, 295].freeze
       BAR_BACK = Ansi[236, 492].freeze
       BAR_INK = Ansi[:bold, 255, :on_default].freeze
+      ERASE = (Ansi.line_clear + Ansi.cursor_show).freeze
     end
 
     PAGE_BEGIN =

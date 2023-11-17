@@ -1,11 +1,14 @@
 # frozen_string_literal: true
 
+require 'io/console'
 require_relative 'wrapper/ask'
 require_relative 'wrapper/framed'
 require_relative 'wrapper/heading'
+require_relative 'wrapper/list_in_columns'
 require_relative 'wrapper/message'
 require_relative 'wrapper/progress'
 require_relative 'wrapper/query'
+require_relative 'wrapper/request'
 require_relative 'wrapper/section'
 require_relative 'wrapper/task'
 
@@ -159,6 +162,12 @@ module NattyUI
     def wrapper = self
     def prefix = nil
     alias suffix prefix
+
+    def prefix_width = 0
+    alias suffix_width prefix_width
+    alias width prefix_width
+
+    alias available_width screen_columns
 
     private_class_method :new
   end

@@ -60,16 +60,22 @@ module NattyUI
       def cursor_left(columns = nil) = "\e[#{columns}D"
 
       # @param lines [Integer] number of lines
-      # @return [String] ANSI code to move the cursor to beginning of the line some lines down
+      # @return [String] ANSI code to move the cursor to beginning of the line
+      #   some lines down
       def cursor_line_down(lines = nil) = "\e[#{lines}E"
 
       # @param lines [Integer] number of lines
-      # @return [String] ANSI code to move the cursor to beginning of the line some lines up
+      # @return [String] ANSI code to move the cursor to beginning of the line
+      #   some lines up
       def cursor_line_up(lines = nil) = "\e[#{lines}F"
 
       # @param columns [Integer] number of columns
-      # @return [String] ANSI code to move the cursor to giben column
+      # @return [String] ANSI code to move the cursor to given column
       def cursor_column(columns = nil) = "\e[#{columns}G"
+
+      # @return [String] ANSI code poition the cursor on right hand side of the
+      #   terminal
+      def cursor_right_aligned = "\e[9999G\e[D\e[C"
 
       # @return [String] ANSI code to hide the cursor
       def cursor_hide = "\e[?25l"
@@ -107,6 +113,15 @@ module NattyUI
         attributes.empty? ? "#{obj}" : "#{attributes}#{obj}#{"\e[0m" if reset}"
       end
 
+      # Remove ANSI attribtes from given string.
+      # This will only remove attributes and colors, not other control codes.
+      #
+      # @see embellish
+      #
+      # @param str [#to_s] string to be modified
+      # @return [String] string without ANSI attributes
+      def blemish(str) = str.to_s.gsub(/(\x1b\[(?~m)m)/, '')
+
       # Combine given ANSI `attributes`.
       #
       # ANSI attribute names are:
@@ -119,55 +134,57 @@ module NattyUI
       # `fraktur_off`, `underline_off`, `blink_off`, `proportional`, `spacing`,
       # `invert_off`, `reverse_off`, `reveal`, `strike_off`, `proportional_off`,
       # `spacing_off`, `framed`, `encircled`, `overlined`, `framed_off`,
-      # `encircled_off`, `overlined_off`
+      # `encircled_off`, `overlined_off`.
       #
-      # Colors can specified by their name for ANSI 4-bit colors:
+      # Colors can specified by their name for ANSI 3-bit and 4-bit colors:
       # `black`, `red`, `green`, `yellow`, `blue`, `magenta`, `cyan`, `white`,
-      # `default`, `bright_black`, `bright_red`, `bright_green`, `bright_yellow`,
-      # `bright_blue`, `bright_magenta`, `bright_cyan`, `bright_white`
+      # `default`, `bright_black`, `bright_red`, `bright_green`,
+      # `bright_yellow`, `bright_blue`, `bright_magenta`, `bright_cyan`,
+      # `bright_white`.
       #
-      # For 8-bit ANSI colors you can use a prefixed integer number:
-      # `i0`...`i255`.
+      # For 8-bit ANSI colors use 2-digit hexadecimal values `00`...`ff`.
       #
-      # To use RGB ANSI colors just specify the hexadecimal code like `#XXXXXX`
-      # or the short form `#XXX`.
+      # To use RGB ANSI colors (24-bit colors) specify 3-digit or 6-digit
+      # hexadecimal values `000`...`fff` or `000000`...`ffffff`.
+      # This represent the `RRGGBB` values (or `RGB` for short version) like you
+      # may known from CSS color notation.
       #
       # To use a color as background color prefix the color attribute with `bg_`
       # or `on_`.
       #
       # To use a color as underline color prefix the color attribute with `ul_`.
       #
-      # To make it more clear a color attribute should be used as fereground
-      # color the code can be prefixed with `fg_`.
+      # To make it more clear a color attribute have to be used as foreground
+      # color the color value can be prefixed with `fg_`.
       #
       # @example Valid Foreground Color Attributes
       #   Ansi[:yellow]
-      #   Ansi["#fab"]
-      #   Ansi["#00aa00"]
+      #   Ansi['#fab']
+      #   Ansi['#00aa00']
       #   Ansi[:fg_fab]
       #   Ansi[:fg_00aa00]
-      #   Ansi[:i196]
-      #   Ansi[:fg_i196]
+      #   Ansi[:af]
+      #   Ansi[:fg_af]
       #
       # @example Valid Background Color Attributes
       #   Ansi[:bg_yellow]
       #   Ansi[:bg_fab]
       #   Ansi[:bg_00aa00]
       #   Ansi['bg#00aa00']
-      #   Ansi[:bg_i196]
+      #   Ansi[:bg_af]
       #
       #   Ansi[:on_yellow]
       #   Ansi[:on_fab]
       #   Ansi[:on_00aa00]
       #   Ansi['on#00aa00']
-      #   Ansi[:on_i196]
+      #   Ansi[:on_af]
       #
       # @example Valid Underline Color Attributes
-      #   Ansi[:underline, :yellow]
+      #   Ansi[:underline, :ul_yellow]
       #   Ansi[:underline, :ul_fab]
       #   Ansi[:underline, :ul_00aa00]
       #   Ansi[:underline, 'ul#00aa00']
-      #   Ansi[:underline, :ul_i196]
+      #   Ansi[:underline, :ul_fa]
       #   Ansi[:underline, :ul_bright_yellow]
       #
       # @example Combined attributes:
@@ -182,7 +199,7 @@ module NattyUI
             .map do |arg|
               case arg
               when Symbol, String
-                ATTRIBUTES[arg] || named_color(arg) || invalid_argument(arg)
+                ATTRIBUTES[arg] || color(arg) || invalid_argument(arg)
               when (0..255)
                 "38;5;#{arg}"
               when (256..512)
@@ -215,7 +232,7 @@ module NattyUI
         return if attributes.empty?
         "\e[#{
           attributes
-            .map { |arg| ATTRIBUTES[arg] || named_color(arg) || return }
+            .map { |arg| ATTRIBUTES[arg] || color(arg) || return }
             .join(';')
         }m"
       end
@@ -230,8 +247,14 @@ module NattyUI
         )
       end
 
-      def named_color(value)
+      def color(value)
         case value
+        when /\A(fg_|fg:|fg)?([[:xdigit:]]{2})\z/
+          "38;5;#{Regexp.last_match(2).hex}"
+        when /\A(bg_|bg:|bg|on_|on:|on)([[:xdigit:]]{2})\z/
+          "48;5;#{Regexp.last_match(2).hex}"
+        when /\A(ul_|ul:|ul)([[:xdigit:]]{2})\z/
+          "58;5;#{Regexp.last_match(2).hex}"
         when /\A(fg_|fg:|fg)?#?([[:xdigit:]]{3})\z/
           hex_rgb_short(38, Regexp.last_match(2))
         when /\A(fg_|fg:|fg)?#?([[:xdigit:]]{6})\z/
@@ -244,18 +267,7 @@ module NattyUI
           hex_rgb_short(58, Regexp.last_match(2))
         when /\A(ul_|ul:|ul)#?([[:xdigit:]]{6})\z/
           hex_rgb(58, Regexp.last_match(2))
-        when /\A(fg_|fg:|fg)?i([[:digit:]]{1,3})\z/
-          number(38, Regexp.last_match(2))
-        when /\A(bg_|bg:|bg|on_|on:|on)i([[:digit:]]{1,3})\z/
-          number(48, Regexp.last_match(2))
-        when /\A(ul_|ul:|ul)i([[:digit:]]{1,3})\z/
-          number(58, Regexp.last_match(2))
         end
-      end
-
-      def number(base, str)
-        index = str.to_i
-        "#{base};5;#{index}" if index >= 0 && index <= 255
       end
 
       def hex_rgb_short(base, str)
@@ -282,7 +294,6 @@ module NattyUI
         rapid_blink: 6,
         # ---
         invert: 7,
-        reverse: 7,
         # ---
         conceal: 8,
         hide: 8,
@@ -319,7 +330,6 @@ module NattyUI
         spacing: 26,
         # ---
         invert_off: 27,
-        reverse_off: 27,
         # ---
         reveal: 28,
         # ---

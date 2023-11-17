@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
-# require 'natty-ui'
-require_relative '../lib/natty-ui'
+require 'natty-ui'
 
 UI = NattyUI::StdOut
 
@@ -10,75 +9,60 @@ UI.h1 'NattyUI Progress Indication Demo'
 UI.space
 
 # just simulate some work
-def something = sleep(0.4)
+def something = sleep(0.5)
 def some = sleep(0.15)
 
-UI.framed('Pogress Indicators') do |sec|
-  progress = sec.progress('Progress with max_value', max_value: 11)
-  11.times do
-    progress.step
-    something
-  end
-  progress.done 'Progress ok'
+UI.info 'Tasks are sections to visualize step by step processing.' do |info|
+  info.task 'Assemble assets' do |task|
+    task.task('Initialize') { something }
 
-  progress = sec.progress('Simple progress')
-  20.times do
-    progress.step
-    some
-  end
-  progress.done 'All fine'
-end
+    progress = task.progress 'Connect to server...'
+    20.times do
+      progress.step
+      some
+    end
+    progress.ok 'Connected'
 
-# simulate assembling task steps
-def assemble(task)
-  task.msg 'Collect files...'
-  something
-  task.task 'Compile files...' do |subtask|
-    %w[readme.txt main.css main.html sub.html].each do |name|
-      subtask.msg "Compile file [[bright_yellow]]./source/#{name}[[/]]..."
+    task.task('Collect files...') { something }
+
+    task.task 'Compile files...' do |subtask|
+      %w[readme.txt main.css main.html sub.html].each do |name|
+        subtask.msg "Compile file [[bright_yellow]]./source/#{name}[[/]]..."
+        something
+      end
+      subtask.done 'Files compiled.'
+    end
+
+    progress = task.progress('Compress files', max_value: 11)
+    11.times do
+      progress.step
       something
     end
-    subtask.done 'Files compiled.'
+    progress.done 'All compressed'
+
+    task.task('Signing') { something }
+
+    task.task('Store assembled results') { something }
   end
-  something
-  task.msg 'Compressing...'
-  something
-  task.msg 'Signing...'
-  something
-  task.msg 'Store assembled results...'
-  something
+  info.puts(
+    'The details are removed ([[italic]]in ANSI version[[/]]) when the task',
+    'ended sucessfully.'
+  )
 end
 
-UI.framed('Tasks') do |sec|
-  sec.puts 'Tasks are sections to visualize step by step processing.'
-  sec.task('Assemble assets') { |task| assemble(task) }
-  sec.space
+UI.info 'Details of failed tasks will not be cleaned.' do |info|
+  info.task 'Assemble assets' do |task|
+    task.task('Initialize') { something }
 
-  sec.puts 'If such a task failed the logged messages are kept:'
-  assembling = sec.task('Assemble assets')
-  assemble(assembling)
-  assembling.failed
-  sec.space
+    progress = task.progress 'Connect to server...'
+    20.times do
+      progress.step
+      some
+    end
+    progress.failed 'Unable to connect to server'
 
-  sec.puts 'You can add some more description when failed:'
-  sec.task('Assemble assets') do |task|
-    assemble(task)
-    task.failed('Unable to store results', <<~ERROR)
-      Server reported Invalid credentials
-      Check your credentials and try again...
-    ERROR
-
-    This code here is never reached!
-  end
-  sec.space
-
-  sec.puts 'You can also add a description when all was fine:'
-  sec.task('Assemble assets') do |task|
-    assemble(task)
-    task.done('Assets assembled', <<~INFO)
-      Your assets are ready on server now.
-    INFO
-
-    This code here is never reached!
+    task.error 'This code will not be reachd!'
   end
 end
+
+UI.space

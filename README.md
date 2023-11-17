@@ -46,7 +46,7 @@ or use progression displays like progress bars.
 
 📕 See the [online help](https://rubydoc.info/gems/natty-ui/NattyUI) for more details or have a look at the [examples](./examples/) directory to get an impression of the current feature set.
 
-![illustration](https://raw.githubusercontent.com/mblumtritt/natty-ui/main/examples/illustration.svg)
+![illustration](https://raw.githubusercontent.com/mblumtritt/natty-ui/main/examples/illustration.png)
 
 ## Installation
 
@@ -73,13 +73,13 @@ require 'natty-ui'
 You can execute the examples by
 
 ```sh
-ruby ./examples/basic.rb
+bundle exec ruby ./examples/basic.rb
 ```
 
 or see the non-ANSI version
 
 ```sh
-NO_COLOR=1 ruby ./examples/basic.rb
+NO_COLOR=1 bundle exec ruby ./examples/basic.rb
 ```
 
 ## NO_COLOR Convention
@@ -92,5 +92,4 @@ Since I did not complete the tests and not all my ideas are already implemented 
 
 - add more samples to help
 - add more tests
-- simple prompt
 - password prompt
