@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
-# require 'natty-ui'
-require_relative '../lib/natty-ui'
+require 'natty-ui'
 
 UI = NattyUI::StdOut
 
