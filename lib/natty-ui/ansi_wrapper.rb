@@ -22,10 +22,7 @@ module NattyUI
 
     protected
 
-    def embellish(obj)
-      obj = NattyUI.embellish(obj)
-      obj.empty? ? nil : obj
-    end
+    def embellish(obj) = (obj = NattyUI.embellish(obj)).empty? ? nil : obj
 
     def temp_func
       count = @lines_written
@@ -68,6 +65,7 @@ module NattyUI
         task: 117
       }.compare_by_identity.freeze
     end
+    private_constant :Message
 
     class Section < Section
       def temporary
@@ -96,6 +94,7 @@ module NattyUI
         @prefix = Ansi.embellish(@prefix, *prefix_attr)
       end
     end
+    private_constant :Section
 
     class Heading < Heading
       protected
@@ -108,13 +107,14 @@ module NattyUI
       PREFIX = Ansi[39].freeze
       MSG = Ansi[:bold, 231].freeze
     end
+    private_constant :Heading
 
     class Framed < Section
       protected
 
       def initialize(parent, title:, type:, **opts)
         @parent = parent
-        title = title.to_s.tr("\r\n", '')
+        title = title.to_s.tr("\r\n\t", '')
         topl, topr, botl, botr, hor, vert = *components(type)
         width = available_width
         rcount = [width - _plain_width(title) - 6, 0].max
@@ -152,6 +152,7 @@ module NattyUI
         double: %w[╔ ╗ ╚ ╝ ═ ║]
       }.compare_by_identity.freeze
     end
+    private_constant :Framed
 
     class Ask < Ask
       protected
@@ -164,6 +165,7 @@ module NattyUI
 
       PREFIX = "#{Ansi[:bold, :italic, 220]}▶︎#{Ansi[:reset, 220]}".freeze
     end
+    private_constant :Ask
 
     class Request < Request
       def prompt(question) = "#{prefix}#{PREFIX} #{question}#{Ansi.reset} "
@@ -172,6 +174,7 @@ module NattyUI
       PREFIX = "#{Ansi[:bold, :italic, 220]}▶︎#{Ansi[:reset, 220]}".freeze
       FINISH = (Ansi.cursor_line_up + Ansi.line_erase_to_end).freeze
     end
+    private_constant :Request
 
     class Query < Query
       protected
@@ -183,11 +186,13 @@ module NattyUI
 
       PROMPT = Ansi.embellish(':', :bold, 220).freeze
     end
+    private_constant :Query
 
     class Task < Message
       include ProgressAttributes
       include TaskMethods
     end
+    private_constant :Task
 
     class Progress < Progress
       protected
@@ -196,12 +201,9 @@ module NattyUI
         @prefix = "#{prefix}#{TITLE_PREFIX}#{title}#{Ansi.reset} "
         (wrapper.stream << @prefix << Ansi.cursor_hide).flush
         @prefix = "#{Ansi.line_clear}#{@prefix}"
-        if @max_value
-          @prefix << BAR_COLOR
-        else
-          @prefix << INDICATOR_ATTRIBUTE
-          @indicator = 0
-        end
+        return @prefix << BAR_COLOR if @max_value
+        @prefix << INDICATOR_ATTRIBUTE
+        @indicator = 0
       end
 
       def redraw
@@ -228,6 +230,7 @@ module NattyUI
       BAR_INK = Ansi[:bold, 255, :on_default].freeze
       ERASE = (Ansi.line_clear + Ansi.cursor_show).freeze
     end
+    private_constant :Progress
 
     PAGE_BEGIN =
       "#{Ansi.reset}#{Ansi.cursor_save_pos}#{Ansi.screen_save}" \

@@ -77,9 +77,8 @@ module NattyUI
     # @return [Wrapper] itself
     def space(lines = 1)
       lines = [lines.to_i, 1].max
-      @stream << ("\n" * lines)
       @lines_written += lines
-      @stream.flush
+      (@stream << ("\n" * lines)).flush
       self
     end
 
@@ -139,11 +138,6 @@ module NattyUI
 
     protected
 
-    def embellish(obj)
-      obj = NattyUI.plain(obj)
-      obj.empty? ? nil : obj
-    end
-
     def temp_func
       lambda do
         @stream.flush
@@ -158,6 +152,8 @@ module NattyUI
     rescue Errno::ENOTTY
       @ws = false
     end
+
+    def embellish(obj) = (obj = NattyUI.plain(obj)).empty? ? nil : obj
 
     def wrapper = self
     def prefix = nil
