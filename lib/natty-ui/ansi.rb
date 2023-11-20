@@ -73,8 +73,8 @@ module NattyUI
       # @return [String] ANSI code to move the cursor to given column
       def cursor_column(columns = nil) = "\e[#{columns}G"
 
-      # @return [String] ANSI code poition the cursor on right hand side of the
-      #   terminal
+      # @return [String] ANSI code positioning the cursor on right hand side of
+      #   the terminal
       def cursor_right_aligned = "\e[9999G\e[D\e[C"
 
       # @return [String] ANSI code to hide the cursor

@@ -49,9 +49,9 @@ module NattyUI
       redraw
     end
 
-    # Maximal value.
+    # Maximum value.
     #
-    # @return [Float] maximal value
+    # @return [Float] maximum value
     # @return [nil] when no max_value was configured
     attr_reader :max_value
 

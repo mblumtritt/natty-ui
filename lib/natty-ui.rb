@@ -25,7 +25,7 @@ module NattyUI
   class << self
     # @see .valid_in?
     # @return [IO] IO stream used to read input
-    # @raise TypeError when a non-readable stream will be assigned
+    # @raise [TypeError] when a non-readable stream will be assigned
     attr_reader :in_stream
 
     # @param [IO] stream to read input
@@ -44,7 +44,7 @@ module NattyUI
     # @param [Boolean, :auto] ansi whether ANSI should be supported
     #   or automatically selected
     # @return [Wrapper] wrapper for the given `stream`
-    # @raise TypeError when `stream` is not a writable stream
+    # @raise [TypeError] when `stream` is not a writable stream
     def new(stream, ansi: :auto)
       unless valid_out?(stream)
         raise(TypeError, "writable IO required  - #{stream.inspect}")
@@ -77,7 +77,7 @@ module NattyUI
     # Translate embedded attribute descriptions into ANSI control codes.
     #
     # @param [#to_s] str string to edit
-    # @return ]String] edited string
+    # @return [String] edited string
     def embellish(str)
       return +'' if (str = str.to_s).empty?
       reset = false
