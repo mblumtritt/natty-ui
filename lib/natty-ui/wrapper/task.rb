@@ -30,16 +30,14 @@ module NattyUI
     end
 
     def finish
-      unless failed?
-        @status = :completed if @status == :closed
-        @temp.call
-      end
+      return @parent.failed(*@final_text) if failed?
+      @temp.call
       _section(
         @parent,
         :Message,
         @final_text,
         title: @final_text.shift,
-        symbol: @status
+        symbol: @status = :completed
       )
     end
   end
