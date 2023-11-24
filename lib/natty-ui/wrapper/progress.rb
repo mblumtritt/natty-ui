@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'element'
-require_relative '../mixins'
+require_relative 'mixins'
 
 module NattyUI
   module Features
