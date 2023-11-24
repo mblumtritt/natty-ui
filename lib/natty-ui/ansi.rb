@@ -227,8 +227,7 @@ module NattyUI
       # @return [String] combined ANSI attributes
       # @return [nil] when string does not contain valid attributes
       def try_convert(attributes)
-        attributes = attributes.to_s.split
-        return if attributes.empty?
+        return if (attributes = attributes.to_s.split).empty?
         "\e[#{
           attributes
             .map { |arg| ATTRIBUTES[arg] || color(arg) || return }
