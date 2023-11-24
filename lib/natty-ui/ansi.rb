@@ -246,35 +246,36 @@ module NattyUI
         )
       end
 
-      def color(value)
-        case value
-        when /\A(fg_|fg:|fg)?([[:xdigit:]]{2})\z/
-          "38;5;#{Regexp.last_match(2).hex}"
-        when /\A(bg_|bg:|bg|on_|on:|on)([[:xdigit:]]{2})\z/
-          "48;5;#{Regexp.last_match(2).hex}"
-        when /\A(ul_|ul:|ul)([[:xdigit:]]{2})\z/
-          "58;5;#{Regexp.last_match(2).hex}"
-        when /\A(fg_|fg:|fg)?#?([[:xdigit:]]{3})\z/
-          hex_rgb_short(38, Regexp.last_match(2))
-        when /\A(fg_|fg:|fg)?#?([[:xdigit:]]{6})\z/
-          hex_rgb(38, Regexp.last_match(2))
-        when /\A(bg_|bg:|bg|on_|on:|on)#?([[:xdigit:]]{3})\z/
-          hex_rgb_short(48, Regexp.last_match(2))
-        when /\A(bg_|bg:|bg|on_|on:|on)#?([[:xdigit:]]{6})\z/
-          hex_rgb(48, Regexp.last_match(2))
-        when /\A(ul_|ul:|ul)#?([[:xdigit:]]{3})\z/
-          hex_rgb_short(58, Regexp.last_match(2))
-        when /\A(ul_|ul:|ul)#?([[:xdigit:]]{6})\z/
-          hex_rgb(58, Regexp.last_match(2))
+      def color(val)
+        val = val.to_s.downcase
+        base =
+          if val.delete_prefix!('fg')
+            val.delete_prefix!(':') || val.delete_prefix!('_')
+            '38;'
+          elsif val.delete_prefix!('ul')
+            val.delete_prefix!(':') || val.delete_prefix!('_')
+            '58;'
+          elsif val.delete_prefix!('bg') || val.delete_prefix!('on')
+            val.delete_prefix!(':') || val.delete_prefix!('_')
+            '48;'
+          else
+            '38;'
+          end
+        val.delete_prefix!('#')
+        case val.size
+        when 2
+          "#{base}5;#{val.hex}" if /\A[[:xdigit:]]+\z/.match?(val)
+        when 3
+          if /\A[[:xdigit:]]+\z/.match?(val)
+            "#{base}2;#{(val[0] * 2).hex};#{(val[1] * 2).hex};#{
+              (val[2] * 2).hex
+            }"
+          end
+        when 6
+          if /\A[[:xdigit:]]+\z/.match?(val)
+            "#{base}2;#{val[0, 2].hex};#{val[2, 2].hex};#{val[4, 2].hex}"
+          end
         end
-      end
-
-      def hex_rgb_short(base, str)
-        "#{base};2;#{(str[0] * 2).hex};#{(str[1] * 2).hex};#{(str[2] * 2).hex}"
-      end
-
-      def hex_rgb(base, str)
-        "#{base};2;#{str[0, 2].hex};#{str[2, 2].hex};#{str[4, 2].hex}"
       end
     end
 
