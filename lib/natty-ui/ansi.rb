@@ -114,13 +114,12 @@ module NattyUI
       end
 
       # Remove ANSI attribtes from given string.
-      # This will only remove attributes and colors, not other control codes.
       #
       # @see embellish
       #
       # @param str [#to_s] string to be modified
       # @return [String] string without ANSI attributes
-      def blemish(str) = str.to_s.gsub(/(\x1b\[(?~m)m)/, '')
+      def blemish(str) = str.to_s.gsub(/(\x1b\[(?~[a-zA-Z])[a-zA-Z])/, '')
 
       # Combine given ANSI `attributes`.
       #
