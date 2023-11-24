@@ -232,6 +232,21 @@ module NattyUI
     end
     private_constant :Progress
 
+    class Table < Table
+      protected
+
+      def initialize(...)
+        super
+        @suffix = Ansi.reset
+      end
+
+      def seperator(type) = "#{PREFIX}#{super}#{Ansi.reset}"
+      def row_seperator(type, col_widths) = "#{COLOR}#{super}"
+
+      COLOR = Ansi[39].freeze
+      PREFIX = "#{Ansi.reset}#{COLOR}".freeze
+    end
+
     PAGE_BEGIN =
       "#{Ansi.reset}#{Ansi.cursor_save_pos}#{Ansi.screen_save}" \
         "#{Ansi.cursor_home}#{Ansi.screen_erase}".freeze

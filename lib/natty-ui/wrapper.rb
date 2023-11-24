@@ -10,6 +10,7 @@ require_relative 'wrapper/progress'
 require_relative 'wrapper/query'
 require_relative 'wrapper/request'
 require_relative 'wrapper/section'
+require_relative 'wrapper/table'
 require_relative 'wrapper/task'
 
 module NattyUI
