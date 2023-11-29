@@ -33,4 +33,11 @@ unless answer
   UI.failed 'aborted'
   exit false
 end
-UI.info "Your answer: #{answer}"
+UI.info "Your answer: #{answer.inspect}"
+
+answer = UI.request('What is your current password?', password: true)
+unless answer
+  UI.failed 'aborted'
+  exit false
+end
+UI.info "I'll keep your secret!"

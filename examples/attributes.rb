@@ -4,9 +4,6 @@ require 'natty-ui'
 
 UI = NattyUI::StdOut
 
-# helper:
-def hex(int) = int.to_s(16).rjust(2, '0')
-
 UI.space
 UI.h1 'NattyUI ANSI Attributes Demo', <<~TEXT
 
@@ -28,17 +25,17 @@ UI.h2 'Attributes', <<~TEXT
 
   Different font types are very rarely displayed:
 
-    - [[primary_font]]primary_font[[/]]
-    - [[font1]]font1[[/]]
-    - [[font2]]font2[[/]]
-    - [[font3]]font3[[/]]
-    - [[font4]]font4[[/]]
-    - [[font5]]font5[[/]]
-    - [[font6]]font6[[/]]
-    - [[font7]]font7[[/]]
-    - [[font8]]font8[[/]]
-    - [[font9]]font9[[/]]
-    - [[fraktur]]fraktur[[/]]
+    • [[primary_font]]primary_font[[/]]
+    • [[font1]]font1[[/]]
+    • [[font2]]font2[[/]]
+    • [[font3]]font3[[/]]
+    • [[font4]]font4[[/]]
+    • [[font5]]font5[[/]]
+    • [[font6]]font6[[/]]
+    • [[font7]]font7[[/]]
+    • [[font8]]font8[[/]]
+    • [[font9]]font9[[/]]
+    • [[fraktur]]fraktur[[/]]
 
 TEXT
 
@@ -56,25 +53,24 @@ UI.h2 '8-bit Colors' do |sec|
   sec.puts 'There are 256 pre-defined color which can be used by their index:'
   sec.space
 
-  colors_std = 0.upto(15).map { |i| hex(i) }
-  colors216 = 16.upto(231).lazy.map { |i| hex(i) }
-  colors_gray1 = 232.upto(243).map { |i| hex(i) }
-  colors_gray2 = 244.upto(255).map { |i| hex(i) }
+  # helper:
+  colors_std = 0.upto(15)
+  colors216 = 16.upto(231).lazy
+  colors_gray1 = 232.upto(243)
+  colors_gray2 = 244.upto(255)
+  as_color = ->(i) { "[[#{i = i.to_s(16).rjust(2, '0')}]] #{i} [[/]]" }
+  as_bgcolor = ->(i) { "[[on:#{i.to_s(16).rjust(2, '0')}]] #{i} [[/]]" }
 
-  sec.puts colors_std.map { |i| "[[#{i}]] #{i} [[/]]" }.join
-  colors216.each_slice(18) do |slice|
-    sec.puts slice.map { |i| "[[#{i}]] #{i} [[/]]" }.join
-  end
-  sec.puts colors_gray1.map { |i| "[[#{i}]] #{i} [[/]]" }.join
-  sec.puts colors_gray2.map { |i| "[[#{i}]] #{i} [[/]]" }.join
+  sec.puts colors_std.map(&as_color).join
+  colors216.each_slice(18) { |slice| sec.puts slice.map(&as_color).join }
+  sec.puts colors_gray1.map(&as_color).join
+  sec.puts colors_gray2.map(&as_color).join
 
   sec.space
-  sec.puts colors_std.map { |i| "[[on:#{i}]] #{i} [[/]]" }.join
-  colors216.each_slice(18) do |slice|
-    sec.puts slice.map { |i| "[[on:#{i}]] #{i} [[/]]" }.join
-  end
-  sec.puts colors_gray1.map { |i| "[[on:#{i}]] #{i} [[/]]" }.join
-  sec.puts colors_gray2.map { |i| "[[on:#{i}]] #{i} [[/]]" }.join
+  sec.puts colors_std.map(&as_bgcolor).join
+  colors216.each_slice(18) { |slice| sec.puts slice.map(&as_bgcolor).join }
+  sec.puts colors_gray1.map(&as_bgcolor).join
+  sec.puts colors_gray2.map(&as_bgcolor).join
 end
 
 UI.space

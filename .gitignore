@@ -3,4 +3,6 @@ pkg/
 local/
 doc/
 .yardoc/
-Gemfile.lock
+.vscode/
+*.lock
+.rubocop.*

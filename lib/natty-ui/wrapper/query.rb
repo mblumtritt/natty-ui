@@ -47,7 +47,7 @@ module NattyUI
     class Query < Element
       protected
 
-      def _call(question, choices, kw_choices, result_typye)
+      def _call(question, choices, kw_choices, result_type)
         choices = grab(choices, kw_choices)
         return if choices.empty?
         wrapper.temporary do
@@ -58,17 +58,17 @@ module NattyUI
             title: question,
             symbol: :query
           )
-          read(choices, result_typye)
+          read(choices, result_type)
         end
       end
 
-      def read(choices, result_typye)
+      def read(choices, result_type)
         while true
           char = NattyUI.in_stream.getch
           return if "\3\4\e".include?(char)
           next unless choices.key?(char)
-          return char if result_typye == :char
-          return choices[char] if result_typye == :choice
+          return char if result_type == :char
+          return choices[char] if result_type == :choice
           return char, choices[char]
         end
       end

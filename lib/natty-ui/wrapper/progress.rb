@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'element'
-require_relative '../mixins'
+require_relative 'mixins'
 
 module NattyUI
   module Features
@@ -29,8 +29,8 @@ module NattyUI
 
       protected
 
-      def initialize(parent, title:, max_value:, **_)
-        super(parent)
+      def initialize(parent, title:, max_value:, **opts)
+        super(parent, **opts)
         @final_text = [title]
         @max_value = [0, max_value.to_f].max if max_value
         @value = 0

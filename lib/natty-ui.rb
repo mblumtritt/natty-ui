@@ -25,7 +25,7 @@ module NattyUI
   class << self
     # @see .valid_in?
     # @return [IO] IO stream used to read input
-    # @raise TypeError when a non-readable stream will be assigned
+    # @raise [TypeError] when a non-readable stream will be assigned
     attr_reader :in_stream
 
     # @param [IO] stream to read input
@@ -44,7 +44,7 @@ module NattyUI
     # @param [Boolean, :auto] ansi whether ANSI should be supported
     #   or automatically selected
     # @return [Wrapper] wrapper for the given `stream`
-    # @raise TypeError when `stream` is not a writable stream
+    # @raise [TypeError] when `stream` is not a writable stream
     def new(stream, ansi: :auto)
       unless valid_out?(stream)
         raise(TypeError, "writable IO required  - #{stream.inspect}")
@@ -77,10 +77,9 @@ module NattyUI
     # Translate embedded attribute descriptions into ANSI control codes.
     #
     # @param [#to_s] str string to edit
-    # @return ]String] edited string
+    # @return [String] edited string
     def embellish(str)
-      str = str.to_s
-      return +'' if str.empty?
+      return +'' if (str = str.to_s).empty?
       reset = false
       ret =
         str.gsub(/(\[\[((?~\]\]))\]\])/) do
@@ -105,11 +104,8 @@ module NattyUI
         .to_s
         .gsub(/(\[\[((?~\]\]))\]\])/) do
           match = Regexp.last_match[2]
-          unless match.delete_prefix!('/')
-            ansi = Ansi.try_convert(match)
-            next ansi ? nil : "[[#{match}]]"
-          end
-          match.empty? ? nil : "[[#{match}]]"
+          next match.empty? ? nil : "[[#{match}]]" if match.delete_prefix!('/')
+          Ansi.try_convert(match) ? nil : "[[#{match}]]"
         end
     end
 
@@ -119,8 +115,7 @@ module NattyUI
     # @param [#to_s] str string to calculate
     # @return [Integer] the display size
     def display_width(str)
-      str = str.to_s
-      str.empty? ? 0 : Reline::Unicode.calculate_width(str)
+      (str = str.to_s).empty? ? 0 : Reline::Unicode.calculate_width(str)
     end
 
     # Convert given arguments into strings and yield each line.
@@ -137,12 +132,11 @@ module NattyUI
     #   @return [Enumerator] line enumerator
     def each_line(*strs, max_width: nil, &block)
       return to_enum(__method__, *strs, max_width: max_width) unless block
-      unless max_width
+      if max_width.nil?
         strs.each { |str| str.to_s.each_line(chomp: true, &block) }
         return nil
       end
-      max_width = max_width.to_i
-      return if max_width <= 0
+      return if (max_width = max_width.to_i) <= 0
       strs.each do |str|
         str
           .to_s

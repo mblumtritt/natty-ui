@@ -26,6 +26,6 @@ Gem::Specification.new do |spec|
 
   spec.required_ruby_version = '>= 3.0'
 
-  spec.files = Dir['lib/**/*'] + Dir['examples/**/*']
+  spec.files = (Dir['lib/**/*'] + Dir['examples/**/*']) << '.yardopts'
   spec.extra_rdoc_files = %w[README.md LICENSE]
 end

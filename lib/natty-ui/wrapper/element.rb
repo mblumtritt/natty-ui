@@ -49,7 +49,7 @@ module NattyUI
         @wrapper
       end
 
-      def initialize(parent) = (@parent = parent)
+      def initialize(parent, **_) = (@parent = parent)
 
       def _close(state)
         return self if @status

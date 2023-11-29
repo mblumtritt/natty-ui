@@ -92,8 +92,8 @@ module NattyUI
 
       protected
 
-      def initialize(parent, prefix: nil, suffix: nil, **_)
-        super(parent)
+      def initialize(parent, prefix: nil, suffix: nil, **opts)
+        super(parent, **opts)
         @prefix = prefix
         @suffix = suffix
       end

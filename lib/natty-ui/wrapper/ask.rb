@@ -59,7 +59,7 @@ module NattyUI
       def read(yes, no)
         while true
           char = NattyUI.in_stream.getch
-          return if "\u0003\u0004\e".include?(char)
+          return if "\3\4\e".include?(char)
           return true if yes.include?(char)
           return false if no.include?(char)
         end

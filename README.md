@@ -92,4 +92,3 @@ Since I did not complete the tests and not all my ideas are already implemented 
 
 - add more samples to help
 - add more tests
-- password prompt
