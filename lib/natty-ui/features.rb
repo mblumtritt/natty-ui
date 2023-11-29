@@ -23,8 +23,8 @@ module NattyUI
     def _plain_width(str) = NattyUI.display_width(NattyUI.plain(str))
     def _blemish_width(str) = NattyUI.display_width(Ansi.blemish(str))
 
-    def _element(type, *args)
-      wrapper.class.const_get(type).__send__(:new, self).__send__(:_call, *args)
+    def _element(type, ...)
+      wrapper.class.const_get(type).__send__(:new, self).__send__(:_call, ...)
     end
 
     def _section(owner, type, args, **opts, &block)
