@@ -2,5 +2,5 @@
 
 module NattyUI
   # @return [String] the version number of the gem
-  VERSION = '0.7.0alpha'
+  VERSION = '0.7.0'
 end
