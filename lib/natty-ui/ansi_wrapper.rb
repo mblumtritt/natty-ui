@@ -41,29 +41,26 @@ module NattyUI
       protected
 
       def title_attr(str, symbol)
-        color = COLORS[symbol]
         {
-          prefix:
-            if color
-              "#{Ansi[:bold, :italic, color]}#{str}" \
-                "#{Ansi[:reset, :bold, color]} "
-            else
-              "#{Ansi[:bold, 231]}#{str} "
-            end,
+          prefix: "#{Ansi[:bold, :italic, COLOR[symbol]]}#{str}#{ITALIC_OFF} ",
           suffix: Ansi.reset
         }
       end
 
-      COLORS = {
-        default: 231,
-        information: 117,
-        warning: 220,
-        error: 196,
-        completed: 46,
-        failed: 198,
-        query: 220,
-        task: 117
-      }.compare_by_identity.freeze
+      ITALIC_OFF = Ansi[:italic_off].freeze
+      COLOR =
+        {
+          information: 117,
+          warning: 220,
+          error: 196,
+          completed: 46,
+          failed: 198,
+          query: 220,
+          task: 117
+        }.tap do |h|
+          h.default = 231
+          h.compare_by_identity.freeze
+        end
     end
     private_constant :Message
 
@@ -101,10 +98,10 @@ module NattyUI
 
       def enclose(weight)
         prefix, suffix = super
-        ["#{PREFIX}#{prefix}#{MSG}", "#{PREFIX}#{suffix}#{Ansi.reset}"]
+        ["#{COLOR}#{prefix}#{MSG}", "#{COLOR}#{suffix}#{Ansi.reset}"]
       end
 
-      PREFIX = Ansi[39].freeze
+      COLOR = Ansi[39].freeze
       MSG = Ansi[:bold, 231].freeze
     end
     private_constant :Heading
@@ -211,8 +208,7 @@ module NattyUI
       end
 
       def end_draw = (wrapper.stream << ERASE).flush
-      def indicator = '─╲│╱'[(@indicator += 1) % 4]
-      # def indicator = '⣷⣯⣟⡿⢿⣻⣽⣾'[(@indicator += 1) % 8]
+      def indicator = '◐◓◑◒'[(@indicator += 1) % 4]
 
       def fullbar
         percent = @value / @max_value
