@@ -20,7 +20,7 @@ UI.h2 'Feature: ANSI Colors and Attributes', <<~TEXT
 
   You can not only color your text but also [[italic]]modify[[/]], [[underline]]decorate[[/]] and [[strike]]manipulate[[/]]
   it. The attributes are direct embedded into the text like '[[/bold red]]'
-  and can be resetted with '[[//]]' or at the line end.
+  and can be reset with '[[//]]' or at the line end.
 
 TEXT
 

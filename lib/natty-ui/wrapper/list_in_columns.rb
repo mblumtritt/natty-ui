@@ -30,9 +30,9 @@ module NattyUI
         return parent if list.empty?
         list.map! { |item| Item.new(item = item.to_s, _plain_width(item)) }
         if compact
-          each_compacted(list, available_width) { |line| parent.puts(line) }
+          each_compacted(list, available_width) { parent.puts(_1) }
         else
-          each(list, available_width) { |line| parent.puts(line) }
+          each(list, available_width) { parent.puts(_1) }
         end
         parent
       end
@@ -40,7 +40,7 @@ module NattyUI
       def each(list, max_width)
         width = list.max_by(&:width).width + 3
         list.each_slice(max_width / width) do |slice|
-          yield(slice.map { |item| item.to_s(width) }.join)
+          yield(slice.map { _1.to_s(width) }.join)
         end
       end
 
@@ -58,7 +58,7 @@ module NattyUI
         widths = [list.max_by(&:width).width]
         1.upto(list.size - 1) do |slice_size|
           candidate = list.each_slice(list.size / slice_size).to_a
-          cwidths = candidate.map { |ary| ary.max_by(&:width).width + 3 }
+          cwidths = candidate.map { _1.max_by(&:width).width + 3 }
           cwidths[-1] -= 3
           break if cwidths.sum > max_width
           found = candidate
@@ -73,7 +73,7 @@ module NattyUI
       end
 
       Item =
-        Data.define(:str, :width) do
+        Struct.new(:str, :width) do
           def to_s(in_width) = "#{str}#{' ' * (in_width - width)}"
         end
     end

@@ -55,7 +55,7 @@ UI.h2 '8-bit Colors' do |sec|
 
   # helper:
   colors_std = 0.upto(15)
-  colors216 = 16.upto(231).lazy
+  colors216 = 16.upto(231)
   colors_gray1 = 232.upto(243)
   colors_gray2 = 244.upto(255)
   as_color = ->(i) { "[[#{i = i.to_s(16).rjust(2, '0')}]] #{i} [[/]]" }

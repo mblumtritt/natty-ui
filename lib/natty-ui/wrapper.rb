@@ -76,7 +76,7 @@ module NattyUI
     # @param [#to_i] lines count of lines
     # @return [Wrapper] itself
     def space(lines = 1)
-      lines = [lines.to_i, 1].max
+      lines = [1, lines.to_i].max
       @lines_written += lines
       (@stream << ("\n" * lines)).flush
       self
