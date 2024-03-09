@@ -90,5 +90,5 @@ NattyUI follows the [NO_COLOR convention](https://no-color.org).
 
 Since I did not complete the tests and not all my ideas are already implemented I have this Todo list:
 
-- add more samples to help
 - add more tests
+- add more samples to help

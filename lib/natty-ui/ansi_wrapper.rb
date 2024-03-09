@@ -49,17 +49,18 @@ module NattyUI
 
       ITALIC_OFF = Ansi[:italic_off].freeze
       COLOR =
-        {
-          information: 117,
-          warning: 220,
-          error: 196,
-          completed: 46,
-          failed: 198,
-          query: 220,
-          task: 117
-        }.tap do |h|
-          h.default = 231
-          h.compare_by_identity.freeze
+        begin
+          ret = {
+            information: 117,
+            warning: 220,
+            error: 196,
+            completed: 46,
+            failed: 198,
+            query: 220,
+            task: 117
+          }
+          ret.default = 231
+          ret.compare_by_identity.freeze
         end
     end
     private_constant :Message
