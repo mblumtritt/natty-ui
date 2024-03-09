@@ -94,20 +94,19 @@ module NattyUI
       protected
 
       def initialize(parent, title:, symbol:, **opts)
-        parent.puts(title, **title_attr(str = as_symbol_str(symbol), symbol))
+        parent.puts(title, **title_attr(str = SYMBOL[symbol] || symbol, symbol))
         super(parent, prefix: ' ' * (NattyUI.display_width(str) + 1), **opts)
       end
 
       def title_attr(str, _symbol) = { prefix: "#{str} " }
-      def as_symbol_str(symbol) = (SYMBOL[symbol] || symbol)
 
       SYMBOL = {
         default: '•',
-        information: 'i',
+        information: '𝒊',
         warning: '!',
-        error: 'X',
+        error: '𝙓',
         completed: '✓',
-        failed: 'F',
+        failed: '𝑭',
         query: '▶︎',
         task: '➔'
       }.compare_by_identity.freeze

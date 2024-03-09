@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative '../helper'
-
 RSpec.describe 'NattyUI::VERSION' do
   subject(:version) { NattyUI::VERSION }
 

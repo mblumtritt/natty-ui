@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative '../helper'
-
 RSpec.describe 'NattyUI::AnsiWrapper' do
   subject(:ui) { NattyUI.new(stream, ansi: true) }
 

@@ -75,12 +75,12 @@ module NattyUI
 
       def grab(choices, kw_choices)
         Array
-          .new(choices.size) { |i| i + 1 }
+          .new(choices.size) { _1 + 1 }
           .zip(choices)
           .to_h
           .merge!(kw_choices)
-          .transform_keys! { |k| [k.to_s[0], ' '].max }
-          .transform_values! { |v| v.to_s.tr("\r\n\t", ' ') }
+          .transform_keys! { [_1.to_s[0], ' '].max }
+          .transform_values! { _1.to_s.tr("\r\n\t", ' ') }
       end
     end
   end

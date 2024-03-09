@@ -110,7 +110,7 @@ module NattyUI
       # @return [String] `obj` converted and decorated with the ANSI `attributes`
       def embellish(obj, *attributes, reset: true)
         attributes = self[*attributes]
-        attributes.empty? ? "#{obj}" : "#{attributes}#{obj}#{"\e[0m" if reset}"
+        attributes.empty? ? obj.to_s : "#{attributes}#{obj}#{"\e[0m" if reset}"
       end
 
       # Remove ANSI attribtes from given string.
@@ -229,9 +229,7 @@ module NattyUI
       def try_convert(attributes)
         return if (attributes = attributes.to_s.split).empty?
         "\e[#{
-          attributes
-            .map { |arg| ATTRIBUTES[arg] || color(arg) || return }
-            .join(';')
+          attributes.map { ATTRIBUTES[_1] || color(_1) || return }.join(';')
         }m"
       end
 
@@ -433,7 +431,7 @@ module NattyUI
         ul_bright_magenta: '58;2;255;0;255',
         ul_bright_cyan: '58;2;0;255;255',
         ul_bright_white: '58;2;255;255;255'
-      }.tap { |ret| ret.merge!(ret.transform_keys(&:to_s)).freeze }
+      }.tap { _1.merge!(_1.transform_keys(&:to_s)).freeze }
     private_constant :ATTRIBUTES
   end
 end

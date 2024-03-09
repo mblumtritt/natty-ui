@@ -133,7 +133,7 @@ module NattyUI
     def each_line(*strs, max_width: nil, &block)
       return to_enum(__method__, *strs, max_width: max_width) unless block
       if max_width.nil?
-        strs.each { |str| str.to_s.each_line(chomp: true, &block) }
+        strs.each { _1.to_s.each_line(chomp: true, &block) }
         return nil
       end
       return if (max_width = max_width.to_i) <= 0

@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative 'helper'
-
 RSpec.describe NattyUI do
   describe '.in_stream' do
     it 'is STDIN by default' do
