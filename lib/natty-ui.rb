@@ -90,9 +90,9 @@ module NattyUI
           end
           match.empty? or next "[[#{match}]]"
           reset = false
-          Ansi.reset
+          Ansi::RESET
         end
-      reset ? "#{ret}#{Ansi.reset}" : ret
+      reset ? "#{ret}#{Ansi::RESET}" : ret
     end
 
     # Remove embedded attribute descriptions from given string.

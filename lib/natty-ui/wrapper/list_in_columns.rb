@@ -74,8 +74,11 @@ module NattyUI
 
       Item =
         Struct.new(:str, :width) do
+          # @!visibility private
           def to_s(in_width) = "#{str}#{' ' * (in_width - width)}"
         end
+
+      private_constant :Item
     end
   end
 end
