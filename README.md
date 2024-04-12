@@ -13,30 +13,28 @@ Here you find elegant, simple and beautiful tools that enhance your command line
 You can simply decorate your text with named ANSI attributes and colors
 
 ```ruby
-UI = NattyUI::StdOut
-
-UI.puts "[[bold]]Hello [[ff7bfd]]World[[/]]!"
+ui.puts "[[bold]]Hello [[ff7bfd]]World[[/]]!"
 ```
 
 or use different types of messages
 
 ```ruby
-UI.info 'NattyUI installed'
-UI.warning 'Nice gem found!'
+ui.info 'NattyUI installed'
+ui.warning 'Nice gem found!'
 ```
 
 and headings
 
 ```ruby
-UI.h1 'The Main Title (TMT)'
-UI.h2 'A Subtitle'
+ui.h1 'The Main Title (TMT)'
+ui.h2 'A Subtitle'
 ```
 
 and framed sections
 
 ```ruby
-UI.framed 'Text Below In Frame' do |framed|
-  framed.puts 'This is the text'
+ui.framed 'Text Below In Frame' do
+  ui.puts 'This is the text'
 end
 ```
 

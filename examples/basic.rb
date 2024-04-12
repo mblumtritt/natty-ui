@@ -2,17 +2,15 @@
 
 require 'natty-ui'
 
-UI = NattyUI::StdOut
+ui.space
 
-UI.space
-
-UI.h1 'NattyUI Basic Feature Demo', <<~TEXT
+ui.h1 'NattyUI Basic Feature Demo', <<~TEXT
 
   This is a short demo of the basic features of [[75 bold]]NattyUI[[/]].
 
 TEXT
 
-UI.h2 'Feature: ANSI Colors and Attributes', <<~TEXT
+ui.h2 'Feature: ANSI Colors and Attributes', <<~TEXT
 
   Like you might noticed you can [[57]]color [[d7]]text[[/]] for terminals supporting this
   feature. You can enforece the non-ANSI version by setting the environment
@@ -24,8 +22,8 @@ UI.h2 'Feature: ANSI Colors and Attributes', <<~TEXT
 
 TEXT
 
-UI.h2 'Feature: Sections' do |sec|
-  sec.puts <<~TEXT
+ui.h2 'Feature: Sections' do
+  ui.puts <<~TEXT
 
     Sections group text lines together and/or define their style. There are
     several section types which all can be stacked.
@@ -33,22 +31,30 @@ UI.h2 'Feature: Sections' do |sec|
     Have a look at the different types of sections:
 
   TEXT
-  sec.message 'Generic Message'
-  sec.information 'Informational Message'
-  sec.warning 'Warning Message'
-  sec.error 'Error Message'
-  sec.completed 'Completion Message'
-  sec.failed 'Failure Message'
-  sec.msg '[[d5]]Customized Message', symbol: '◉'
-  sec.space
 
-  sec.puts 'You can stack all kinds of sections together:'
-  sec.space
-  sec.framed('Rounded Frame') do |f1|
-    f1.framed('Heavy Framed', type: :heavy) do |f2|
-      f2.framed('Simple Frame', type: :simple) do |f3|
-        f3.framed('Double Framed Section', type: :double) do |f4|
-          f4.message(
+  ui.message 'Generic Message'
+
+  ui.information 'Informational Message'
+
+  ui.warning 'Warning Message'
+
+  ui.error 'Error Message'
+
+  ui.completed 'Completion Message'
+
+  ui.failed 'Failure Message'
+
+  ui.msg '[[d5]]Customized Message', symbol: '◉'
+
+  ui.space
+  ui.puts 'You can stack all kinds of sections together:'
+  ui.space
+
+  ui.framed('Rounded Frame') do
+    ui.framed('Heavy Framed', type: :heavy) do
+      ui.framed('Simple Frame', type: :simple) do
+        ui.framed('Double Framed Section', type: :double) do
+          ui.message(
             '[[fff400]]Frames are nice',
             "Just to show you that all sections\ncan be stacked...",
             symbol: '💛'
@@ -59,4 +65,4 @@ UI.h2 'Feature: Sections' do |sec|
   end
 end
 
-UI.space
+ui.space

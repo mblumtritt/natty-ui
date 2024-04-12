@@ -2,10 +2,8 @@
 
 require 'natty-ui'
 
-UI = NattyUI::StdOut
-
-UI.space
-UI.h1 'NattyUI ANSI Attributes Demo', <<~TEXT
+ui.space
+ui.h1 'NattyUI ANSI Attributes Demo', <<~TEXT
 
   This text contains all supported ANSI attrubtes and explains the available
   colors.
@@ -16,7 +14,7 @@ UI.h1 'NattyUI ANSI Attributes Demo', <<~TEXT
 
 TEXT
 
-UI.h2 'Attributes', <<~TEXT
+ui.h2 'Attributes', <<~TEXT
 
   Some attributes are widely supported, such as [[bold]]bold[[/]], [[italic]]italic[[/]], [[underline]]underline[[/]], [[blink]]blink[[/]],
   [[invert]]invert[[/]] and [[strike]]strike[[/]], while others are rarely complete or correctly implemented,
@@ -39,19 +37,19 @@ UI.h2 'Attributes', <<~TEXT
 
 TEXT
 
-UI.h2 '3-bit and 4-bit Colors' do |sec|
-  sec.space
+ui.h2 '3-bit and 4-bit Colors' do
+  ui.space
   colors = %w[black red green yellow blue magenta cyan white].freeze
   (colors + colors.map { |name| "bright_#{name}" }).each do |name|
-    sec.puts "  [[#{name}]]#{name.ljust(14)}[[/]] [[on_#{name}]]sample text"
+    ui.puts "  [[#{name}]]#{name.ljust(14)}[[/]] [[on_#{name}]]sample text"
   end
 end
-UI.space
+ui.space
 
-UI.h2 '8-bit Colors' do |sec|
-  sec.space
-  sec.puts 'There are 256 pre-defined color which can be used by their index:'
-  sec.space
+ui.h2 '8-bit Colors' do
+  ui.space
+  ui.puts 'There are 256 pre-defined color which can be used by their index:'
+  ui.space
 
   # helper:
   colors_std = 0.upto(15)
@@ -61,21 +59,21 @@ UI.h2 '8-bit Colors' do |sec|
   as_color = ->(i) { "[[#{i = i.to_s(16).rjust(2, '0')}]] #{i} [[/]]" }
   as_bgcolor = ->(i) { "[[on:#{i.to_s(16).rjust(2, '0')}]] #{i} [[/]]" }
 
-  sec.puts colors_std.map(&as_color).join
-  colors216.each_slice(18) { |slice| sec.puts slice.map(&as_color).join }
-  sec.puts colors_gray1.map(&as_color).join
-  sec.puts colors_gray2.map(&as_color).join
+  ui.puts colors_std.map(&as_color).join
+  colors216.each_slice(18) { |slice| ui.puts slice.map(&as_color).join }
+  ui.puts colors_gray1.map(&as_color).join
+  ui.puts colors_gray2.map(&as_color).join
 
-  sec.space
-  sec.puts colors_std.map(&as_bgcolor).join
-  colors216.each_slice(18) { |slice| sec.puts slice.map(&as_bgcolor).join }
-  sec.puts colors_gray1.map(&as_bgcolor).join
-  sec.puts colors_gray2.map(&as_bgcolor).join
+  ui.space
+  ui.puts colors_std.map(&as_bgcolor).join
+  colors216.each_slice(18) { |slice| ui.puts slice.map(&as_bgcolor).join }
+  ui.puts colors_gray1.map(&as_bgcolor).join
+  ui.puts colors_gray2.map(&as_bgcolor).join
 end
 
-UI.space
-UI.h2 '24-bit colors' do |sec|
-  sec.puts <<~TEXT
+ui.space
+ui.h2 '24-bit colors' do
+  ui.puts <<~TEXT
 
     Modern terminal applications support 24-bit colors for foreground and background
     RGB-color values. Here are just some samples:
@@ -84,15 +82,13 @@ UI.h2 '24-bit colors' do |sec|
 
   some_rgb = DATA.readlines(chomp: true).lazy.each_slice(8)
 
+  some_rgb.each { |slice| ui.puts slice.map { |v| " [[#{v}]]#{v}[[/]] " }.join }
+  ui.space
   some_rgb.each do |slice|
-    sec.puts slice.map { |v| " [[#{v}]]#{v}[[/]] " }.join
-  end
-  sec.space
-  some_rgb.each do |slice|
-    sec.puts slice.map { |v| " [[on:#{v}]]#{v}[[/]] " }.join
+    ui.puts slice.map { |v| " [[on:#{v}]]#{v}[[/]] " }.join
   end
 end
-UI.space
+ui.space
 
 __END__
 #800000

@@ -59,11 +59,14 @@ module NattyUI
       end
 
       def _call
+        NattyUI.instance_variable_set(:@element, self)
         @raise = true
         yield(self)
         close unless closed?
       rescue BREAK
         nil
+      ensure
+        NattyUI.instance_variable_set(:@element, @parent)
       end
 
       BREAK = Class.new(StandardError)

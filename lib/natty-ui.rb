@@ -28,6 +28,9 @@ module NattyUI
     # @raise [TypeError] when a non-readable stream will be assigned
     attr_reader :in_stream
 
+    # @return [Wrapper, Wrapper::Element] active UI element
+    attr_reader :element
+
     # @param [IO] stream to read input
     def in_stream=(stream)
       unless valid_in?(stream)
@@ -196,5 +199,10 @@ module NattyUI
   # Instance for standard error output.
   StdErr = stderr_is_stdout? ? StdOut : new(STDERR)
 
+  @element = StdOut
   self.in_stream = STDIN
 end
+
+# @see NattyUI.element
+# @return [NattyUI::Wrapper, NattyUI::Wrapper::Element] active UI element
+def ui = NattyUI.element unless defined?(ui)
