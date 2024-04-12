@@ -26,8 +26,8 @@ module NattyUI
       protected
 
       def _call(list, compact)
-        list.flatten!
         return parent if list.empty?
+        list.flatten!
         list.map! { |item| Item.new(item = item.to_s, _plain_width(item)) }
         if compact
           each_compacted(list, available_width) { parent.puts(_1) }

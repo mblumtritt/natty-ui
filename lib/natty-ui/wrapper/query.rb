@@ -79,7 +79,7 @@ module NattyUI
           .zip(choices)
           .to_h
           .merge!(kw_choices)
-          .transform_keys! { [_1.to_s[0], ' '].max }
+          .transform_keys! { [' ', _1.to_s[0]].max }
           .transform_values! { _1.to_s.tr("\r\n\t", ' ') }
       end
     end

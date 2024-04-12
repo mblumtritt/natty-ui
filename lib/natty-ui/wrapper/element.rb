@@ -31,7 +31,7 @@ module NattyUI
       private :_to_s
 
       # @!visibility private
-      def inspect = "#{_to_s[..-2]} status=#{@status}}}>"
+      def inspect = @status ? "#{_to_s[..-2]} status=#{@status}>" : _to_s
 
       protected
 
