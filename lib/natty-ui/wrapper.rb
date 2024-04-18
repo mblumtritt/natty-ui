@@ -28,22 +28,15 @@ module NattyUI
 
     # @attribute [r] screen_size
     # @return [[Integer, Integer]] screen size as rows and columns
-    def screen_size
-      return @stream.winsize if @ws
-      [ENV['LINES'].to_i.nonzero? || 24, ENV['COLUMNS'].to_i.nonzero? || 80]
-    end
+    def screen_size = (@screen_size ||= determine_screen_size)
 
     # @attribute [r] screen_rows
     # @return [Integer] number of screen rows
-    def screen_rows
-      @ws ? @stream.winsize[0] : (ENV['LINES'].to_i.nonzero? || 24)
-    end
+    def screen_rows = screen_size[0]
 
     # @attribute [r] screen_columns
     # @return [Integer] number of screen columns
-    def screen_columns
-      @ws ? @stream.winsize[-1] : (ENV['COLUMNS'].to_i.nonzero? || 80)
-    end
+    def screen_columns = screen_size[1]
 
     # @!group Tool functions
 
@@ -148,9 +141,6 @@ module NattyUI
     def initialize(stream)
       @stream = stream
       @lines_written = 0
-      @ws = stream.respond_to?(:winsize) && stream.winsize&.all?(&:positive?)
-    rescue Errno::ENOTTY
-      @ws = false
     end
 
     def embellish(obj) = (obj = NattyUI.plain(obj)).empty? ? nil : obj
@@ -166,5 +156,42 @@ module NattyUI
     alias available_width screen_columns
 
     private_class_method :new
+
+    private
+
+    def determine_screen_size
+      return @stream.winsize if @ws
+      if @ws.nil?
+        ret = try_fetch_winsize
+        if ret
+          @ws = true
+          Signal.trap('WINCH') { @screen_size = nil }
+          return ret
+        end
+        @ws = false
+      end
+      [ENV['LINES'].to_i.nonzero? || 24, ENV['COLUMNS'].to_i.nonzero? || 80]
+    end
+
+    def try_fetch_winsize
+      return unless @stream.respond_to?(:winsize)
+      ret = @stream.winsize
+      ret&.all?(&:positive?) ? ret : nil
+    rescue Errno::ENOTTY
+      nil
+    end
+
+    GLYPHS = {
+      default: '[[bold ff]]•[[/]]',
+      information: '[[bold italic 77]]𝒊[[/]]',
+      warning: '[[bold italic dd]]![[/]]',
+      error: '[[bold italic d0]]𝙓[[/]]',
+      completed: '[[bold italic 52]]✓[[/]]',
+      failed: '[[bold italic c4]]𝑭[[/]]',
+      query: '[[bold 52]]▸[[/]]',
+      task: '[[bold 51]]➔[[/]]'
+    }.compare_by_identity.freeze
+
+    private_constant :GLYPHS
   end
 end
