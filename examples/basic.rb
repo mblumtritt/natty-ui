@@ -44,7 +44,7 @@ ui.h2 'Feature: Sections' do
 
   ui.failed 'Failure Message'
 
-  ui.msg '[[d5]]Customized Message', symbol: '◉'
+  ui.msg '[[d5]]Customized Message', glyph: '👻'
 
   ui.space
   ui.puts 'You can stack all kinds of sections together:'

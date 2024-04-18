@@ -35,12 +35,18 @@ module NattyUI
 
       protected
 
+      def initialize(parent, **_) = (@parent = parent)
+      def finish = nil
+
       def prefix = "#{@parent.__send__(:prefix)}#{@prefix}"
       def suffix = "#{@suffix}#{@parent.__send__(:suffix)}"
-      def prefix_width = _blemish_width(prefix)
-      def suffix_width = _blemish_width(suffix)
-      def available_width = wrapper.screen_columns - prefix_width - suffix_width
-      def finish = nil
+      def prefix_width = _cleared_width(prefix)
+      def suffix_width = _cleared_width(suffix)
+
+      def available_width
+        @available_width ||=
+          wrapper.screen_columns - prefix_width - suffix_width
+      end
 
       def wrapper
         return @wrapper if @wrapper
@@ -49,7 +55,9 @@ module NattyUI
         @wrapper
       end
 
-      def initialize(parent, **_) = (@parent = parent)
+      def out!(str) = (wrapper.stream << str).flush
+      def out(str) = (wrapper.stream << wrapper.__send__(:embellish, str)).flush
+      def decorated(str) = wrapper.__send__(:embellish, str)
 
       def _close(state)
         return self if @status

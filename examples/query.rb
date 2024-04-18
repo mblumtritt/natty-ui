@@ -21,7 +21,7 @@ choice =
   ui.query(
     'Which fruits do you prefer?',
     'Apples',
-    'Bananas',
+    '[[yellow]]Bananas[[/]]',
     'Cherries',
     x: 'No fruits',
     result: :choice

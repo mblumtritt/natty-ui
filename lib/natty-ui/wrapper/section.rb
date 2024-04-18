@@ -52,6 +52,8 @@ module NattyUI
       #   @return [Section] itself
       def puts(*args, max_width: nil, prefix: nil, suffix: nil)
         return self if @status
+        max_width =
+          max_width ? [available_width, max_width].min : available_width
         @parent.puts(
           *args,
           max_width: max_width,
@@ -90,9 +92,7 @@ module NattyUI
       # @return [Object] block result
       def temporary = block_given? ? yield(self) : self
 
-      protected
-
-      def initialize(parent, prefix: nil, suffix: nil, **opts)
+      protected def initialize(parent, prefix: nil, suffix: nil, **opts)
         super(parent, **opts)
         @prefix = prefix
         @suffix = suffix

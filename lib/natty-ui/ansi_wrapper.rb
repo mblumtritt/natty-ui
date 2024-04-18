@@ -40,28 +40,24 @@ module NattyUI
     class Message < Message
       protected
 
-      def title_attr(str, symbol)
-        {
-          prefix: "#{Ansi[:bold, :italic, COLOR[symbol]]}#{str}#{ITALIC_OFF} ",
-          suffix: Ansi::RESET
-        }
+      def prefix_info(glyph)
+        color = COLOR[glyph] || 'ff'
+        glyph = wrapper.glyph(glyph)
+        [
+          _cleared_width(glyph) + 1,
+          { prefix: "#{glyph} [[bold #{color}]]", suffix: Ansi::RESET }
+        ]
       end
 
-      ITALIC_OFF = Ansi[:italic_off].freeze
-      COLOR =
-        begin
-          ret = {
-            information: 117,
-            warning: 220,
-            error: 196,
-            completed: 46,
-            failed: 198,
-            query: 220,
-            task: 117
-          }
-          ret.default = 231
-          ret.compare_by_identity.freeze
-        end
+      COLOR = {
+        information: '2d',
+        warning: 'dd',
+        error: 'd0',
+        completed: '52',
+        failed: 'c4',
+        query: '0b',
+        task: '51'
+      }.compare_by_identity.freeze
     end
     private_constant :Message
 
@@ -84,28 +80,13 @@ module NattyUI
         end
       end
 
-      protected
-
-      def initialize(parent, prefix_attr: nil, **opts)
+      protected def initialize(parent, prefix_attr: nil, **opts)
         super
         return unless @prefix && prefix_attr
         @prefix = Ansi.embellish(@prefix, *prefix_attr)
       end
     end
     private_constant :Section
-
-    class Heading < Heading
-      protected
-
-      def enclose(weight)
-        prefix, suffix = super
-        ["#{COLOR}#{prefix}#{MSG}", "#{COLOR}#{suffix}#{Ansi::RESET}"]
-      end
-
-      COLOR = Ansi[39].freeze
-      MSG = Ansi[:bold, 231].freeze
-    end
-    private_constant :Heading
 
     class Framed < Section
       protected
@@ -115,11 +96,11 @@ module NattyUI
         title = title.to_s.tr("\r\n\t", '')
         topl, topr, botl, botr, hor, vert = *components(type)
         width = available_width
-        rcount = [0, width - _plain_width(title) - 6].max
+        rcount = [0, width - _cleared_width(title) - 6].max
         parent.puts(
-          "#{COLOR}#{topl}#{hor}#{hor}#{Ansi::RESET} " \
-            "#{TITLE_ATTR}#{title}#{Ansi::RESET} " \
-            "#{COLOR}#{hor * rcount}#{topr}#{Ansi::RESET}"
+          "#{COLOR}#{topl}#{hor}#{hor}#{Ansi::RESET} #{
+            TITLE_ATTR
+          }#{title}#{Ansi::RESET} #{COLOR}#{hor * rcount}#{topr}#{Ansi::RESET}"
         )
         @bottom = "#{COLOR}#{botl}#{hor * (width - 2)}#{botr}#{Ansi::RESET}"
         vert = "#{COLOR}#{vert}#{Ansi::RESET}"
@@ -127,8 +108,9 @@ module NattyUI
           parent,
           prefix: "#{vert} ",
           suffix:
-            "#{Ansi::CURSOR_RIGHT_ALIGNED}" \
-              "#{Ansi.cursor_left(suffix_width)}#{vert}",
+            "#{Ansi::CURSOR_RIGHT_ALIGNED}#{
+              Ansi.cursor_left(suffix_width + 1)
+            } #{vert}",
           **opts
         )
       end
@@ -153,40 +135,15 @@ module NattyUI
     private_constant :Framed
 
     class Ask < Ask
-      protected
-
-      def query(question)
-        (
-          wrapper.stream << "#{prefix}#{PREFIX} #{question}#{Ansi::RESET} "
-        ).flush
-      end
-
-      def finish = (wrapper.stream << Ansi::LINE_CLEAR).flush
-
-      PREFIX = "#{Ansi[:bold, :italic, 220]}▶︎#{Ansi[:reset, 220]}".freeze
+      protected def finish = out!(Ansi::LINE_CLEAR)
     end
     private_constant :Ask
 
     class Request < Request
-      def prompt(question) = "#{prefix}#{PREFIX} #{question}#{Ansi::RESET} "
-      def finish = (wrapper.stream << FINISH).flush
-
-      PREFIX = "#{Ansi[:bold, :italic, 220]}▶︎#{Ansi[:reset, 220]}".freeze
+      protected def finish = out!(FINISH)
       FINISH = (Ansi::CURSOR_LINE_UP + Ansi::LINE_ERASE_TO_END).freeze
     end
     private_constant :Request
-
-    class Query < Query
-      protected
-
-      def read(choices, result_typye)
-        wrapper.stream << "#{prefix}#{PROMPT} "
-        super
-      end
-
-      PROMPT = Ansi.embellish(':', :bold, 220).freeze
-    end
-    private_constant :Query
 
     class Task < Message
       include ProgressAttributes

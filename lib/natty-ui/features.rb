@@ -11,7 +11,7 @@ module NattyUI
     # @return [Wrapper, Wrapper::Element] itself
     def hr(symbol = '═')
       symbol = symbol.to_s
-      size = _plain_width(symbol)
+      size = _cleared_width(symbol)
       return self if size.zero?
       msg = symbol * ((available_width - 1) / size)
       return puts(msg, prefix: Ansi[39], suffix: Ansi::RESET) if wrapper.ansi?
@@ -20,8 +20,8 @@ module NattyUI
 
     protected
 
-    def _plain_width(str) = NattyUI.display_width(NattyUI.plain(str))
-    def _blemish_width(str) = NattyUI.display_width(Ansi.blemish(str))
+    def _cleared(str) = Ansi.blemish(NattyUI.plain(str))
+    def _cleared_width(str) = NattyUI.display_width(_cleared(str))
 
     def _element(type, ...)
       wrapper.class.const_get(type).__send__(:new, self).__send__(:_call, ...)

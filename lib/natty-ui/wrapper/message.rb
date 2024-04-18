@@ -93,23 +93,17 @@ module NattyUI
     class Message < Section
       protected
 
-      def initialize(parent, title:, symbol:, **opts)
-        parent.puts(title, **title_attr(str = SYMBOL[symbol] || symbol, symbol))
-        super(parent, prefix: ' ' * (NattyUI.display_width(str) + 1), **opts)
+      def initialize(parent, title:, glyph:, **opts)
+        @parent = parent
+        prefix_width, attributes = prefix_info(glyph)
+        parent.puts(title, **attributes)
+        super(parent, prefix: ' ' * prefix_width, **opts)
       end
 
-      def title_attr(str, _symbol) = { prefix: "#{str} " }
-
-      SYMBOL = {
-        default: '•',
-        information: '𝒊',
-        warning: '!',
-        error: '𝙓',
-        completed: '✓',
-        failed: '𝑭',
-        query: '▶︎',
-        task: '➔'
-      }.compare_by_identity.freeze
+      def prefix_info(glyph)
+        glyph = wrapper.glyph(glyph)
+        [_cleared_width(glyph) + 1, { prefix: "#{glyph} " }]
+      end
     end
   end
 end

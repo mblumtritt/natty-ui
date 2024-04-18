@@ -54,6 +54,7 @@ module NattyUI
         @stream.puts(embellish("#{prefix}#{suffix}"))
         @lines_written += 1
       else
+        args.map! { embellish(_1) }
         NattyUI.each_line(*args, max_width: max_width) do |line|
           @stream.puts(embellish("#{prefix}#{line}#{suffix}"))
           @lines_written += 1
@@ -122,6 +123,12 @@ module NattyUI
     end
 
     # @!endgroup
+
+    # @return [String] the glyph
+    def glyph(name) = GLYPHS[name] || name
+
+    # @return [Array[Symbol]] available glyph names
+    def glyphs = GLYPHS.keys
 
     # @!visibility private
     attr_reader :lines_written

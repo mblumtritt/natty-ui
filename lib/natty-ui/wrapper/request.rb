@@ -24,20 +24,22 @@ module NattyUI
       protected
 
       def _call(question, password)
-        return read_password(question) if password
-        NattyUI.readline(prompt(question), stream: wrapper.stream)
+        prompt =
+          decorated(
+            "#{prefix}#{wrapper.glyph(:query)} [[bold 0b]]#{question}:[[/]] "
+          )
+        return read_password(prompt) if password
+        NattyUI.readline(prompt, stream: wrapper.stream)
       ensure
         finish
       end
 
-      def read_password(question)
-        (wrapper.stream << prompt(question)).flush
+      def read_password(prompt)
+        out!(prompt)
         NattyUI.in_stream.getpass
       rescue Interrupt
         nil
       end
-
-      def prompt(question) = "#{prefix}▶︎ #{question}: "
     end
   end
 end

@@ -43,18 +43,13 @@ module NattyUI
       protected
 
       def _call(question, yes, no)
-        yes, no = grab(yes, no)
-        query(question)
-        read(yes, no)
+        out("#{prefix}#{wrapper.glyph(:query)} [[bold 0b]]#{question}[[/]] ")
+        read(*grab(yes, no))
       ensure
         finish
       end
 
-      def query(question)
-        (wrapper.stream << prefix << "▶︎ #{question} ").flush
-      end
-
-      def finish = (wrapper.stream << "\n").flush
+      def finish = out!("\n")
 
       def read(yes, no)
         while true
