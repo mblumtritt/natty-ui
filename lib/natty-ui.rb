@@ -101,7 +101,7 @@ module NattyUI
     # Remove embedded attribute descriptions from given string.
     #
     # @param [#to_s] str string to edit
-    # @return ]String] edited string
+    # @return [String] edited string
     def plain(str)
       str
         .to_s
@@ -182,7 +182,9 @@ module NattyUI
 
     def wrapper_class(stream, ansi)
       return AnsiWrapper if ansi == true
-      return Wrapper if ansi == false || ENV.key?('NO_COLOR')
+      if ansi == false || ENV.key?('NO_COLOR') || ENV['TERM'] == 'dumb'
+        return Wrapper
+      end
       stream.tty? ? AnsiWrapper : Wrapper
     end
 

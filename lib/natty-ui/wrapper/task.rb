@@ -26,7 +26,7 @@ module NattyUI
       @parent = parent
       @temp = wrapper.temporary
       @final_text = [title]
-      super(parent, title: title, symbol: :task, **opts)
+      super(parent, title: title, glyph: :task, **opts)
     end
 
     def finish
@@ -37,7 +37,7 @@ module NattyUI
         :Message,
         @final_text,
         title: @final_text.shift,
-        symbol: @status = :completed
+        glyph: @status = :completed
       )
     end
   end

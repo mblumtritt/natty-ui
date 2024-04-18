@@ -13,13 +13,13 @@ module NattyUI
     # The default for `yes` includes `ENTER` and `RETURN` key
     #
     # @example
-    #   case sec.ask('Do you like the NattyUI gem?')
+    #   case ui.ask('Do you like the NattyUI gem?')
     #   when true
-    #     sec.info('Yeah!!')
+    #     ui.info('Yeah!!')
     #   when false
-    #     sec.write("That's pity!")
+    #     ui.write("That's pity!")
     #   else
-    #     sec.failed('You should have an opinion!')
+    #     ui.failed('You should have an opinion!')
     #   end
     #
     # @see NattyUI.in_stream
@@ -28,7 +28,7 @@ module NattyUI
     # @param yes [#to_s] chars which will be used to answer 'Yes'
     # @param no [#to_s] chars which will be used to answer 'No'
     # @return [Boolean] whether the answer is yes or no
-    # @return [nil] when input was aborted with `ESC`, `^C` or `^D`
+    # @return [nil] when input was aborted with `^C` or `^D`
     def ask(question, yes: "jotsyd\r\n", no: 'n')
       _element(:Ask, question, yes, no)
     end
@@ -59,7 +59,7 @@ module NattyUI
       def read(yes, no)
         while true
           char = NattyUI.in_stream.getch
-          return if "\3\4\e".include?(char)
+          return if "\3\4".include?(char)
           return true if yes.include?(char)
           return false if no.include?(char)
         end

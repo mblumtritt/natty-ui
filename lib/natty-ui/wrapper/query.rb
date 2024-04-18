@@ -7,7 +7,7 @@ module NattyUI
     # Request a choice from user.
     #
     # @example Select by Index
-    #   choice = sec.query(
+    #   choice = ui.query(
     #     'Which fruits do you prefer?',
     #     'Apples',
     #     'Bananas',
@@ -16,7 +16,7 @@ module NattyUI
     #   # => '1' or '2' or '3' or nil if user aborted
     #
     # @example Select by given char
-    #   choice = sec.query(
+    #   choice = ui.query(
     #     'Which fruits do you prefer?',
     #     a: 'Apples',
     #     b: 'Bananas',
@@ -33,7 +33,7 @@ module NattyUI
     # @return [Char] when `result` is configured as `:char`
     # @return [#to_s] when `result` is configured as `:choice`
     # @return [[Char, #to_s]] when `result` is configured as `:both`
-    # @return [nil] when input was aborted with `ESC`, `^C` or `^D`
+    # @return [nil] when input was aborted with `^C` or `^D`
     def query(question, *choices, result: :char, **kw_choices)
       _element(:Query, question, choices, kw_choices, result)
     end
@@ -56,7 +56,7 @@ module NattyUI
             :Message,
             choices.map { |k, v| "#{k} #{v}" },
             title: question,
-            symbol: :query
+            glyph: :query
           )
           read(choices, result_type)
         end
@@ -65,7 +65,7 @@ module NattyUI
       def read(choices, result_type)
         while true
           char = NattyUI.in_stream.getch
-          return if "\3\4\e".include?(char)
+          return if "\3\4".include?(char)
           next unless choices.key?(char)
           return char if result_type == :char
           return choices[char] if result_type == :choice

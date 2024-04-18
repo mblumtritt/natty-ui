@@ -33,8 +33,7 @@ module NattyUI
         super(parent, **opts)
         @final_text = [title]
         @max_value = [0, max_value.to_f].max if max_value
-        @value = 0
-        @progress = 0
+        @value = @progress = 0
         draw(title)
       end
 
@@ -57,7 +56,7 @@ module NattyUI
           :Message,
           @final_text,
           title: @final_text.shift,
-          symbol: @status = :completed
+          glyph: @status = :completed
         )
       end
     end

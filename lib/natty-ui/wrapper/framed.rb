@@ -31,10 +31,9 @@ module NattyUI
       protected
 
       def initialize(parent, title:, type:, **opts)
-        top_start, top_suffix, left, bottom = components(type)
+        top_start, top_suffix, left, @bottom = components(type)
         parent.puts(" #{title} ", prefix: top_start, suffix: top_suffix)
-        @bottom = bottom
-        super(parent, prefix: "#{left} ", **opts)
+        super(parent, prefix: "#{left} ", suffix: ' ', **opts)
       end
 
       def finish = parent.puts(@bottom)
