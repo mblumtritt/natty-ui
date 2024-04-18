@@ -51,13 +51,8 @@ module NattyUI
         choices = grab(choices, kw_choices)
         return if choices.empty?
         wrapper.temporary do
-          _section(
-            @parent,
-            :Message,
-            choices.map { |k, v| "#{k} #{v}" },
-            title: question,
-            glyph: :query
-          )
+          sec = _section(@parent, :Message, nil, title: question, glyph: :query)
+          sec.ls(choices.map { |k, v| "⦗[[bold 52]]#{k}[[/]]⦘ #{v}" })
           read(choices, result_type)
         end
       end

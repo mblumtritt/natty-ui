@@ -14,8 +14,7 @@ module NattyUI
       size = _cleared_width(symbol)
       return self if size.zero?
       msg = symbol * ((available_width - 1) / size)
-      return puts(msg, prefix: Ansi[39], suffix: Ansi::RESET) if wrapper.ansi?
-      puts(msg)
+      puts(msg, prefix: Ansi[39], suffix: Ansi::RESET)
     end
 
     protected

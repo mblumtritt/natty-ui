@@ -45,12 +45,15 @@ module NattyUI
 
       def available_width
         @available_width ||=
-          wrapper.screen_columns - prefix_width - suffix_width
+          (
+            parent.available_width - _cleared_width(@prefix) -
+              _cleared_width(@suffix)
+          )
       end
 
       def wrapper
         return @wrapper if @wrapper
-        @wrapper = self
+        @wrapper = @parent
         @wrapper = @wrapper.parent until @wrapper.is_a?(Wrapper)
         @wrapper
       end

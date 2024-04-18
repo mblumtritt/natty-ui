@@ -62,14 +62,14 @@ module NattyUI
     # @see Features#h5
     class Heading < Section
       protected def initialize(parent, title:, weight:, **opts)
-        enclose = ENCLOSE[weight] or
-          raise(ArgumentError, "invalid heading weight - #{weight}")
+        enclose = ENCLOSE[weight]
         parent.puts(
           title,
           prefix: "[[27]]#{enclose}[[bold e7]] ",
           suffix: " [[27]]#{enclose}[[/]]"
         )
-        super(parent, **opts)
+        super(parent, prefix: '  ', **opts)
+        @available_width = available_width - 2
       end
 
       ENCLOSE = {

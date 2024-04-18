@@ -98,6 +98,7 @@ module NattyUI
         prefix_width, attributes = prefix_info(glyph)
         parent.puts(title, **attributes)
         super(parent, prefix: ' ' * prefix_width, **opts)
+        @available_width = available_width - 2
       end
 
       def prefix_info(glyph)
