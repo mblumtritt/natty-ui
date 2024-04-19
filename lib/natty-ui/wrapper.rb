@@ -76,6 +76,8 @@ module NattyUI
       self
     end
 
+    def cls = self
+
     # @note The screen manipulation is only available in ANSI mode see {#ansi?}
     #
     # Saves current screen, deletes all screen content and moves the cursor

@@ -20,6 +20,11 @@ module NattyUI
       end
     end
 
+    def cls
+      (@stream << Ansi::CURSOR_HOME << Ansi::SCREEN_ERASE).flush
+      self
+    end
+
     protected
 
     def embellish(obj) = (obj = NattyUI.embellish(obj)).empty? ? nil : obj
