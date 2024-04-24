@@ -157,7 +157,11 @@ module NattyUI
 
     def wrapper = self
 
+    # @!visibility private
     alias available_width screen_columns
+
+    # @!visibility private
+    def prefix = ''
 
     protected
 

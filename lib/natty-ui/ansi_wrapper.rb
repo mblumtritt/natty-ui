@@ -106,11 +106,8 @@ module NattyUI
 
     class Ask < Ask
       def draw(title)
-        (
-          wrapper.stream << @parent.prefix << Ansi[:bold, 39] <<
-            find_glyph(:query) << Ansi[:reset, 39] << ' ' << title <<
-            Ansi::RESET << ' '
-        ).flush
+        @parent.msg(title + Ansi::CURSOR_SAVE_POS, glyph: :query)
+        (wrapper.stream << Ansi::CURSOR_RESTORE_POS).flush
       end
 
       def finish = (wrapper.stream << Ansi::LINE_CLEAR).flush
@@ -118,15 +115,16 @@ module NattyUI
     private_constant :Ask
 
     class Request < Request
-      def prompt(question)
-        "#{@parent.prefix}#{Ansi[:bold, 39]}#{find_glyph(:query)}#{Ansi[:reset, 39]} " \
-          "#{question}:#{Ansi::RESET} "
+      def draw(title)
+        @parent.msg(title + Ansi::CURSOR_SAVE_POS, glyph: :query)
+        wrapper.stream << Ansi::CURSOR_RESTORE_POS << Ansi::RESET <<
+          Ansi[:italic, 255]
+        wrapper.stream.flush
       end
 
       def finish
-        (
-          wrapper.stream << Ansi::CURSOR_LINE_UP << Ansi::LINE_ERASE_TO_END
-        ).flush
+        wrapper.stream << Ansi::RESET << Ansi::CURSOR_UP << Ansi::LINE_ERASE
+        wrapper.stream.flush
       end
     end
     private_constant :Request
@@ -170,9 +168,8 @@ module NattyUI
 
     module Temporary
       def temporary
-        stream = wrapper.stream
         unless block_given?
-          stream.flush
+          wrapper.stream.flush
           return self
         end
         count = wrapper.lines_written
@@ -181,9 +178,10 @@ module NattyUI
         ensure
           count = wrapper.lines_written - count
           if count.nonzero?
-            stream << Ansi.cursor_line_up(count) << Ansi::SCREEN_ERASE_BELOW
+            wrapper.stream << Ansi.cursor_line_up(count) <<
+              Ansi::SCREEN_ERASE_BELOW
           end
-          stream.flush
+          wrapper.stream.flush
         end
       end
     end

@@ -24,23 +24,16 @@ module NattyUI
       protected
 
       def call(question, password)
-        prompt = prompt(question)
-        return read_password(prompt) if password
-        NattyUI.readline(prompt, stream: wrapper.stream)
+        draw("#{question} ")
+        return NattyUI.in_stream.getpass if password
+        NattyUI.in_stream.gets(chomp: true)
+      rescue Interrupt, SystemCallError
+        nil
       ensure
         finish
       end
 
-      def prompt(question)
-        "#{@parent.prefix}#{find_glyph(:query)} #{question}: "
-      end
-
-      def read_password(prompt)
-        (wrapper.stream << prompt).flush
-        NattyUI.in_stream.getpass
-      rescue Interrupt
-        nil
-      end
+      def draw(title) = @parent.msg(title, glyph: :query)
     end
   end
 end

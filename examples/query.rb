@@ -24,8 +24,7 @@ choice =
     'Apples',
     '[[yellow]]Bananas[[/]]',
     'Cherries',
-    x: 'No fruits',
-    result: :choice
+    x: 'No fruits'
   )
 abort! unless choice
 ui.info "Your choice: #{choice}"

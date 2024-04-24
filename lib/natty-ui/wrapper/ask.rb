@@ -43,28 +43,21 @@ module NattyUI
       protected
 
       def call(question, yes, no)
+        yes, no = grab(yes, no)
         draw(question)
-        read(*grab(yes, no))
-      ensure
-        finish
-      end
-
-      def draw(title)
-        (
-          wrapper.stream << @parent.prefix << "#{find_glyph(:query)} #{title} "
-        ).flush
-      end
-
-      def finish = (wrapper.stream << "\n").flush
-
-      def read(yes, no)
         while true
           char = NattyUI.in_stream.getch
           return if "\3\4".include?(char)
           return true if yes.include?(char)
           return false if no.include?(char)
         end
+      rescue Interrupt, SystemCallError
+        nil
+      ensure
+        finish
       end
+
+      def draw(title) = @parent.msg(title, glyph: :query)
 
       def grab(yes, no)
         yes = yes.to_s.chars.uniq
