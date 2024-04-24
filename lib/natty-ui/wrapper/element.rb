@@ -22,6 +22,9 @@ module NattyUI
       # @return [Boolean] whether its closed or not
       def closed? = (@status != nil)
 
+      # @return [Integer] available columns count within the element
+      def available_width = @parent.available_width
+
       # Close the element.
       #
       # @return [Element] itself
@@ -31,8 +34,6 @@ module NattyUI
       private :_to_s
       # @!visibility private
       def inspect = _to_s
-
-      def available_width = @parent.available_width
 
       protected
 
@@ -56,29 +57,6 @@ module NattyUI
 
       def finish = nil
       def prefix = "#{@parent.instance_variable_get(:@prefix)}#{@prefix}"
-      def find_glyph(name) = GLYPHS[name]
-
-      GLYPHS = {
-        default: '•',
-        information: '𝒊',
-        warning: '!',
-        error: '𝙓',
-        completed: '✓',
-        failed: '𝑭',
-        task: '➔',
-        query: '▸'
-      }.compare_by_identity.freeze
-      # GLYPHS = {
-      #   default: '•',
-      #   information: '🅸',
-      #   warning: '🆆',
-      #   error: '🅴',
-      #   completed: '✓',
-      #   failed: '🅵',
-      #   task: '➔',
-      #   query: '▸'
-      # }.compare_by_identity.freeze
-      private_constant :GLYPHS
 
       def initialize(parent)
         @parent = parent

@@ -7,11 +7,15 @@ module NattyUI
     # Print a horizontal rule
     #
     # @param [#to_s] symbol string to build the horizontal rule
-    # @return [Wrapper, Wrapper::Element] itself
+    # @return [Wrapper::Section, Wrapper] it's parent object
     def hr(symbol = '=') = _element(:HorizontalRule, symbol)
   end
 
   class Wrapper
+    #
+    # A {Element} drawing a horizontal rule.
+    #
+    # @see Features#hr
     class HorizontalRule < Element
       protected
 

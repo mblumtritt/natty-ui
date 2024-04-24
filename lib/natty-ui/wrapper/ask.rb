@@ -57,7 +57,17 @@ module NattyUI
         finish
       end
 
-      def draw(title) = @parent.msg(title, glyph: :query)
+      def draw(question)
+        glyph = wrapper.glyph(:query)
+        @parent.print(
+          question,
+          prefix: "#{glyph} ",
+          prefix_width: NattyUI.display_width(glyph) + 1,
+          suffix_width: 0
+        )
+      end
+
+      def finish = @parent.puts
 
       def grab(yes, no)
         yes = yes.to_s.chars.uniq

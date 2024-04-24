@@ -42,48 +42,29 @@ module NattyUI
 
     # @!group Tool functions
 
-    # Print given arguments as lines to the output stream.
-    # Optionally limit the line width to given `max_width`.
+    # Print given arguments line-wise to the output stream.
     #
     # @overload puts(...)
     #   @param [#to_s] ... objects to print
     #   @return [Wrapper] itself
     def puts(*args, **kwargs)
-      prefix = kwargs[:prefix]
-      suffix = kwargs[:suffix]
+      args = prepare_print(args, kwargs)
+      @lines_written += args.size
+      @stream.puts(args)
+      @stream.flush
+      self
+    end
 
-      if args.empty?
-        @stream.puts("#{prefix}#{suffix}")
-        @lines_written += 1
-        @stream.flush
-        return self
-      end
-
-      max_width =
-        kwargs[:max_width] ||
-          (
-            screen_columns -
-              (
-                if prefix
-                  kwargs[:prefix_width] || NattyUI.display_width(prefix)
-                else
-                  0
-                end
-              ) -
-              (
-                if suffix
-                  kwargs[:suffix_width] || NattyUI.display_width(suffix)
-                else
-                  0
-                end
-              )
-          )
-
-      args.map! { Ansi.blemish(NattyUI.plain(_1)) }
-      NattyUI.each_line(*args, max_width: max_width) do |line|
-        @stream.puts("#{prefix}#{line}#{suffix}")
-        @lines_written += 1
-      end
+    # Print given arguments to the output stream.
+    #
+    # @overload print(...)
+    #   @param [#to_s] ... objects to print
+    #   @return [Wrapper] itself
+    def print(*args, **kwargs)
+      args = prepare_print(args, kwargs).to_a
+      @lines_written += args.size
+      @lines_written -= 1
+      @stream.print(args.join("\n"))
       @stream.flush
       self
     end
@@ -99,6 +80,9 @@ module NattyUI
       self
     end
 
+    # Clear Screen
+    #
+    # @return [Wrapper] itself
     def cls = self
 
     # @note The screen manipulation is only available in ANSI mode see {#ansi?}
@@ -163,7 +147,41 @@ module NattyUI
     # @!visibility private
     def prefix = ''
 
+    def glyph_names = GLYPHS.keys
+    def glyph(name) = GLYPHS[name]
+    def glyph_attribute(_name) = nil
+
     protected
+
+    def prepare_print(args, kwargs)
+      prefix = kwargs[:prefix]
+      suffix = kwargs[:suffix]
+      return ["#{prefix}#{suffix}"] if args.empty?
+      NattyUI
+        .each_line(
+          *args.map! { Ansi.blemish(NattyUI.plain(_1)) },
+          max_width:
+            kwargs[:max_width] ||
+              (
+                screen_columns -
+                  (
+                    if prefix
+                      kwargs[:prefix_width] || NattyUI.display_width(prefix)
+                    else
+                      0
+                    end
+                  ) -
+                  (
+                    if suffix
+                      kwargs[:suffix_width] || NattyUI.display_width(suffix)
+                    else
+                      0
+                    end
+                  )
+              )
+        )
+        .map { "#{prefix}#{_1}#{suffix}" }
+    end
 
     def temp_func
       lambda do
@@ -202,5 +220,27 @@ module NattyUI
     rescue Errno::ENOTTY
       nil
     end
+
+    GLYPHS = {
+      default: '•',
+      information: '𝒊',
+      warning: '!',
+      error: '𝙓',
+      completed: '✓',
+      failed: '𝑭',
+      task: '➔',
+      query: '▸'
+    }.compare_by_identity.freeze
+    # GLYPHS = {
+    #   default: '•',
+    #   information: '🅸',
+    #   warning: '🆆',
+    #   error: '🅴',
+    #   completed: '✓',
+    #   failed: '🅵',
+    #   task: '➔',
+    #   query: '▸'
+    # }.compare_by_identity.freeze
+    private_constant :GLYPHS
   end
 end
