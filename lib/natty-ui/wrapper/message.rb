@@ -4,8 +4,8 @@ require_relative 'section'
 
 module NattyUI
   module Features
-    # Creates a simple message section with a highlighted `title`  and
-    # prints given additional arguments as lines into the section.
+    # Creates a section with a highlighted `title` and prints given additional
+    # arguments as lines into the section.
     #
     # @param [#to_s] title object to print as section title
     # @param [Array<#to_s>] args more objects to print
@@ -81,11 +81,20 @@ module NattyUI
   end
 
   class Wrapper
+    #
+    # A {Section} with a highlighted title.
+    #
+    # @see Features#message
+    # @see Features#information
+    # @see Features#warning
+    # @see Features#error
+    # @see Features#completed
+    # @see Features#failed
     class Message < Section
       protected
 
       def initialize(parent, title:, glyph:)
-        glyph = find_glyph(glyph) || _cleared(glyph)
+        glyph = parent.wrapper.glyph(glyph) || _cleared(glyph)
         prefix_width = NattyUI.display_width(glyph) + 1
         parent.puts(
           title,

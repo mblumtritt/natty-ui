@@ -7,12 +7,34 @@ module NattyUI
   class AnsiWrapper < Wrapper
     def ansi? = true
 
-    def puts(*args, **kwargs)
-      return super() if args.empty?
+    def page
+      unless block_given?
+        @stream.flush
+        return self
+      end
+      (@stream << Ansi::BLANK_SLATE).flush
+      begin
+        yield(self)
+      ensure
+        (@stream << Ansi::UNBLANK_SLATE).flush
+      end
+    end
 
+    def cls
+      (@stream << Ansi::CURSOR_HOME << Ansi::SCREEN_ERASE).flush
+      self
+    end
+
+    def glyph_attribute(name)
+      GLYPH_ATTRIBUTES[name] || GLYPH_ATTRIBUTES[:default]
+    end
+
+    protected
+
+    def prepare_print(args, kwargs)
       prefix = kwargs[:prefix]
       suffix = kwargs[:suffix]
-
+      return ["#{prefix}#{suffix}"] if args.empty?
       max_width =
         kwargs[:max_width] ||
           (
@@ -32,38 +54,12 @@ module NattyUI
                 end
               )
           )
-
       prefix = NattyUI.embellish(prefix) if prefix
       suffix = NattyUI.embellish(suffix) if suffix
-
-      args.map! { NattyUI.embellish(_1) }
-      NattyUI.each_line(*args, max_width: max_width) do |line|
-        @stream.puts("#{prefix}#{line}#{suffix}")
-        @lines_written += 1
-      end
-      @stream.flush
-      self
+      NattyUI
+        .each_line(*args.map! { NattyUI.embellish(_1) }, max_width: max_width)
+        .map { "#{prefix}#{_1}#{suffix}" }
     end
-
-    def page
-      unless block_given?
-        @stream.flush
-        return self
-      end
-      (@stream << Ansi::BLANK_SLATE).flush
-      begin
-        yield(self)
-      ensure
-        (@stream << Ansi::UNBLANK_SLATE).flush
-      end
-    end
-
-    def cls
-      (@stream << Ansi::CURSOR_HOME << Ansi::SCREEN_ERASE).flush
-      self
-    end
-
-    protected
 
     def temp_func
       count = @lines_written
@@ -77,6 +73,17 @@ module NattyUI
         self
       end
     end
+
+    GLYPH_ATTRIBUTES = {
+      default: Ansi[:bold, 255],
+      information: Ansi[:bold, 119],
+      warning: Ansi[:bold, 221],
+      error: Ansi[:bold, 208],
+      completed: Ansi[:bold, 82],
+      failed: Ansi[:bold, 196],
+      task: Ansi[:bold, 39],
+      query: Ansi[:bold, 39]
+    }.compare_by_identity.freeze
 
     class HorizontalRule < HorizontalRule
       def call(symbol)
@@ -105,9 +112,14 @@ module NattyUI
     private_constant :Heading
 
     class Ask < Ask
-      def draw(title)
-        @parent.msg(title + Ansi::CURSOR_SAVE_POS, glyph: :query)
-        (wrapper.stream << Ansi::CURSOR_RESTORE_POS).flush
+      def draw(question)
+        glyph = wrapper.glyph(:query)
+        @parent.print(
+          question,
+          prefix: "#{wrapper.glyph_attribute(:query)}#{glyph} #{Ansi[255]}",
+          prefix_width: NattyUI.display_width(glyph) + 1,
+          suffix_width: 0
+        )
       end
 
       def finish = (wrapper.stream << Ansi::LINE_CLEAR).flush
@@ -115,16 +127,21 @@ module NattyUI
     private_constant :Ask
 
     class Request < Request
-      def draw(title)
-        @parent.msg(title + Ansi::CURSOR_SAVE_POS, glyph: :query)
-        wrapper.stream << Ansi::CURSOR_RESTORE_POS << Ansi::RESET <<
-          Ansi[:italic, 255]
-        wrapper.stream.flush
+      def draw(question)
+        glyph = wrapper.glyph(:query)
+        @parent.print(
+          question,
+          prefix: "#{wrapper.glyph_attribute(:query)}#{glyph} #{Ansi[255]}",
+          prefix_width: NattyUI.display_width(glyph) + 1,
+          suffix_width: 0
+        )
+        (wrapper.stream << Ansi::RESET << Ansi[:italic, 255]).flush
       end
 
       def finish
-        wrapper.stream << Ansi::RESET << Ansi::CURSOR_UP << Ansi::LINE_ERASE
-        wrapper.stream.flush
+        (
+          wrapper.stream << Ansi::RESET << Ansi::CURSOR_UP << Ansi::LINE_ERASE
+        ).flush
       end
     end
     private_constant :Request
@@ -211,12 +228,14 @@ module NattyUI
       protected
 
       def initialize(parent, title:, glyph:)
+        wrapper = parent.wrapper
+        glyph_color = wrapper.glyph_attribute(glyph)
         color = COLORS[glyph] || COLORS[:default]
-        glyph = find_glyph(glyph) || glyph
+        glyph = wrapper.glyph(glyph) || glyph
         prefix_width = _cleared_width(glyph) + 1
         parent.puts(
           title,
-          prefix: "#{color}#{glyph} #{color}",
+          prefix: "#{glyph_color}#{glyph} #{color}",
           prefix_width: prefix_width,
           suffix: Ansi::RESET,
           suffix_width: 0
@@ -225,14 +244,14 @@ module NattyUI
       end
 
       COLORS = {
-        default: Ansi[:bold, 255],
-        information: Ansi[:bold, 119],
-        warning: Ansi[:bold, 221],
-        error: Ansi[:bold, 208],
-        completed: Ansi[:bold, 82],
-        failed: Ansi[:bold, 196],
-        task: Ansi[:bold, 39],
-        query: Ansi[:bold, 39]
+        default: Ansi[255],
+        information: Ansi[255],
+        warning: Ansi[221],
+        error: Ansi[208],
+        completed: Ansi[82],
+        failed: Ansi[196],
+        task: Ansi[39],
+        query: Ansi[255]
       }.compare_by_identity.freeze
     end
     private_constant :Message

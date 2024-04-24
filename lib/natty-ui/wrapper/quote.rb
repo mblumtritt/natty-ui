@@ -9,11 +9,17 @@ module NattyUI
     #
     # @param (see #section)
     # @yieldparam (see #section)
-    # @return (see #section)
+    # @return [Object] the result of the code block
+    # @return [Wrapper::Quote] itself, when no code block is given
     def quote(*args, &block) = _section(:Quote, args, prefix: '▍ ', &block)
   end
 
   class Wrapper
-    Quote = Class.new(Section)
+    #
+    # A quotation {Section}.
+    #
+    # @see Features#quote
+    class Quote < Section
+    end
   end
 end

@@ -24,7 +24,7 @@ module NattyUI
       protected
 
       def call(question, password)
-        draw("#{question} ")
+        draw(question)
         return NattyUI.in_stream.getpass if password
         NattyUI.in_stream.gets(chomp: true)
       rescue Interrupt, SystemCallError
@@ -33,7 +33,15 @@ module NattyUI
         finish
       end
 
-      def draw(title) = @parent.msg(title, glyph: :query)
+      def draw(question)
+        glyph = @parent.wrapper.glyph(:query)
+        @parent.print(
+          question,
+          prefix: "#{glyph} ",
+          prefix_width: NattyUI.display_width(glyph) + 1,
+          suffix_width: 0
+        )
+      end
     end
   end
 end

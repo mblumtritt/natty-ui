@@ -52,7 +52,7 @@ module NattyUI
         return if choices.empty? && kw_choices.empty?
         choices = as_choices(choices, kw_choices)
         text = choices.map { |k, v| "⦗[[bold 52]]#{k}[[/]]⦘ #{v}" }
-        wrapper.temporary do
+        @parent.wrapper.temporary do
           if display == :compact
             @parent.msg(question, glyph: :query).ls(text)
           else

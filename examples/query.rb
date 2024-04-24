@@ -13,7 +13,7 @@ def abort!
   exit
 end
 
-unless ui.ask('Do you like to continute? (Y|n)')
+unless ui.ask('Do you like to continute? (Y|n): ')
   ui.info 'ok, try later!'
   exit
 end
@@ -29,10 +29,10 @@ choice =
 abort! unless choice
 ui.info "Your choice: #{choice}"
 
-answer = ui.request 'Are you okay?'
+answer = ui.request 'What is your favorite verb?: '
 abort! unless answer
 ui.info "Your answer: #{answer.inspect}"
 
-answer = ui.request('What is your current password?', password: true)
+answer = ui.request('What is your current password?:', password: true)
 abort! unless answer
 ui.info "I'll keep your secret!"

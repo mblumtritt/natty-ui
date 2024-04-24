@@ -23,7 +23,13 @@ module NattyUI
     #
     # @see Features#section
     class Section < Element
-      # Print given arguments as lines into the section.
+      # @return [Integer] available columns count within the section
+      def available_width
+        @available_width ||=
+          @parent.available_width - @prefix_width - @suffix_width
+      end
+
+      # Print given arguments line-wise into the section.
       #
       # @overload puts(...)
       #   @param [#to_s] ... objects to print
@@ -31,6 +37,23 @@ module NattyUI
       def puts(*args, **kwargs)
         return self if @status
         @parent.puts(
+          *args,
+          prefix: "#{@prefix}#{kwargs[:prefix]}",
+          prefix_width: @prefix_width + kwargs[:prefix_width].to_i,
+          suffix: "#{kwargs[:suffix]}#{@suffix}",
+          suffix_width: @suffix_width + kwargs[:suffix_width].to_i
+        )
+        self
+      end
+
+      # Print given arguments into the section.
+      #
+      # @overload print(...)
+      #   @param [#to_s] ... objects to print
+      #   @return [Section] itself
+      def print(*args, **kwargs)
+        return self if @status
+        @parent.print(
           *args,
           prefix: "#{@prefix}#{kwargs[:prefix]}",
           prefix_width: @prefix_width + kwargs[:prefix_width].to_i,
@@ -63,11 +86,6 @@ module NattyUI
 
       # @!visibility private
       def inspect = @status ? "#{_to_s[..-2]} status=#{@status}>" : _to_s
-
-      def available_width
-        @available_width ||=
-          @parent.available_width - @prefix_width - @suffix_width
-      end
 
       protected
 
