@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'readline'
 unless defined?(Reline)
   # load the Reline::Unicode part only
   # @!visibility private
@@ -150,32 +149,6 @@ module NattyUI
           end
       end
       nil
-    end
-
-    # Read user input line from {.in_stream}.
-    #
-    # This method uses Ruby's Readline implementation (default gem). See there
-    # for more information.
-    #
-    # @see .valid_out?
-    #
-    # @param [#to_s] prompt input prompt
-    # @param [false, nil, #call] completion disable autocompletion, use default
-    #   autocompletion or use given completion proc
-    # @param [IO] stream writeable IO used to display output
-    # @return [String] user input line
-    # @return [nil] when user interrupted input with `^C` or `^D`
-    def readline(prompt = nil, completion: false, stream: StdOut.stream)
-      cp = Readline.completion_proc
-      Readline.completion_proc = completion == false ? ->(*_) {} : completion
-      Readline.output = stream
-      Readline.input = @in_stream
-      Readline.readline(prompt.to_s)
-    rescue Interrupt
-      stream.puts
-      nil
-    ensure
-      Readline.completion_proc = cp
     end
 
     private
