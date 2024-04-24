@@ -4,10 +4,12 @@ require 'io/console'
 require_relative 'wrapper/ask'
 require_relative 'wrapper/framed'
 require_relative 'wrapper/heading'
+require_relative 'wrapper/horizontal_rule'
 require_relative 'wrapper/list_in_columns'
 require_relative 'wrapper/message'
 require_relative 'wrapper/progress'
 require_relative 'wrapper/query'
+require_relative 'wrapper/quote'
 require_relative 'wrapper/request'
 require_relative 'wrapper/section'
 require_relative 'wrapper/task'
@@ -43,27 +45,48 @@ module NattyUI
     # Print given arguments as lines to the output stream.
     # Optionally limit the line width to given `max_width`.
     #
-    # @overload puts(..., max_width: nil)
+    # @overload puts(...)
     #   @param [#to_s] ... objects to print
-    #   @param [Integer, nil] max_width maximum line width
-    #   @comment @param [#to_s, nil] prefix line prefix
-    #   @comment @param [#to_s, nil] suffix line suffix
     #   @return [Wrapper] itself
-    def puts(*args, max_width: nil, prefix: nil, suffix: nil)
+    def puts(*args, **kwargs)
+      prefix = kwargs[:prefix]
+      suffix = kwargs[:suffix]
+
       if args.empty?
-        @stream.puts(embellish("#{prefix}#{suffix}"))
+        @stream.puts("#{prefix}#{suffix}")
         @lines_written += 1
-      else
-        args.map! { embellish(_1) }
-        NattyUI.each_line(*args, max_width: max_width) do |line|
-          @stream.puts(embellish("#{prefix}#{line}#{suffix}"))
-          @lines_written += 1
-        end
+        @stream.flush
+        return self
+      end
+
+      max_width =
+        kwargs[:max_width] ||
+          (
+            screen_columns -
+              (
+                if prefix
+                  kwargs[:prefix_width] || NattyUI.display_width(prefix)
+                else
+                  0
+                end
+              ) -
+              (
+                if suffix
+                  kwargs[:suffix_width] || NattyUI.display_width(suffix)
+                else
+                  0
+                end
+              )
+          )
+
+      args.map! { Ansi.blemish(NattyUI.plain(_1)) }
+      NattyUI.each_line(*args, max_width: max_width) do |line|
+        @stream.puts("#{prefix}#{line}#{suffix}")
+        @lines_written += 1
       end
       @stream.flush
       self
     end
-    alias add puts
 
     # Add at least one empty line
     #
@@ -71,8 +94,8 @@ module NattyUI
     # @return [Wrapper] itself
     def space(lines = 1)
       lines = [1, lines.to_i].max
-      @lines_written += lines
       (@stream << ("\n" * lines)).flush
+      @lines_written += lines
       self
     end
 
@@ -126,17 +149,15 @@ module NattyUI
 
     # @!endgroup
 
-    # @return [String] the glyph
-    def glyph(name) = GLYPHS[name] || name
-
-    # @return [Array[Symbol]] available glyph names
-    def glyphs = GLYPHS.keys
-
     # @!visibility private
     attr_reader :lines_written
 
     # @!visibility private
     alias inspect to_s
+
+    def wrapper = self
+
+    alias available_width screen_columns
 
     protected
 
@@ -151,18 +172,6 @@ module NattyUI
       @stream = stream
       @lines_written = 0
     end
-
-    def embellish(obj) = (obj = NattyUI.plain(obj)).empty? ? nil : obj
-
-    def wrapper = self
-    def prefix = nil
-    alias suffix prefix
-
-    def prefix_width = 0
-    alias suffix_width prefix_width
-    alias width prefix_width
-
-    alias available_width screen_columns
 
     private_class_method :new
 
@@ -189,18 +198,5 @@ module NattyUI
     rescue Errno::ENOTTY
       nil
     end
-
-    GLYPHS = {
-      default: '[[bold ff]]•[[/]]',
-      information: '[[bold italic 77]]𝒊[[/]]',
-      warning: '[[bold italic dd]]![[/]]',
-      error: '[[bold italic d0]]𝙓[[/]]',
-      completed: '[[bold italic 52]]✓[[/]]',
-      failed: '[[bold italic c4]]𝑭[[/]]',
-      query: '[[bold 52]]▸[[/]]',
-      task: '[[bold 51]]➔[[/]]'
-    }.compare_by_identity.freeze
-
-    private_constant :GLYPHS
   end
 end

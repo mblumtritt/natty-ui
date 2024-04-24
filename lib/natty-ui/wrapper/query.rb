@@ -29,13 +29,14 @@ module NattyUI
     # @param question [#to_s] Question to display
     # @param choices [#to_s] choices selectable via index (0..9)
     # @param result  [Symbol] defines how the result will be returned
+    # @param display  [Symbol] display choices as `:list` or `:compact`
     # @param kw_choices [{Char => #to_s}] choices selectable with given char
     # @return [Char] when `result` is configured as `:char`
     # @return [#to_s] when `result` is configured as `:choice`
     # @return [[Char, #to_s]] when `result` is configured as `:both`
     # @return [nil] when input was aborted with `^C` or `^D`
-    def query(question, *choices, result: :char, **kw_choices)
-      _element(:Query, question, choices, kw_choices, result)
+    def query(question, *choices, result: :char, display: :list, **kw_choices)
+      _element(:Query, question, choices, kw_choices, result, display)
     end
   end
 
@@ -47,35 +48,41 @@ module NattyUI
     class Query < Element
       protected
 
-      def _call(question, choices, kw_choices, result_type)
-        choices = grab(choices, kw_choices)
-        return if choices.empty?
+      def call(question, choices, kw_choices, result, display)
+        return if choices.empty? && kw_choices.empty?
+        choices = as_choices(choices, kw_choices)
+        text = choices.map { |k, v| "⦗[[bold 52]]#{k}[[/]]⦘ #{v}" }
         wrapper.temporary do
-          sec = _section(@parent, :Message, nil, title: question, glyph: :query)
-          sec.ls(choices.map { |k, v| "⦗[[bold 52]]#{k}[[/]]⦘ #{v}" })
-          read(choices, result_type)
+          if display == :compact
+            @parent.msg(question, glyph: :query).ls(text)
+          else
+            @parent.msg(question, *text, glyph: :query)
+          end
+          read(choices, result)
         end
       end
 
-      def read(choices, result_type)
+      def as_choices(choices, kw_choices)
+        ret = {}
+        choices.each_with_index do |title, i|
+          (i += 1) == 10 ? break : ret[i.to_s] = title.to_s.tr("\r\n\t", ' ')
+        end
+        ret.merge!(
+          kw_choices
+            .transform_keys! { [' ', _1.to_s[0]].max }
+            .transform_values! { _1.to_s.tr("\r\n\t", ' ') }
+        )
+      end
+
+      def read(choices, result)
         while true
           char = NattyUI.in_stream.getch
           return if "\3\4".include?(char)
           next unless choices.key?(char)
-          return char if result_type == :char
-          return choices[char] if result_type == :choice
+          return char if result == :char
+          return choices[char] if result == :title
           return char, choices[char]
         end
-      end
-
-      def grab(choices, kw_choices)
-        Array
-          .new(choices.size) { _1 + 1 }
-          .zip(choices)
-          .to_h
-          .merge!(kw_choices)
-          .transform_keys! { [' ', _1.to_s[0]].max }
-          .transform_values! { _1.to_s.tr("\r\n\t", ' ') }
       end
     end
   end

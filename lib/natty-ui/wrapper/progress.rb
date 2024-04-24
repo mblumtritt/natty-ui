@@ -14,7 +14,7 @@ module NattyUI
     # @param [##to_f] max_value maximum value of the progress
     # @return [Wrapper::Progress] the created progress element
     def progress(title, max_value: nil)
-      _section(self, :Progress, nil, title: title, max_value: max_value)
+      _element(:Progress, title, max_value)
     end
   end
 
@@ -29,15 +29,18 @@ module NattyUI
 
       protected
 
-      def initialize(parent, title:, max_value:, **opts)
-        super(parent, **opts)
+      def call(title, max_value)
         @final_text = [title]
         @max_value = [0, max_value.to_f].max if max_value
         @value = @progress = 0
         draw(title)
+        self
       end
 
-      def draw(title) = (wrapper.stream << prefix << "➔ #{title} ").flush
+      def draw(title)
+        (wrapper.stream << @parent.prefix << "➔ #{title} ").flush
+      end
+
       def end_draw = (wrapper.stream << "\n")
 
       def redraw
@@ -52,9 +55,9 @@ module NattyUI
         end_draw
         return @parent.failed(*@final_text) if failed?
         _section(
-          @parent,
           :Message,
           @final_text,
+          owner: @parent,
           title: @final_text.shift,
           glyph: @status = :completed
         )

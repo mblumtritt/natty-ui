@@ -42,14 +42,20 @@ module NattyUI
     class Ask < Element
       protected
 
-      def _call(question, yes, no)
-        out("#{prefix}#{wrapper.glyph(:query)} [[bold 0b]]#{question}[[/]] ")
+      def call(question, yes, no)
+        draw(question)
         read(*grab(yes, no))
       ensure
         finish
       end
 
-      def finish = out!("\n")
+      def draw(title)
+        (
+          wrapper.stream << @parent.prefix << "#{find_glyph(:query)} #{title} "
+        ).flush
+      end
+
+      def finish = (wrapper.stream << "\n").flush
 
       def read(yes, no)
         while true

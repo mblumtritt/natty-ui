@@ -5,16 +5,11 @@ module NattyUI
   # Features of {NattyUI} - methods to display natty elements.
   #
   module Features
-    # Print a horizontal rule
-    #
-    # @param [#to_s] symbol string to build the horizontal rule
-    # @return [Wrapper, Wrapper::Element] itself
-    def hr(symbol = '═')
-      symbol = symbol.to_s
-      size = _cleared_width(symbol)
-      return self if size.zero?
-      msg = symbol * ((available_width - 1) / size)
-      puts(msg, prefix: Ansi[39], suffix: Ansi::RESET)
+    def wrapper
+      return @wrapper if @wrapper
+      @wrapper = @parent
+      @wrapper = @wrapper.parent until @wrapper.is_a?(Wrapper)
+      @wrapper
     end
 
     protected
@@ -23,13 +18,14 @@ module NattyUI
     def _cleared_width(str) = NattyUI.display_width(_cleared(str))
 
     def _element(type, ...)
-      wrapper.class.const_get(type).__send__(:new, self).__send__(:_call, ...)
+      wrapper.class.const_get(type).__send__(:new, self).__send__(:call, ...)
     end
 
-    def _section(owner, type, args, **opts, &block)
-      sec = wrapper.class.const_get(type).__send__(:new, owner, **opts)
+    def _section(type, args = nil, owner: nil, **opts, &block)
+      sec = wrapper.class.const_get(type).__send__(:new, owner || self, **opts)
       sec.puts(*args) if args && !args.empty?
-      block ? sec.__send__(:_call, &block) : sec
+      sec.__send__(:call, &block) if block
+      sec
     end
   end
 end

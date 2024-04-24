@@ -17,8 +17,8 @@ module NattyUI
     # @yieldparam [Wrapper::Framed] framed the created section
     # @return [Object] the result of the code block
     # @return [Wrapper::Framed] itself, when no code block is given
-    def framed(title, *args, type: :rounded, &block)
-      _section(self, :Framed, args, title: title, type: type, &block)
+    def framed(*args, type: :rounded, &block)
+      _section(:Framed, args, type: type, &block)
     end
   end
 
@@ -30,50 +30,32 @@ module NattyUI
     class Framed < Section
       protected
 
-      def initialize(parent, title:, type:, **opts)
-        top_start, top_suffix, left, @bottom = components(type)
-        parent.puts(" #{title} ", prefix: top_start, suffix: top_suffix)
-        super(parent, prefix: "#{left} ", suffix: ' ', **opts)
+      def initialize(parent, type:)
+        @type = FRAME_PARTS[type] or
+          raise(ArgumentError, "invalid frame type - #{type.inspect}")
+        parent.puts(
+          color("#{@type[0]}#{@type[1] * (parent.available_width - 2)}")
+        )
+        super(parent, prefix: "#{color(@type[4])} ", prefix_width: 2)
+        @suffix = ' '
+        @suffix_width = 1
       end
 
-      def finish = parent.puts(@bottom)
-
-      def components(type)
-        COMPONENTS[type] || raise(ArgumentError, "invalid frame type - #{type}")
+      def finish
+        @parent.puts(
+          color("#{@type[3]}#{@type[1] * (@parent.available_width - 2)}")
+        )
       end
 
-      COMPONENTS = {
-        rounded: [
-          '[[27]]╭──[[bold e7]]',
-          '[[bold_off 27]]───[[/]]',
-          '[[27]]│[[/]]',
-          '[[27]]╰──────────[[/]]'
-        ],
-        simple: [
-          '[[27]]┌──[[bold e7]]',
-          '[[bold_off 27]]───[[/]]',
-          '[[27]]│[[/]]',
-          '[[27]]└──────────[[/]]'
-        ],
-        heavy: [
-          '[[27]]┏━━[[bold e7]]',
-          '[[bold_off 27]]━━━[[/]]',
-          '[[27]]┃[[/]]',
-          '[[27]]┗━━━━━━━━━━[[/]]'
-        ],
-        semi: [
-          '[[27]]┍━━[[bold e7]]',
-          '[[bold_off 27]]━━━[[/]]',
-          '[[27]] [[/]]',
-          '[[27]]┕━━━━━━━━━━[[/]]'
-        ],
-        double: [
-          '[[27]]╔══[[bold e7]]',
-          '[[bold_off 27]]═══[[/]]',
-          '[[27]]║[[/]]',
-          '[[27]]╚══════════[[/]]'
-        ]
-      }.compare_by_identity.freeze
+      def color(str) = str
+
+      FRAME_PARTS = {
+        rounded: '╭─╮╰│╯',
+        simple: '┌─┐└│┘',
+        heavy: '┏━┓┗┃┛',
+        double: '╔═╗╚║╝',
+        semi: '╒═╕╘│╛'
+      }.freeze
     end
   end
 end

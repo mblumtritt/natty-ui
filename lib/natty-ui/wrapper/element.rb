@@ -10,7 +10,7 @@ module NattyUI
     class Element
       include Features
 
-      # @return [Section] when embedded in a section
+      # @return [Element] when embedded in a section
       # @return [Wrapper] when not embedded in a section
       attr_reader :parent
 
@@ -29,38 +29,12 @@ module NattyUI
 
       alias _to_s to_s
       private :_to_s
-
       # @!visibility private
-      def inspect = @status ? "#{_to_s[..-2]} status=#{@status}>" : _to_s
+      def inspect = _to_s
+
+      def available_width = @parent.available_width
 
       protected
-
-      def initialize(parent, **_) = (@parent = parent)
-      def finish = nil
-
-      def prefix = "#{@parent.__send__(:prefix)}#{@prefix}"
-      def suffix = "#{@suffix}#{@parent.__send__(:suffix)}"
-      def prefix_width = _cleared_width(prefix)
-      def suffix_width = _cleared_width(suffix)
-
-      def available_width
-        @available_width ||=
-          (
-            parent.available_width - _cleared_width(@prefix) -
-              _cleared_width(@suffix)
-          )
-      end
-
-      def wrapper
-        return @wrapper if @wrapper
-        @wrapper = @parent
-        @wrapper = @wrapper.parent until @wrapper.is_a?(Wrapper)
-        @wrapper
-      end
-
-      def out!(str) = (wrapper.stream << str).flush
-      def out(str) = (wrapper.stream << wrapper.__send__(:embellish, str)).flush
-      def decorated(str) = wrapper.__send__(:embellish, str)
 
       def _close(state)
         return self if @status
@@ -69,21 +43,51 @@ module NattyUI
         @raise ? raise(BREAK) : self
       end
 
-      def _call
+      def call
         NattyUI.instance_variable_set(:@element, self)
         @raise = true
         yield(self)
-        close unless closed?
+        closed? ? self : close
       rescue BREAK
         nil
       ensure
         NattyUI.instance_variable_set(:@element, @parent)
       end
 
-      BREAK = Class.new(StandardError)
-      private_constant :BREAK
+      def finish = nil
+      def prefix = "#{@parent.instance_variable_get(:@prefix)}#{@prefix}"
+      def find_glyph(name) = GLYPHS[name]
+
+      GLYPHS = {
+        default: '•',
+        information: '𝒊',
+        warning: '!',
+        error: '𝙓',
+        completed: '✓',
+        failed: '𝑭',
+        task: '➔',
+        query: '▸'
+      }.compare_by_identity.freeze
+      # GLYPHS = {
+      #   default: '•',
+      #   information: '🅸',
+      #   warning: '🆆',
+      #   error: '🅴',
+      #   completed: '✓',
+      #   failed: '🅵',
+      #   task: '➔',
+      #   query: '▸'
+      # }.compare_by_identity.freeze
+      private_constant :GLYPHS
+
+      def initialize(parent)
+        @parent = parent
+      end
 
       private_class_method :new
+
+      BREAK = Class.new(StandardError)
+      private_constant :BREAK
     end
   end
 end

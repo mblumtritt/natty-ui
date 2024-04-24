@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
-require 'natty-ui'
+require_relative '../lib/natty-ui'
+# require 'natty-ui'
 
 ui.space
 ui.h1 'NattyUI Progress Indication Demo'
@@ -52,14 +53,10 @@ end
 ui.info 'Details of failed tasks will not be cleaned.' do
   ui.task 'Assemble assets' do
     ui.task('Initialize') { something }
-
-    progress = ui.progress 'Connect to server...'
-    20.times do
-      progress.step
-      some
+    ui.task('Connect to Server') do
+      something
+      ui.failed 'Unable to connect to server'
     end
-    progress.failed 'Unable to connect to server'
-
     ui.error 'This code will not be reachd!'
   end
 end

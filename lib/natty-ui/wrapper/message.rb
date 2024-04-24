@@ -14,7 +14,7 @@ module NattyUI
     # @return [Object] the result of the code block
     # @return [Wrapper::Message] itself, when no code block is given
     def message(title, *args, glyph: :default, &block)
-      _section(self, :Message, args, title: title, glyph: glyph, &block)
+      _section(:Message, args, title: title, glyph: glyph, &block)
     end
     alias msg message
 
@@ -26,7 +26,7 @@ module NattyUI
     # @yieldparam (see #message)
     # @return (see #message)
     def information(title, *args, &block)
-      _section(self, :Message, args, title: title, glyph: :information, &block)
+      _section(:Message, args, title: title, glyph: :information, &block)
     end
     alias info information
 
@@ -37,7 +37,7 @@ module NattyUI
     # @yieldparam (see #message)
     # @return (see #message)
     def warning(title, *args, &block)
-      _section(self, :Message, args, title: title, glyph: :warning, &block)
+      _section(:Message, args, title: title, glyph: :warning, &block)
     end
     alias warn warning
 
@@ -48,7 +48,7 @@ module NattyUI
     # @yieldparam (see #message)
     # @return (see #message)
     def error(title, *args, &block)
-      _section(self, :Message, args, title: title, glyph: :error, &block)
+      _section(:Message, args, title: title, glyph: :error, &block)
     end
     alias err error
 
@@ -61,7 +61,7 @@ module NattyUI
     # @yieldparam (see #message)
     # @return (see #message)
     def completed(title, *args, &block)
-      _section(self, :Message, args, title: title, glyph: :completed, &block)
+      _section(:Message, args, title: title, glyph: :completed, &block)
     end
     alias done completed
     alias ok completed
@@ -76,34 +76,24 @@ module NattyUI
     # @yieldparam (see #message)
     # @return (see #message)
     def failed(title, *args, &block)
-      _section(self, :Message, args, title: title, glyph: :failed, &block)
+      _section(:Message, args, title: title, glyph: :failed, &block)
     end
   end
 
   class Wrapper
-    #
-    # A {Section} with a highlighted title.
-    #
-    # @see Features#message
-    # @see Features#information
-    # @see Features#warning
-    # @see Features#error
-    # @see Features#completed
-    # @see Features#failed
     class Message < Section
       protected
 
-      def initialize(parent, title:, glyph:, **opts)
-        @parent = parent
-        prefix_width, attributes = prefix_info(glyph)
-        parent.puts(title, **attributes)
-        super(parent, prefix: ' ' * prefix_width, **opts)
-        @available_width = available_width - 2
-      end
-
-      def prefix_info(glyph)
-        glyph = wrapper.glyph(glyph)
-        [_cleared_width(glyph) + 1, { prefix: "#{glyph} " }]
+      def initialize(parent, title:, glyph:)
+        glyph = find_glyph(glyph) || _cleared(glyph)
+        prefix_width = NattyUI.display_width(glyph) + 1
+        parent.puts(
+          title,
+          prefix: "#{glyph} ",
+          prefix_width: prefix_width,
+          suffix_width: 0
+        )
+        super(parent, prefix: ' ' * prefix_width, prefix_width: prefix_width)
       end
     end
   end

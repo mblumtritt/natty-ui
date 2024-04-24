@@ -25,14 +25,14 @@ module NattyUI
     class ListInColumns < Element
       protected
 
-      def _call(list, compact)
-        return parent if list.empty?
+      def call(list, compact)
+        return @parent if list.empty?
         list.flatten!
         list.map! { |item| Item.new(item = item.to_s, _cleared_width(item)) }
         if compact
-          each_compacted(list, available_width) { parent.puts(_1) }
+          each_compacted(list, available_width) { @parent.puts(_1) }
         else
-          each(list, available_width) { parent.puts(_1) }
+          each(list, available_width) { @parent.puts(_1) }
         end
         parent
       end
