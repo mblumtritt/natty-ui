@@ -4,6 +4,7 @@ require_relative '../lib/natty-ui'
 
 def attributes
   ui.puts <<~TEXT
+
     Some attributes are widely supported, such as [[bold]]bold[[/]], [[italic]]italic[[/]], [[underline]]underline[[/]], [[blink]]blink[[/]],
     [[invert]]invert[[/]] and [[strike]]strike[[/]], while others are rarely complete or correctly implemented,
     like [[faint]]faint[[/]], [[rapid_blink]]rapid_blink[[/]], [[double_underline]]double_underline[[/]], [[framed]]framed[[/]], [[encircled]]encircled[[/]], [[overlined]]overlined[[/]],
@@ -11,47 +12,47 @@ def attributes
 
     Different font types are very rarely displayed:
 
-      • [[primary_font]]primary_font[[/]]
-      • [[font1]]font1[[/]]
-      • [[font2]]font2[[/]]
-      • [[font3]]font3[[/]]
-      • [[font4]]font4[[/]]
-      • [[font5]]font5[[/]]
-      • [[font6]]font6[[/]]
-      • [[font7]]font7[[/]]
-      • [[font8]]font8[[/]]
-      • [[font9]]font9[[/]]
-      • [[fraktur]]fraktur[[/]]
+      [[primary_font]]primary_font[[/]]
+      [[fraktur]]fraktur[[/]]
+      [[font1]]font1[[/]]    [[font2]]font2[[/]]    [[font3]]font3[[/]]
+      [[font4]]font4[[/]]    [[font5]]font5[[/]]    [[font6]]font6[[/]]
+      [[font7]]font7[[/]]    [[font8]]font8[[/]]    [[font9]]font9[[/]]
+
   TEXT
 end
 
 def colors_3bit
-  colors = %w[black red green yellow blue magenta cyan white].freeze
-  (colors + colors.map { |name| "bright_#{name}" }).each do |name|
-    ui.puts "  [[#{name}]]#{name.ljust(14)}[[/]] [[on_#{name}]]sample text"
+  color = ->(n) { "[[#{n}]]#{n.ljust(14)}[[/]] [[on_#{n}]]sample text[[/]]" }
+  %w[black red green yellow blue magenta cyan white].each do |name|
+    ui.puts "#{color[name]}    #{color["bright_#{name}"]}"
   end
 end
 
 def colors_8bit
-  ui.puts 'There are 256 pre-defined color which can be used by their index:'
-  ui.space
+  color = ->(i) { "[[bg#{i.to_s(16).rjust(2, '0')}]] #{i.to_s.rjust(2)} " }
+  ui.msg 'System Colors', glyph: '[[27]]◉' do
+    ui.puts "[[#ff]]#{0.upto(7).map(&color).join}"
+    ui.puts "[[#00]]#{8.upto(15).map(&color).join}"
+    ui.space
+  end
 
-  as_color = ->(i) { "[[#{i = i.to_s(16).rjust(2, '0')}]] #{i} [[/]]" }
-  as_bgcolor =
-    lambda do |i|
-      "[[on:#{i.to_s(16).rjust(2, '0')}]] #{i.to_s.rjust(3, '0')} [[/]]"
+  color = ->(i) { "[[bg#{i.to_s(16)}]] #{i.to_s.rjust(3)} " }
+  ui.msg '6x6x6 Color Cube', glyph: '[[27]]◉' do
+    [16, 22, 28].each do |b|
+      b.step(b + 185, by: 36) do |i|
+        left = i.upto(i + 5).map(&color).join
+        right = (i + 18).upto(i + 23).map(&color).join
+        ui.puts "[[#ff]]#{left}[[bg_default]]  #{right}"
+      end
+      ui.space
     end
+  end
 
-  ui.puts 0.upto(15).map(&as_color).join
-  16.upto(231).each_slice(18) { |slice| ui.puts slice.map(&as_color).join }
-  ui.puts 232.upto(243).map(&as_color).join
-  ui.puts 244.upto(255).map(&as_color).join
-
-  ui.space
-  ui.puts 0.upto(15).map(&as_bgcolor).join
-  16.upto(231).each_slice(18) { |slice| ui.puts slice.map(&as_bgcolor).join }
-  ui.puts 232.upto(243).map(&as_bgcolor).join
-  ui.puts 244.upto(255).map(&as_bgcolor).join
+  ui.msg 'Grayscale', glyph: '[[27]]◉' do
+    ui.puts "[[#ff]]#{232.upto(243).map(&color).join}"
+    ui.puts "[[#ff]]#{244.upto(255).map(&color).join}"
+    ui.space
+  end
 end
 
 def colors_24bit
@@ -63,6 +64,10 @@ def colors_24bit
   RGB_COLORS.each { ui.puts _1.map { |v| " [[#{v}]]#{v}[[/]] " }.join }
   ui.space
   RGB_COLORS.each { ui.puts _1.map { |v| " [[on:#{v}]]#{v}[[/]] " }.join }
+end
+
+def color_3to8
+  ui.puts 'Standard: [[fg#0e bg#00]]'
 end
 
 def sections

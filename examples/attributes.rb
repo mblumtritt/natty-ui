@@ -3,7 +3,8 @@
 require 'natty-ui'
 
 ui.space
-ui.h1 'NattyUI ANSI Attributes Demo', <<~TEXT
+ui.h1 'NattyUI ANSI Attributes Demo'
+ui.puts <<~TEXT
 
   This text contains all supported ANSI attrubtes and explains the available
   colors.
@@ -14,7 +15,8 @@ ui.h1 'NattyUI ANSI Attributes Demo', <<~TEXT
 
 TEXT
 
-ui.h2 'Attributes', <<~TEXT
+ui.h2 'Attributes'
+ui.puts <<~TEXT
 
   Some attributes are widely supported, such as [[bold]]bold[[/]], [[italic]]italic[[/]], [[underline]]underline[[/]], [[blink]]blink[[/]],
   [[invert]]invert[[/]] and [[strike]]strike[[/]], while others are rarely complete or correctly implemented,
@@ -23,135 +25,48 @@ ui.h2 'Attributes', <<~TEXT
 
   Different font types are very rarely displayed:
 
-    • [[primary_font]]primary_font[[/]]
-    • [[font1]]font1[[/]]
-    • [[font2]]font2[[/]]
-    • [[font3]]font3[[/]]
-    • [[font4]]font4[[/]]
-    • [[font5]]font5[[/]]
-    • [[font6]]font6[[/]]
-    • [[font7]]font7[[/]]
-    • [[font8]]font8[[/]]
-    • [[font9]]font9[[/]]
-    • [[fraktur]]fraktur[[/]]
+    [[primary_font]]primary_font[[/]]
+    [[fraktur]]fraktur[[/]]
+    [[font1]]font1[[/]]    [[font2]]font2[[/]]    [[font3]]font3[[/]]
+    [[font4]]font4[[/]]    [[font5]]font5[[/]]    [[font6]]font6[[/]]
+    [[font7]]font7[[/]]    [[font8]]font8[[/]]    [[font9]]font9[[/]]
 
 TEXT
 
-ui.h2 '3-bit and 4-bit Colors' do
+ui.h2 '3-bit and 4-bit Colors'
+ui.space
+color = ->(n) { "[[#{n}]]#{n.ljust(14)}[[/]] [[on_#{n}]]sample text[[/]]" }
+%w[black red green yellow blue magenta cyan white].each do |name|
+  ui.puts "#{color[name]}    #{color["bright_#{name}"]}"
+end
+ui.space
+
+ui.h2 '8-bit Colors'
+ui.space
+ui.puts 'There are 256 pre-defined color which can be used by their index:'
+ui.space
+
+color = ->(i) { "[[bg#{i.to_s(16).rjust(2, '0')}]] #{i.to_s.rjust(2)} " }
+ui.msg 'System Colors', glyph: '[[27]]◉' do
+  ui.puts "[[#ff]]#{0.upto(7).map(&color).join}"
+  ui.puts "[[#00]]#{8.upto(15).map(&color).join}"
   ui.space
-  colors = %w[black red green yellow blue magenta cyan white].freeze
-  (colors + colors.map { |name| "bright_#{name}" }).each do |name|
-    ui.puts "  [[#{name}]]#{name.ljust(14)}[[/]] [[on_#{name}]]sample text"
+end
+
+color = ->(i) { "[[bg#{i.to_s(16)}]] #{i.to_s.rjust(3)} " }
+ui.msg '6x6x6 Color Cube', glyph: '[[27]]◉' do
+  [16, 22, 28].each do |b|
+    b.step(b + 185, by: 36) do |i|
+      left = i.upto(i + 5).map(&color).join
+      right = (i + 18).upto(i + 23).map(&color).join
+      ui.puts "[[#ff]]#{left}[[bg_default]]  #{right}"
+    end
+    ui.space
+  end
+
+  ui.msg 'Grayscale', glyph: '[[27]]◉' do
+    ui.puts "[[#ff]]#{232.upto(243).map(&color).join}"
+    ui.puts "[[#ff]]#{244.upto(255).map(&color).join}"
+    ui.space
   end
 end
-ui.space
-
-ui.h2 '8-bit Colors' do
-  ui.space
-  ui.puts 'There are 256 pre-defined color which can be used by their index:'
-  ui.space
-
-  # helper:
-  colors_std = 0.upto(15)
-  colors216 = 16.upto(231)
-  colors_gray1 = 232.upto(243)
-  colors_gray2 = 244.upto(255)
-  as_color = ->(i) { "[[#{i = i.to_s(16).rjust(2, '0')}]] #{i} [[/]]" }
-  as_bgcolor = ->(i) { "[[on:#{i.to_s(16).rjust(2, '0')}]] #{i} [[/]]" }
-
-  ui.puts colors_std.map(&as_color).join
-  colors216.each_slice(18) { |slice| ui.puts slice.map(&as_color).join }
-  ui.puts colors_gray1.map(&as_color).join
-  ui.puts colors_gray2.map(&as_color).join
-
-  ui.space
-  ui.puts colors_std.map(&as_bgcolor).join
-  colors216.each_slice(18) { |slice| ui.puts slice.map(&as_bgcolor).join }
-  ui.puts colors_gray1.map(&as_bgcolor).join
-  ui.puts colors_gray2.map(&as_bgcolor).join
-end
-
-ui.space
-ui.h2 '24-bit colors' do
-  ui.puts <<~TEXT
-
-    Modern terminal applications support 24-bit colors for foreground and background
-    RGB-color values. Here are just some samples:
-
-  TEXT
-
-  some_rgb = DATA.readlines(chomp: true).lazy.each_slice(8)
-
-  some_rgb.each { |slice| ui.puts slice.map { |v| " [[#{v}]]#{v}[[/]] " }.join }
-  ui.space
-  some_rgb.each do |slice|
-    ui.puts slice.map { |v| " [[on:#{v}]]#{v}[[/]] " }.join
-  end
-end
-ui.space
-
-__END__
-#800000
-#8b0000
-#a52a2a
-#b22222
-#dc143c
-#ff0000
-#ff6347
-#ff7f50
-#cd5c5c
-#f08080
-#e9967a
-#fa8072
-#ffa07a
-#ff4500
-#ff8c00
-#ffa500
-#ffd700
-#b8860b
-#daa520
-#eee8aa
-#bdb76b
-#f0e68c
-#808000
-#ffff00
-#9acd32
-#556b2f
-#6b8e23
-#7cfc00
-#7fff00
-#adff2f
-#006400
-#008000
-#228b22
-#00ff00
-#32cd32
-#90ee90
-#98fb98
-#8fbc8f
-#00fa9a
-#00ff7f
-#2e8b57
-#66cdaa
-#3cb371
-#20b2aa
-#2f4f4f
-#008080
-#008b8b
-#00ffff
-#00ffff
-#e0ffff
-#00ced1
-#40e0d0
-#48d1cc
-#afeeee
-#7fffd4
-#b0e0e6
-#5f9ea0
-#4682b4
-#6495ed
-#00bfff
-#1e90ff
-#add8e6
-#87ceeb
-#87cefa

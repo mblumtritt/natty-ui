@@ -57,7 +57,7 @@ gem install natty-ui
 or you can use [Bundler](http://gembundler.com/) to add NattyUI to your own project:
 
 ```shell
-bundle add 'natty-ui'
+bundle add natty-ui
 ```
 
 After that you only need one line of code to have everything together

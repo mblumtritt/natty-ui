@@ -147,8 +147,24 @@ module NattyUI
     # @!visibility private
     def prefix = ''
 
+    # @return [Array<Symbol>] available glyph names
     def glyph_names = GLYPHS.keys
+
+    #
+    # Get a pre-defined glyph
+    #
+    # @param [Symbol] name glyph name
+    # @return [String] the named glyph
+    # @return [nil] when glyph is not defined
     def glyph(name) = GLYPHS[name]
+
+    #
+    # Get a pre-defined glyph attribute
+    #
+    # @overload glyph_attribute(name)
+    #   @param [Symbol] name glyph name
+    #   @return [String] ANSI attributes for the named glyph
+    #   @return [nil] when ANSI is not supported
     def glyph_attribute(_name) = nil
 
     protected
@@ -217,7 +233,7 @@ module NattyUI
       return unless @stream.respond_to?(:winsize)
       ret = @stream.winsize
       ret&.all?(&:positive?) ? ret : nil
-    rescue Errno::ENOTTY
+    rescue SystemCallError
       nil
     end
 
@@ -232,14 +248,14 @@ module NattyUI
       query: '▸'
     }.compare_by_identity.freeze
     # GLYPHS = {
-    #   default: '•',
-    #   information: '🅸',
-    #   warning: '🆆',
-    #   error: '🅴',
+    #   default: '●',
+    #   information: '🅸 ',
+    #   warning: '🆆 ',
+    #   error: '🅴 ',
     #   completed: '✓',
-    #   failed: '🅵',
+    #   failed: '🅵 ',
     #   task: '➔',
-    #   query: '▸'
+    #   query: '🆀 '
     # }.compare_by_identity.freeze
     private_constant :GLYPHS
   end

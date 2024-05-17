@@ -84,6 +84,16 @@ module NattyUI
       task: Ansi[:bold, 39],
       query: Ansi[:bold, 39]
     }.compare_by_identity.freeze
+    # GLYPH_ATTRIBUTES = {
+    #   default: Ansi[255],
+    #   information: Ansi[119],
+    #   warning: Ansi[221],
+    #   error: Ansi[208],
+    #   completed: Ansi[:bold, 82],
+    #   failed: Ansi[196],
+    #   task: Ansi[:bold, 39],
+    #   query: Ansi[39]
+    # }.compare_by_identity.freeze
 
     class HorizontalRule < HorizontalRule
       def call(symbol)

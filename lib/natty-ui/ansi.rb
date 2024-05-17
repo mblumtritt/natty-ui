@@ -282,7 +282,7 @@ module NattyUI
           end
         val.delete_prefix!('#')
         case val.size
-        when 2
+        when 1, 2
           "#{base}5;#{val.hex}" if /\A[[:xdigit:]]+\z/.match?(val)
         when 3
           if /\A[[:xdigit:]]+\z/.match?(val)

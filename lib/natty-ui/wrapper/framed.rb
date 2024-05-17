@@ -10,7 +10,6 @@ module NattyUI
     # When no block is given, the section must be closed, see
     # {Wrapper::Element#close}.
     #
-    # @param [#to_s] title object to print as section title
     # @param [Array<#to_s>] args more objects to print
     # @param [Symbol] type frame type;
     #   valid types are `:rounded`, `:simple`, `:heavy`, `:semi`, `:double`
