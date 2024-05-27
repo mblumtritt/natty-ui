@@ -33,9 +33,9 @@ ui.ls LOREM.lines(chomp: true)
 ui.space
 
 ui.h2 'Lorem ipsum word list (compact)'
-ui.ls WORDS
+ui.ls WORDS, glyph: 1
 ui.space
 
 ui.h2 'Lorem ipsum word list (row-wise)'
-ui.ls WORDS, compact: false
+ui.ls WORDS, compact: false, glyph: 1
 ui.space

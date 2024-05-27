@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../lib/natty-ui'
+require 'natty-ui'
 
 def attributes
   ui.puts <<~TEXT
@@ -66,10 +66,6 @@ def colors_24bit
   RGB_COLORS.each { ui.puts _1.map { |v| " [[on:#{v}]]#{v}[[/]] " }.join }
 end
 
-def color_3to8
-  ui.puts 'Standard: [[fg#0e bg#00]]'
-end
-
 def sections
   ui.section do
     ui.puts 'Sections can be stacked'
@@ -131,6 +127,10 @@ def tasks
   progress.done 'All compressed'
 end
 
+def table
+  ui.table { |tab| TEXT.each_line(chomp: true).each_slice(4) { tab.add(*_1) } }
+end
+
 # just simulate some work
 def something = sleep(0.5)
 def some = sleep(0.15)
@@ -184,6 +184,7 @@ ui.page do
         'l' => 'List in Columns',
         's' => 'Sections',
         'S' => 'Sections with lists',
+        'z' => 'Sections with table',
         't' => 'Tasks',
         :q => 'Quit Demo',
         :result => :all,
@@ -208,6 +209,13 @@ ui.page do
       sections { messages }
     when 'S'
       sections { list_in_columns }
+    when 'z'
+      sections do
+        ui.space
+        ui.hr
+        ui.space
+        table
+      end
     end
   end
 end

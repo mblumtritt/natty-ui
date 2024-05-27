@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../lib/natty-ui'
-# require 'natty-ui'
+require 'natty-ui'
 
 ui.space
 ui.h1 'NattyUI Progress Indication Demo'
