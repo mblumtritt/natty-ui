@@ -20,15 +20,17 @@ module NattyUI
       protected
 
       def call(symbol)
-        msg, max_width = determine(symbol)
-        msg ? @parent.puts(msg, max_width: max_width) : @parent.puts
-      end
-
-      def determine(symbol)
-        size = _cleared_width(symbol = symbol.to_s)
-        return if size == 0
+        size = NattyUI.display_width(symbol = symbol.to_s)
+        return @parent.puts if size == 0
         max_width = available_width
-        [symbol * ((max_width / size) - 1), max_width]
+        @parent.puts(
+          symbol * ((max_width / size) - 1),
+          max_width: max_width,
+          prefix: Ansi[39],
+          prefix_width: 0,
+          suffix: Ansi::RESET,
+          suffix_width: 0
+        )
       end
     end
   end

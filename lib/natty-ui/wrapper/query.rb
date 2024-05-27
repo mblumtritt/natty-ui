@@ -51,7 +51,7 @@ module NattyUI
       def call(question, choices, kw_choices, result, display)
         return if choices.empty? && kw_choices.empty?
         choices = as_choices(choices, kw_choices)
-        text = choices.map { |k, v| "⦗[[bold 52]]#{k}[[/]]⦘ #{v}" }
+        text = choices.map { |k, v| "⦗#{CHOICE_MARK}#{k}#{Ansi::RESET}⦘ #{v}" }
         @parent.wrapper.temporary do
           if display == :compact
             @parent.msg(question, glyph: :query).ls(text)
@@ -86,6 +86,9 @@ module NattyUI
       rescue Interrupt, SystemCallError
         nil
       end
+
+      CHOICE_MARK = Ansi[:bold, 34]
+      private_constant :CHOICE_MARK
     end
   end
 end

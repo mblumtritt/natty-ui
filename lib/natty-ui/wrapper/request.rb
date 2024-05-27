@@ -30,18 +30,25 @@ module NattyUI
       rescue Interrupt, SystemCallError
         nil
       ensure
-        finish
+        (wrapper = @parent.wrapper).ansi? and
+          (wrapper.stream << ANSI_FINISH).flush
       end
 
       def draw(question)
-        glyph = @parent.wrapper.glyph(:query)
+        wrapper = @parent.wrapper
+        glyph = wrapper.glyph(:query)
         @parent.print(
           question,
-          prefix: "#{glyph} ",
+          prefix: "#{glyph} #{Ansi[255]}",
           prefix_width: NattyUI.display_width(glyph) + 1,
           suffix_width: 0
         )
+        (wrapper.stream << ANSI_PREFIX).flush if wrapper.ansi?
       end
+
+      ANSI_PREFIX = Ansi::RESET + Ansi[:italic]
+      ANSI_FINISH = Ansi::RESET + Ansi::CURSOR_UP + Ansi::LINE_ERASE
+      private_constant :ANSI_PREFIX, :ANSI_FINISH
     end
   end
 end

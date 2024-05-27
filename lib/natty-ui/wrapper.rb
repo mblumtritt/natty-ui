@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'io/console'
+require_relative 'ansi'
 require_relative 'wrapper/ask'
 require_relative 'wrapper/framed'
 require_relative 'wrapper/heading'
@@ -139,7 +140,9 @@ module NattyUI
     # @!visibility private
     alias inspect to_s
 
-    def wrapper = self
+    # @attribute [r] wrapper
+    # @return [Wrapper] self
+    alias wrapper itself
 
     # @!visibility private
     alias available_width screen_columns
@@ -158,45 +161,39 @@ module NattyUI
     # @return [nil] when glyph is not defined
     def glyph(name) = GLYPHS[name]
 
-    #
-    # Get a pre-defined glyph attribute
-    #
-    # @overload glyph_attribute(name)
-    #   @param [Symbol] name glyph name
-    #   @return [String] ANSI attributes for the named glyph
-    #   @return [nil] when ANSI is not supported
-    def glyph_attribute(_name) = nil
-
     protected
 
     def prepare_print(args, kwargs)
-      prefix = kwargs[:prefix]
-      suffix = kwargs[:suffix]
+      prefix = kwargs[:prefix] and prefix = NattyUI.plain(prefix)
+      suffix = kwargs[:suffix] and suffix = NattyUI.plain(suffix)
       return ["#{prefix}#{suffix}"] if args.empty?
       NattyUI
         .each_line(
           *args.map! { Ansi.blemish(NattyUI.plain(_1)) },
-          max_width:
-            kwargs[:max_width] ||
-              (
-                screen_columns -
-                  (
-                    if prefix
-                      kwargs[:prefix_width] || NattyUI.display_width(prefix)
-                    else
-                      0
-                    end
-                  ) -
-                  (
-                    if suffix
-                      kwargs[:suffix_width] || NattyUI.display_width(suffix)
-                    else
-                      0
-                    end
-                  )
-              )
+          max_width: find_max_width(kwargs, prefix, suffix)
         )
         .map { "#{prefix}#{_1}#{suffix}" }
+    end
+
+    def find_max_width(kwargs, prefix, suffix)
+      kwargs[:max_width] ||
+        (
+          screen_columns -
+            (
+              if prefix
+                kwargs[:prefix_width] || NattyUI.display_width(prefix)
+              else
+                0
+              end
+            ) -
+            (
+              if suffix
+                kwargs[:suffix_width] || NattyUI.display_width(suffix)
+              else
+                0
+              end
+            )
+        )
     end
 
     def temp_func
@@ -238,15 +235,16 @@ module NattyUI
     end
 
     GLYPHS = {
-      default: '•',
-      information: '𝒊',
-      warning: '!',
-      error: '𝙓',
-      completed: '✓',
-      failed: '𝑭',
-      task: '➔',
-      query: '▸'
+      default: "#{Ansi[:bold, 255]}•#{Ansi::RESET}",
+      information: "#{Ansi[:bold, 119]}𝒊#{Ansi::RESET}",
+      warning: "#{Ansi[:bold, 221]}!#{Ansi::RESET}",
+      error: "#{Ansi[:bold, 208]}𝙓#{Ansi::RESET}",
+      completed: "#{Ansi[:bold, 82]}✓#{Ansi::RESET}",
+      failed: "#{Ansi[:bold, 196]}𝑭#{Ansi::RESET}",
+      task: "#{Ansi[:bold, 39]}➔#{Ansi::RESET}",
+      query: "#{Ansi[:bold, 39]}▸#{Ansi::RESET}"
     }.compare_by_identity.freeze
+
     # GLYPHS = {
     #   default: '●',
     #   information: '🅸 ',

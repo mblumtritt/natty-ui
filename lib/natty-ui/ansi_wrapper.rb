@@ -25,39 +25,17 @@ module NattyUI
       self
     end
 
-    def glyph_attribute(name)
-      GLYPH_ATTRIBUTES[name] || GLYPH_ATTRIBUTES[:default]
-    end
-
     protected
 
     def prepare_print(args, kwargs)
-      prefix = kwargs[:prefix]
-      suffix = kwargs[:suffix]
+      prefix = kwargs[:prefix] and prefix = NattyUI.embellish(prefix)
+      suffix = kwargs[:suffix] and suffix = NattyUI.embellish(suffix)
       return ["#{prefix}#{suffix}"] if args.empty?
-      max_width =
-        kwargs[:max_width] ||
-          (
-            screen_columns -
-              (
-                if prefix
-                  kwargs[:prefix_width] || _cleared_width(prefix)
-                else
-                  0
-                end
-              ) -
-              (
-                if suffix
-                  kwargs[:suffix_width] || _cleared_width(suffix)
-                else
-                  0
-                end
-              )
-          )
-      prefix = NattyUI.embellish(prefix) if prefix
-      suffix = NattyUI.embellish(suffix) if suffix
       NattyUI
-        .each_line(*args.map! { NattyUI.embellish(_1) }, max_width: max_width)
+        .each_line(
+          *args.map! { NattyUI.embellish(_1) },
+          max_width: find_max_width(kwargs, prefix, suffix)
+        )
         .map { "#{prefix}#{_1}#{suffix}" }
     end
 
@@ -73,88 +51,6 @@ module NattyUI
         self
       end
     end
-
-    GLYPH_ATTRIBUTES = {
-      default: Ansi[:bold, 255],
-      information: Ansi[:bold, 119],
-      warning: Ansi[:bold, 221],
-      error: Ansi[:bold, 208],
-      completed: Ansi[:bold, 82],
-      failed: Ansi[:bold, 196],
-      task: Ansi[:bold, 39],
-      query: Ansi[:bold, 39]
-    }.compare_by_identity.freeze
-    # GLYPH_ATTRIBUTES = {
-    #   default: Ansi[255],
-    #   information: Ansi[119],
-    #   warning: Ansi[221],
-    #   error: Ansi[208],
-    #   completed: Ansi[:bold, 82],
-    #   failed: Ansi[196],
-    #   task: Ansi[:bold, 39],
-    #   query: Ansi[39]
-    # }.compare_by_identity.freeze
-
-    class HorizontalRule < HorizontalRule
-      def call(symbol)
-        msg, max_width = determine(symbol)
-        return @parent.puts unless msg
-        @parent.puts(
-          msg,
-          max_width: max_width,
-          prefix: Ansi[39],
-          suffix: Ansi::RESET
-        )
-      end
-    end
-    private_constant :HorizontalRule
-
-    class Heading < Heading
-      def call(title, enclose)
-        @parent.puts(
-          title,
-          prefix: "#{Ansi[39]}#{enclose} #{Ansi[:bold, 255]}",
-          suffix: " #{Ansi[:normal, 39]}#{enclose}#{Ansi::RESET}",
-          max_width: available_width - 2 - (enclose.size * 2)
-        )
-      end
-    end
-    private_constant :Heading
-
-    class Ask < Ask
-      def draw(question)
-        glyph = wrapper.glyph(:query)
-        @parent.print(
-          question,
-          prefix: "#{wrapper.glyph_attribute(:query)}#{glyph} #{Ansi[255]}",
-          prefix_width: NattyUI.display_width(glyph) + 1,
-          suffix_width: 0
-        )
-      end
-
-      def finish = (wrapper.stream << Ansi::LINE_CLEAR).flush
-    end
-    private_constant :Ask
-
-    class Request < Request
-      def draw(question)
-        glyph = wrapper.glyph(:query)
-        @parent.print(
-          question,
-          prefix: "#{wrapper.glyph_attribute(:query)}#{glyph} #{Ansi[255]}",
-          prefix_width: NattyUI.display_width(glyph) + 1,
-          suffix_width: 0
-        )
-        (wrapper.stream << Ansi::RESET << Ansi[:italic, 255]).flush
-      end
-
-      def finish
-        (
-          wrapper.stream << Ansi::RESET << Ansi::CURSOR_UP << Ansi::LINE_ERASE
-        ).flush
-      end
-    end
-    private_constant :Request
 
     class Progress < Progress
       def draw(title)
@@ -239,13 +135,12 @@ module NattyUI
 
       def initialize(parent, title:, glyph:)
         wrapper = parent.wrapper
-        glyph_color = wrapper.glyph_attribute(glyph)
         color = COLORS[glyph] || COLORS[:default]
         glyph = wrapper.glyph(glyph) || glyph
-        prefix_width = _cleared_width(glyph) + 1
+        prefix_width = NattyUI.display_width(glyph) + 1
         parent.puts(
           title,
-          prefix: "#{glyph_color}#{glyph} #{color}",
+          prefix: "#{glyph} #{color}",
           prefix_width: prefix_width,
           suffix: Ansi::RESET,
           suffix_width: 0

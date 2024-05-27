@@ -54,7 +54,7 @@ module NattyUI
         heavy: '┏━┓┗┃┛',
         double: '╔═╗╚║╝',
         semi: '╒═╕╘│╛'
-      }.freeze
+      }.compare_by_identity.freeze
     end
   end
 end

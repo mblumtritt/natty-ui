@@ -11,10 +11,38 @@ module NattyUI
     # The non-compact format prints all columns in same width and order the list
     # items row-wise.
     #
+    # @example simple compact list
+    #   ui.ls('apple', 'banana', 'blueberry', 'pineapple', 'strawberry')
+    #   # => apple   banana   blueberry   pineapple   strawberry
+    #
+    # @example (unordered) list with red dot
+    #   ui.ls('apple', 'banana', 'blueberry', 'pineapple', 'strawberry', glyph: '[[red]]•[[/]]')
+    #   # => • apple   • banana   • blueberry   • pineapple   • strawberry
+    #
+    # @example ordered list
+    #   ui.ls('apple', 'banana', 'blueberry', 'pineapple', 'strawberry', glyph: 1)
+    #   # => 1 apple   2 banana   3 blueberry   4 pineapple   5 strawberry
+    #
+    # @example ordered list, start at 100
+    #   ui.ls('apple', 'banana', 'blueberry', 'pineapple', 'strawberry', glyph: 100)
+    #   # => 1 apple   2 banana   3 blueberry   4 pineapple   5 strawberry
+    #
+    # @example ordered list using, uppercase characters
+    #   ui.ls('apple', 'banana', 'blueberry', 'pineapple', 'strawberry', glyph: :A)
+    #   # => A apple   B banana   C blueberry   D pineapple   E strawberry
+    #
+    # @example ordered list, using lowercase characters
+    #   ui.ls('apple', 'banana', 'blueberry', 'pineapple', 'strawberry', glyph: :a)
+    #   # => a apple   b banana   c blueberry   d pineapple   e strawberry
+    #
     # @param [Array<#to_s>] args items to print
     # @param [Boolean] compact whether to use compact format
+    # @param [nil,#to_s,Integer,Symbol] glyph optional glyph used as element
+    #   prefix
     # @return [Wrapper, Wrapper::Element] itself
-    def ls(*args, compact: true) = _element(:ListInColumns, args, compact)
+    def ls(*args, compact: true, glyph: nil)
+      _element(:ListInColumns, args, compact, glyph)
+    end
   end
 
   class Wrapper
@@ -25,16 +53,39 @@ module NattyUI
     class ListInColumns < Element
       protected
 
-      def call(list, compact)
+      def call(list, compact, glyph)
         return @parent if list.empty?
         list.flatten!
-        list.map! { |item| Item.new(item = item.to_s, _cleared_width(item)) }
-        if compact
-          each_compacted(list, available_width) { @parent.puts(_1) }
-        else
-          each(list, available_width) { @parent.puts(_1) }
+        cvt = cvt(glyph, list.size)
+        list.map! do |item|
+          Item.new(item = cvt[item], NattyUI.display_width(item))
         end
-        parent
+        if compact
+          each_compacted(list, available_width - 1) { @parent.puts(_1) }
+        else
+          each(list, available_width - 1) { @parent.puts(_1) }
+        end
+        @parent
+      end
+
+      def cvt(glyph, size)
+        enum =
+          case glyph
+          when nil, false
+            return ->(s) { s.to_s }
+          when :hex
+            glyph = 1
+            pad = size.to_s(16).size
+            Enumerator.produce(glyph) { (glyph += 1).to_s(16).rjust(pad, '0') }
+          when Integer
+            pad = (glyph + size).to_s.size
+            Enumerator.produce(glyph) { (glyph += 1).to_s.rjust(pad) }
+          when Symbol
+            Enumerator.produce(glyph, &:succ)
+          else
+            return ->(s) { "#{glyph} #{s}" }
+          end
+        ->(s) { "#{enum.next} #{s}" }
       end
 
       def each(list, max_width)
@@ -74,7 +125,6 @@ module NattyUI
 
       Item =
         Struct.new(:str, :width) do
-          # @!visibility private
           def to_s(in_width) = "#{str}#{' ' * (in_width - width)}"
         end
 

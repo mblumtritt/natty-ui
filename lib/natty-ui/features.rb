@@ -15,9 +15,6 @@ module NattyUI
 
     protected
 
-    def _cleared(str) = Ansi.blemish(NattyUI.plain(str))
-    def _cleared_width(str) = NattyUI.display_width(_cleared(str))
-
     def _element(type, ...)
       wrapper.class.const_get(type).__send__(:new, self).__send__(:call, ...)
     end

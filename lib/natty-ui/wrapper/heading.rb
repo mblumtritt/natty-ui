@@ -50,8 +50,8 @@ module NattyUI
       def call(title, enclose)
         @parent.puts(
           title,
-          prefix: "#{enclose} ",
-          suffix: " #{enclose}",
+          prefix: "#{Ansi[39]}#{enclose} #{Ansi[:bold, 255]}",
+          suffix: " #{Ansi[:normal, 39]}#{enclose}#{Ansi::RESET}",
           max_width: available_width - 2 - (enclose.size * 2)
         )
       end

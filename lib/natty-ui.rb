@@ -14,7 +14,7 @@ require_relative 'natty-ui/ansi_wrapper'
 
 #
 # Module to create beautiful, nice, nifty, fancy, neat, pretty, cool, lovely,
-# natty user interfaces for your CLI.
+# natty user interfaces for your CLI application.
 #
 # It creates {Wrapper} instances which can optionally support ANSI. The UI
 # consists of {Wrapper::Element}s and {Wrapper::Section}s for different
@@ -117,7 +117,7 @@ module NattyUI
     # @param [#to_s] str string to calculate
     # @return [Integer] the display size
     def display_width(str)
-      (str = str.to_s).empty? ? 0 : Reline::Unicode.calculate_width(str)
+      (str = str.to_s).empty? ? 0 : Reline::Unicode.calculate_width(str, true)
     end
 
     # Convert given arguments into strings and yield each line.
