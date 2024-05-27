@@ -12,7 +12,7 @@ LOREM = <<~LOREM
   nostrud exercitation ullamco
   laboris nisi ut aliquip ex
   ea commodo [[bold]]consequat[[/]]. Duis
-  aute irure dolor in
+  aute irure [[bold green]]dolor[[/]] in
   reprehenderit in voluptate
   velit [[underline]]esse cillum[[/]] dolore eu
   fugiat nulla pariatur.
@@ -22,20 +22,15 @@ LOREM = <<~LOREM
   deserunt mollit anim id
   est laborum.
 LOREM
-WORDS = LOREM.split(/\W+/).uniq.sort!.freeze
 
 ui.space
 ui.h1 'Print a list in columns'
 ui.space
 
-ui.h2 'Lorem ipsum lines'
-ui.ls LOREM.lines(chomp: true)
+ui.h2 'Lorem ipsum lines (compact)'
+ui.ls LOREM.lines(chomp: true), glyph: 1
 ui.space
 
-ui.h2 'Lorem ipsum word list (compact)'
-ui.ls WORDS, glyph: 1
-ui.space
-
-ui.h2 'Lorem ipsum word list (row-wise)'
-ui.ls WORDS, compact: false, glyph: 1
+ui.h2 'Lorem ipsum lines (row-wise)'
+ui.ls LOREM.lines(chomp: true), glyph: 1, compact: false
 ui.space

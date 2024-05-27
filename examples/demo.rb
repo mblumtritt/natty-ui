@@ -73,7 +73,11 @@ def sections
       ui.puts TEXT_MID
       ui.framed do
         ui.puts TEXT_MID
-        yield if block_given?
+        next unless block_given?
+        ui.space
+        ui.hr
+        ui.space
+        yield
       end
     end
   end
@@ -99,8 +103,6 @@ def list_in_columns
   ui.ls TEXT_LINES
   ui.hr
   ui.ls TEXT_LINES, compact: false
-  ui.hr
-  ui.ls WORDS
 end
 
 def tasks
@@ -128,7 +130,7 @@ def tasks
 end
 
 def table
-  ui.table { |tab| TEXT.each_line(chomp: true).each_slice(4) { tab.add(*_1) } }
+  ui.table { |tab| TEXT.each_line(chomp: true).each_slice(5) { tab.add(*_1) } }
 end
 
 # just simulate some work
@@ -136,16 +138,16 @@ def something = sleep(0.5)
 def some = sleep(0.15)
 
 TEXT = <<~LOREM
-  Lorem ipsum dolor sit
+  Lorem [[yellow]]ipsum[[/]] dolor sit
   amet, consectetur adipisicing
-  elit, sed do [[green]]eiusmod[[/]] tempor
+  elit, sed do eiusmod tempor
   incididunt ut labore et
   dolore [[red]]magna[[/]] aliqua. Ut
   enim ad minim veniam, quis
   nostrud exercitation ullamco
   laboris nisi ut aliquip ex
   ea commodo [[bold]]consequat[[/]]. Duis
-  aute irure dolor in
+  aute irure [[bold green]]dolor[[/]] in
   reprehenderit in voluptate
   velit [[underline]]esse cillum[[/]] dolore eu
   fugiat nulla pariatur.
@@ -158,7 +160,6 @@ LOREM
 TEXT_LINES = TEXT.lines(chomp: true)
 TEXT_MID = TEXT_LINES.take(8).join(' ')
 TEXT_BIG = TEXT_LINES.join(' ')
-WORDS = TEXT.split(/\W+/).uniq.sort!.freeze
 RGB_COLORS = <<~RGB_COLORS.lines(chomp: true).map!(&:split)
   #800000 #8b0000 #a52a2a #b22222 #dc143c #ff0000 #ff6347 #ff7f50
   #cd5c5c #f08080 #e9967a #fa8072 #ffa07a #ff4500 #ff8c00 #ffa500
@@ -210,12 +211,7 @@ ui.page do
     when 'S'
       sections { list_in_columns }
     when 'z'
-      sections do
-        ui.space
-        ui.hr
-        ui.space
-        table
-      end
+      sections { table }
     end
   end
 end

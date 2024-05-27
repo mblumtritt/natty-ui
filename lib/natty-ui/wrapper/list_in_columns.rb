@@ -69,23 +69,26 @@ module NattyUI
       end
 
       def cvt(glyph, size)
-        enum =
-          case glyph
-          when nil, false
-            return ->(s) { s.to_s }
-          when :hex
-            glyph = 1
-            pad = size.to_s(16).size
-            Enumerator.produce(glyph) { (glyph += 1).to_s(16).rjust(pad, '0') }
-          when Integer
-            pad = (glyph + size).to_s.size
-            Enumerator.produce(glyph) { (glyph += 1).to_s.rjust(pad) }
-          when Symbol
-            Enumerator.produce(glyph, &:succ)
-          else
-            return ->(s) { "#{glyph} #{s}" }
+        case glyph
+        when nil, false
+          ->(s) { NattyUI.embellish(s) }
+        when :hex
+          pad = size.to_s(16).size
+          glyph = 0
+          lambda do |s|
+            "#{(glyph += 1).to_s(16).rjust(pad, '0')} #{NattyUI.embellish(s)}"
           end
-        ->(s) { "#{enum.next} #{s}" }
+        when Integer
+          pad = (glyph + size).to_s.size
+          glyph -= 1
+          ->(s) { "#{(glyph += 1).to_s.rjust(pad)} #{NattyUI.embellish(s)}" }
+        when Symbol
+          lambda do |s|
+            "#{t = glyph; glyph = glyph.succ; t} #{NattyUI.embellish(s)}"
+          end
+        else
+          ->(s) { "#{glyph} #{NattyUI.embellish(s)}" }
+        end
       end
 
       def each(list, max_width)
