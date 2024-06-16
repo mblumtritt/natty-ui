@@ -100,15 +100,20 @@ module NattyUI
     # Remove embedded attribute descriptions from given string.
     #
     # @param [#to_s] str string to edit
+    # @param [:keep,:remove] ansi keep or remove ANSI codes too
     # @return [String] edited string
-    def plain(str)
-      str
-        .to_s
-        .gsub(/(\[\[((?~\]\]))\]\])/) do
-          match = Regexp.last_match[2]
-          next match.empty? ? nil : "[[#{match}]]" if match.delete_prefix!('/')
-          Ansi.try_convert(match) ? nil : "[[#{match}]]"
-        end
+    def plain(str, ansi: :keep)
+      str =
+        str
+          .to_s
+          .gsub(/(\[\[((?~\]\]))\]\])/) do
+            match = Regexp.last_match[2]
+            if match.delete_prefix!('/')
+              next match.empty? ? nil : "[[#{match}]]"
+            end
+            Ansi.try_convert(match) ? nil : "[[#{match}]]"
+          end
+      ansi == :keep ? str : Ansi.blemish(str)
     end
 
     # Calculate monospace (display) width of given String.
