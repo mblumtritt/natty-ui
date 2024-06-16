@@ -141,7 +141,7 @@ module NattyUI
           rows,
           @parent.available_width - 1,
           seperator,
-          NattyUI.plain(seperator)[-1] == ' '
+          NattyUI.plain(seperator, ansi: false)[-1] == ' '
         ) { |line| @parent.puts(line) }
         @parent
       end
