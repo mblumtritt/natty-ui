@@ -157,6 +157,21 @@ module NattyUI
       nil
     end
 
+    # Read next raw key (keyboard input) from {in_stream}.
+    #
+    # @return [String] read key
+    def read_key
+      return @in_stream.getch unless defined?(@in_stream.getc)
+      return @in_stream.getc unless defined?(@in_stream.raw)
+      @in_stream.raw do |raw|
+        key = raw.getc
+        while (nc = raw.read_nonblock(1, exception: false))
+          nc.is_a?(String) ? key += nc : break
+        end
+        key
+      end
+    end
+
     private
 
     def wrapper_class(stream, ansi)
