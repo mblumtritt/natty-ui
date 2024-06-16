@@ -64,8 +64,7 @@ module NattyUI
     #   @return [Wrapper] itself
     def print(*args, **kwargs)
       args = prepare_print(args, kwargs).to_a
-      @lines_written += args.size
-      @lines_written -= 1
+      @lines_written += args.size - 1
       @stream.print(args.join("\n"))
       @stream.flush
       self
@@ -165,36 +164,23 @@ module NattyUI
     protected
 
     def prepare_print(args, kwargs)
-      prefix = kwargs[:prefix] and prefix = NattyUI.plain(prefix)
-      suffix = kwargs[:suffix] and suffix = NattyUI.plain(suffix)
+      prefix = kwargs[:prefix] and prefix = NattyUI.plain(prefix, ansi: false)
+      suffix = kwargs[:suffix] and suffix = NattyUI.plain(suffix, ansi: false)
       return ["#{prefix}#{suffix}"] if args.empty?
       NattyUI
         .each_line(
-          *args.map! { Ansi.blemish(NattyUI.plain(_1)) },
-          max_width: find_max_width(kwargs, prefix, suffix)
+          *args.map! { NattyUI.plain(_1, ansi: false) },
+          max_width: max_with(prefix, suffix, kwargs)
         )
         .map { "#{prefix}#{_1}#{suffix}" }
     end
 
-    def find_max_width(kwargs, prefix, suffix)
-      kwargs[:max_width] ||
-        (
-          screen_columns -
-            (
-              if prefix
-                kwargs[:prefix_width] || NattyUI.display_width(prefix)
-              else
-                0
-              end
-            ) -
-            (
-              if suffix
-                kwargs[:suffix_width] || NattyUI.display_width(suffix)
-              else
-                0
-              end
-            )
-        )
+    def max_with(prefix, suffix, kwargs)
+      mw = kwargs[:max_width] and return mw
+      mw = screen_columns
+      mw -= kwargs[:prefix_width] || NattyUI.display_width(prefix) if prefix
+      mw -= kwargs[:suffix_width] || NattyUI.display_width(suffix) if suffix
+      mw
     end
 
     def temp_func

@@ -34,7 +34,7 @@ module NattyUI
       NattyUI
         .each_line(
           *args.map! { NattyUI.embellish(_1) },
-          max_width: find_max_width(kwargs, prefix, suffix)
+          max_width: max_with(prefix, suffix, kwargs)
         )
         .map { "#{prefix}#{_1}#{suffix}" }
     end
