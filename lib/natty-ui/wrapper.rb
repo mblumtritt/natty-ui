@@ -1,15 +1,19 @@
 # frozen_string_literal: true
 
 require 'io/console'
+require_relative 'ansi'
 require_relative 'wrapper/ask'
 require_relative 'wrapper/framed'
 require_relative 'wrapper/heading'
+require_relative 'wrapper/horizontal_rule'
 require_relative 'wrapper/list_in_columns'
 require_relative 'wrapper/message'
 require_relative 'wrapper/progress'
 require_relative 'wrapper/query'
+require_relative 'wrapper/quote'
 require_relative 'wrapper/request'
 require_relative 'wrapper/section'
+require_relative 'wrapper/table'
 require_relative 'wrapper/task'
 
 module NattyUI
@@ -28,59 +32,59 @@ module NattyUI
 
     # @attribute [r] screen_size
     # @return [[Integer, Integer]] screen size as rows and columns
-    def screen_size
-      return @stream.winsize if @ws
-      [ENV['LINES'].to_i.nonzero? || 24, ENV['COLUMNS'].to_i.nonzero? || 80]
-    end
+    def screen_size = (@screen_size ||= determine_screen_size)
 
     # @attribute [r] screen_rows
     # @return [Integer] number of screen rows
-    def screen_rows
-      @ws ? @stream.winsize[0] : (ENV['LINES'].to_i.nonzero? || 24)
-    end
+    def screen_rows = screen_size[0]
 
     # @attribute [r] screen_columns
     # @return [Integer] number of screen columns
-    def screen_columns
-      @ws ? @stream.winsize[-1] : (ENV['COLUMNS'].to_i.nonzero? || 80)
-    end
+    def screen_columns = screen_size[1]
 
     # @!group Tool functions
 
-    # Print given arguments as lines to the output stream.
-    # Optionally limit the line width to given `max_width`.
+    # Print given arguments line-wise to the output stream.
     #
-    # @overload puts(..., max_width: nil)
+    # @overload puts(...)
     #   @param [#to_s] ... objects to print
-    #   @param [Integer, nil] max_width maximum line width
-    #   @comment @param [#to_s, nil] prefix line prefix
-    #   @comment @param [#to_s, nil] suffix line suffix
     #   @return [Wrapper] itself
-    def puts(*args, max_width: nil, prefix: nil, suffix: nil)
-      if args.empty?
-        @stream.puts(embellish("#{prefix}#{suffix}"))
-        @lines_written += 1
-      else
-        NattyUI.each_line(*args, max_width: max_width) do |line|
-          @stream.puts(embellish("#{prefix}#{line}#{suffix}"))
-          @lines_written += 1
-        end
-      end
+    def puts(*args, **kwargs)
+      args = prepare_print(args, kwargs)
+      @lines_written += args.size
+      @stream.puts(args)
       @stream.flush
       self
     end
-    alias add puts
+
+    # Print given arguments to the output stream.
+    #
+    # @overload print(...)
+    #   @param [#to_s] ... objects to print
+    #   @return [Wrapper] itself
+    def print(*args, **kwargs)
+      args = prepare_print(args, kwargs).to_a
+      @lines_written += args.size - 1
+      @stream.print(args.join("\n"))
+      @stream.flush
+      self
+    end
 
     # Add at least one empty line
     #
     # @param [#to_i] lines count of lines
     # @return [Wrapper] itself
     def space(lines = 1)
-      lines = [lines.to_i, 1].max
-      @lines_written += lines
+      lines = [1, lines.to_i].max
       (@stream << ("\n" * lines)).flush
+      @lines_written += lines
       self
     end
+
+    # Clear Screen
+    #
+    # @return [Wrapper] itself
+    def cls = self
 
     # @note The screen manipulation is only available in ANSI mode see {#ansi?}
     #
@@ -136,7 +140,48 @@ module NattyUI
     # @!visibility private
     alias inspect to_s
 
+    # @attribute [r] wrapper
+    # @return [Wrapper] self
+    alias wrapper itself
+
+    # @!visibility private
+    alias available_width screen_columns
+
+    # @!visibility private
+    def prefix = ''
+
+    # @return [Array<Symbol>] available glyph names
+    def glyph_names = GLYPHS.keys
+
+    #
+    # Get a pre-defined glyph
+    #
+    # @param [Symbol] name glyph name
+    # @return [String] the named glyph
+    # @return [nil] when glyph is not defined
+    def glyph(name) = GLYPHS[name]
+
     protected
+
+    def prepare_print(args, kwargs)
+      prefix = kwargs[:prefix] and prefix = NattyUI.plain(prefix, ansi: false)
+      suffix = kwargs[:suffix] and suffix = NattyUI.plain(suffix, ansi: false)
+      return ["#{prefix}#{suffix}"] if args.empty?
+      NattyUI
+        .each_line(
+          *args.map! { NattyUI.plain(_1, ansi: false) },
+          max_width: max_with(prefix, suffix, kwargs)
+        )
+        .map { "#{prefix}#{_1}#{suffix}" }
+    end
+
+    def max_with(prefix, suffix, kwargs)
+      mw = kwargs[:max_width] and return mw
+      mw = screen_columns
+      mw -= kwargs[:prefix_width] || NattyUI.display_width(prefix) if prefix
+      mw -= kwargs[:suffix_width] || NattyUI.display_width(suffix) if suffix
+      mw
+    end
 
     def temp_func
       lambda do
@@ -148,23 +193,55 @@ module NattyUI
     def initialize(stream)
       @stream = stream
       @lines_written = 0
-      @ws = stream.respond_to?(:winsize) && stream.winsize&.all?(&:positive?)
-    rescue Errno::ENOTTY
-      @ws = false
     end
 
-    def embellish(obj) = (obj = NattyUI.plain(obj)).empty? ? nil : obj
-
-    def wrapper = self
-    def prefix = nil
-    alias suffix prefix
-
-    def prefix_width = 0
-    alias suffix_width prefix_width
-    alias width prefix_width
-
-    alias available_width screen_columns
-
     private_class_method :new
+
+    private
+
+    def determine_screen_size
+      return @stream.winsize if @ws
+      if @ws.nil?
+        ret = try_fetch_winsize
+        if ret
+          @ws = true
+          Signal.trap('WINCH') { @screen_size = nil }
+          return ret
+        end
+        @ws = false
+      end
+      [ENV['LINES'].to_i.nonzero? || 24, ENV['COLUMNS'].to_i.nonzero? || 80]
+    end
+
+    def try_fetch_winsize
+      return unless @stream.respond_to?(:winsize)
+      ret = @stream.winsize
+      ret&.all?(&:positive?) ? ret : nil
+    rescue SystemCallError
+      nil
+    end
+
+    GLYPHS = {
+      default: "#{Ansi[:bold, 255]}•#{Ansi::RESET}",
+      information: "#{Ansi[:bold, 119]}𝒊#{Ansi::RESET}",
+      warning: "#{Ansi[:bold, 221]}!#{Ansi::RESET}",
+      error: "#{Ansi[:bold, 208]}𝙓#{Ansi::RESET}",
+      completed: "#{Ansi[:bold, 82]}✓#{Ansi::RESET}",
+      failed: "#{Ansi[:bold, 196]}𝑭#{Ansi::RESET}",
+      task: "#{Ansi[:bold, 39]}➔#{Ansi::RESET}",
+      query: "#{Ansi[:bold, 39]}▸#{Ansi::RESET}"
+    }.compare_by_identity.freeze
+
+    # GLYPHS = {
+    #   default: '●',
+    #   information: '🅸 ',
+    #   warning: '🆆 ',
+    #   error: '🅴 ',
+    #   completed: '✓',
+    #   failed: '🅵 ',
+    #   task: '➔',
+    #   query: '🆀 '
+    # }.compare_by_identity.freeze
+    private_constant :GLYPHS
   end
 end

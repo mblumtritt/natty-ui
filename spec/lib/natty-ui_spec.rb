@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative 'helper'
-
 RSpec.describe NattyUI do
   describe '.in_stream' do
     it 'is STDIN by default' do
@@ -112,16 +110,22 @@ RSpec.describe NattyUI do
       ).to eq('Hello World!')
     end
 
+    it 'removes additionally ANSI control codes' do
+      expect(
+        NattyUI.plain("\e[1K\e[0G[[bold]]Hello [[blink]]World!", ansi: :remove)
+      ).to eq('Hello World!')
+    end
+
     it 'does not remove escaped and invalid attributes' do
-      expect(NattyUI.plain('[[/some test]] [[another test]]')).to eq(
-        '[[some test]] [[another test]]'
+      expect(NattyUI.plain('[[/some test]] Hello [[another test]]')).to eq(
+        '[[some test]] Hello [[another test]]'
       )
     end
   end
 
   describe '.display_width' do
     it 'returns the correct dislay width of a given string' do
-      expect(NattyUI.display_width('123❌67890')).to be 10
+      expect(NattyUI.display_width("\e[s123❌67[[bold]]890")).to be 10
     end
   end
 

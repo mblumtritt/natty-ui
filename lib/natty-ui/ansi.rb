@@ -5,44 +5,85 @@ module NattyUI
   # Helper module for ANSI escape codes.
   #
   module Ansi
+    # ANSI code to move the cursor down.
+    CURSOR_DOWN = "\e[B"
+
+    # ANSI code to move the cursor up.
+    CURSOR_UP = "\e[A"
+
+    # ANSI code to move the cursor left.
+    CURSOR_LEFT = "\e[D"
+
+    # ANSI code to move the cursor right.
+    CURSOR_RIGHT = "\e[C"
+
+    # ANSI code to move the cursor to beginning of the line below.
+    CURSOR_LINE_DOWN = "\e[E"
+
+    # ANSI code to move the cursor to beginning of the line up.
+    CURSOR_LINE_UP = "\e[F"
+
+    # ANSI code to hide the cursor.
+    CURSOR_HIDE = "\e[?25l"
+
+    # ANSI code to show the cursor (again).
+    CURSOR_SHOW = "\e[?25h"
+
+    # ANSI code to save current cursor position.
+    CURSOR_SAVE_POS = "\e[s"
+
+    # ANSI code to restore saved cursor position.
+    CURSOR_RESTORE_POS = "\e[u"
+
+    # ANSI code to set cursor position on upper left corner.
+    CURSOR_HOME = "\e[H"
+
+    # ANSI code to erase current line and position to first column.
+    LINE_CLEAR = "\e[1K\e[0G"
+
+    # ANSI code to erase current line.
+    LINE_ERASE = "\e[2K"
+
+    # ANSI code to erase to end of current line.
+    LINE_ERASE_TO_END = "\e[0K"
+
+    # ANSI code to erase to begin of current line.
+    LINE_ERASE_TO_BEGIN = "\e[1K"
+
+    # ANSI code to save current screen state.
+    SCREEN_SAVE = "\e[?47h"
+
+    # ANSI code to restore screen state.
+    SCREEN_RESTORE = "\e[?47l"
+
+    # ANSI code to erase screen.
+    SCREEN_ERASE = "\e[2J"
+
+    # ANSI code to erase screen below current cursor position.
+    SCREEN_ERASE_BELOW = "\e[0J"
+
+    # ANSI code to erase screen above current cursor position.
+    SCREEN_ERASE_ABOVE = "\e[1J"
+
+    # ANSI code to alternate screen
+    SCREEN_ALTERNATIVE = "\e[?1049h"
+
+    # ANSI code to set alternate screen off.
+    SCREEN_ALTERNATIVE_OFF = "\e[?1049l"
+
+    # ANSI code to reset all attributes.
+    RESET = "\e[0m"
+
+    # @!visibility private
+    CURSOR_RIGHT_ALIGNED = "\e[9999G\e[D\e[C"
+
+    # @!visibility private
+    BLANK_SLATE = "\e[0m\e[s\e[?47h\e[H\e[2J"
+
+    # @!visibility private
+    UNBLANK_SLATE = "\e[?47l\e[u\e[0m"
+
     class << self
-      # @return [String] ANSI code to reset all attributes
-      def reset = "\e[0m"
-
-      # @return [String] ANSI code to save current screen state
-      def screen_save = "\e[?47h"
-
-      # @return [String] ANSI code to restore screen state
-      def screen_restore = "\e[?47l"
-
-      # @return [String] ANSI code to alternate screen
-      def screen_alternative = "\e[?1049h"
-
-      # @return [String] ANSI code to set alternate screen off
-      def screen_alternative_off = "\e[?1049l"
-
-      # @return [String] ANSI code to erase screen
-      def screen_erase = "\e[2J"
-
-      # @return [String] ANSI code to erase screen below current cursor position
-      def screen_erase_below = "\e[0J"
-
-      # @return [String] ANSI code to erase screen above current cursor position
-      def screen_erase_above = "\e[1J"
-
-      # @return [String] ANSI code to erase current line
-      def line_erase = "\e[2K"
-
-      # @return [String] ANSI code to erase to end of current line
-      def line_erase_to_end = "\e[0K"
-
-      # @return [String] ANSI code to erase to begin of current line
-      def line_erase_to_begin = "\e[1K"
-
-      # @return [String] ANSI code to erase current line and position to first
-      #   column
-      def line_clear = "\e[1K\e[0G"
-
       # @param lines [Integer] number of lines
       # @return [String] ANSI code to move the cursor up
       def cursor_up(lines = nil) = "\e[#{lines}A"
@@ -60,37 +101,18 @@ module NattyUI
       def cursor_left(columns = nil) = "\e[#{columns}D"
 
       # @param lines [Integer] number of lines
-      # @return [String] ANSI code to move the cursor to beginning of the line
-      #   some lines down
+      # @return [String] ANSI code to move the cursor to beginning of some lines
+      #   below
       def cursor_line_down(lines = nil) = "\e[#{lines}E"
 
       # @param lines [Integer] number of lines
-      # @return [String] ANSI code to move the cursor to beginning of the line
-      #   some lines up
+      # @return [String] ANSI code to move the cursor to beginning of some lines
+      #   up
       def cursor_line_up(lines = nil) = "\e[#{lines}F"
 
-      # @param columns [Integer] number of columns
+      # @param column [Integer] column number
       # @return [String] ANSI code to move the cursor to given column
-      def cursor_column(columns = nil) = "\e[#{columns}G"
-
-      # @return [String] ANSI code positioning the cursor on right hand side of
-      #   the terminal
-      def cursor_right_aligned = "\e[9999G\e[D\e[C"
-
-      # @return [String] ANSI code to hide the cursor
-      def cursor_hide = "\e[?25l"
-
-      # @return [String] ANSI code to show the cursor (again)
-      def cursor_show = "\e[?25h"
-
-      # @return [String] ANSI code to save current cursor position
-      def cursor_save_pos = "\e[s"
-
-      # @return [String] ANSI code to restore saved cursor position
-      def cursor_restore_pos = "\e[u"
-
-      # @return [String] ANSI code to set cursor position on upper left corner
-      def cursor_home = "\e[H"
+      def cursor_column(column = nil) = "\e[#{column}G"
 
       # @param row [Integer] row to set cursor
       # @param column [Integer] column to set cursor
@@ -100,17 +122,17 @@ module NattyUI
         column ? "\e[;#{column}H" : "\e[H"
       end
 
-      # Decorate given `obj` with ANSI `attributes`.
+      # Decorate given `str` with ANSI `attributes`.
       #
       # @see []
       #
-      # @param obj [#to_s] object to be decorated
+      # @param str [#to_s] object to be decorated
       # @param attributes [Symbol, String] attribute names to be used
       # @param reset [Boolean] whether to include reset code for ANSI attributes
-      # @return [String] `obj` converted and decorated with the ANSI `attributes`
-      def embellish(obj, *attributes, reset: true)
+      # @return [String] `str` converted and decorated with the ANSI `attributes`
+      def embellish(str, *attributes, reset: true)
         attributes = self[*attributes]
-        attributes.empty? ? "#{obj}" : "#{attributes}#{obj}#{"\e[0m" if reset}"
+        attributes.empty? ? str.to_s : "#{attributes}#{str}#{"\e[0m" if reset}"
       end
 
       # Remove ANSI attribtes from given string.
@@ -229,9 +251,7 @@ module NattyUI
       def try_convert(attributes)
         return if (attributes = attributes.to_s.split).empty?
         "\e[#{
-          attributes
-            .map { |arg| ATTRIBUTES[arg] || color(arg) || return }
-            .join(';')
+          attributes.map { ATTRIBUTES[_1] || color(_1) || return }.join(';')
         }m"
       end
 
@@ -262,7 +282,7 @@ module NattyUI
           end
         val.delete_prefix!('#')
         case val.size
-        when 2
+        when 1, 2
           "#{base}5;#{val.hex}" if /\A[[:xdigit:]]+\z/.match?(val)
         when 3
           if /\A[[:xdigit:]]+\z/.match?(val)
@@ -433,7 +453,7 @@ module NattyUI
         ul_bright_magenta: '58;2;255;0;255',
         ul_bright_cyan: '58;2;0;255;255',
         ul_bright_white: '58;2;255;255;255'
-      }.tap { |ret| ret.merge!(ret.transform_keys(&:to_s)).freeze }
+      }.tap { _1.merge!(_1.transform_keys(&:to_s)).freeze }
     private_constant :ATTRIBUTES
   end
 end

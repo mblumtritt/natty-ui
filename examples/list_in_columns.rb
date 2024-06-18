@@ -2,8 +2,6 @@
 
 require 'natty-ui'
 
-UI = NattyUI::StdOut
-
 LOREM = <<~LOREM
   Lorem ipsum dolor sit
   amet, consectetur adipisicing
@@ -14,7 +12,7 @@ LOREM = <<~LOREM
   nostrud exercitation ullamco
   laboris nisi ut aliquip ex
   ea commodo [[bold]]consequat[[/]]. Duis
-  aute irure dolor in
+  aute irure [[bold green]]dolor[[/]] in
   reprehenderit in voluptate
   velit [[underline]]esse cillum[[/]] dolore eu
   fugiat nulla pariatur.
@@ -24,20 +22,15 @@ LOREM = <<~LOREM
   deserunt mollit anim id
   est laborum.
 LOREM
-WORDS = LOREM.split(/\W+/).uniq.sort!.freeze
 
-UI.space
-UI.h2 'Print a list in columns'
-UI.space
+ui.space
+ui.h1 'Print a list in columns'
+ui.space
 
-UI.h3 'Lorem ipsum lines'
-UI.ls LOREM.lines(chomp: true)
-UI.space
+ui.h2 'Lorem ipsum lines (compact)'
+ui.ls LOREM.lines(chomp: true), glyph: 1
+ui.space
 
-UI.h3 'Lorem ipsum word list (compact)'
-UI.ls WORDS
-UI.space
-
-UI.h3 'Lorem ipsum word list (row-wise)'
-UI.ls WORDS, compact: false
-UI.space
+ui.h2 'Lorem ipsum lines (row-wise)'
+ui.ls LOREM.lines(chomp: true), glyph: 1, compact: false
+ui.space

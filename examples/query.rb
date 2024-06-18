@@ -2,42 +2,36 @@
 
 require 'natty-ui'
 
-UI = NattyUI::StdOut
+ui.space
+ui.h1 'NattyUI Query Demo'
+ui.space
 
-UI.space
-UI.h1 'NattyUI Query Demo'
-UI.space
+# little helper
+def abort!
+  ui.failed 'aborted'
+  exit
+end
 
-unless UI.ask('Do you like to continute? (Y|n)')
-  UI.failed 'aborted'
+unless ui.ask('Do you like to continute? (Y|n): ')
+  ui.info 'ok, try later!'
   exit
 end
 
 choice =
-  UI.query(
+  ui.query(
     'Which fruits do you prefer?',
     'Apples',
-    'Bananas',
+    '[[yellow]]Bananas[[/]]',
     'Cherries',
-    x: 'No fruits',
-    result: :choice
+    x: 'No fruits'
   )
-unless choice
-  UI.failed 'aborted'
-  exit false
-end
-UI.info "Your choice: #{choice}"
+abort! unless choice
+ui.info "Your choice: #{choice}"
 
-answer = UI.request 'Are you okay?'
-unless answer
-  UI.failed 'aborted'
-  exit false
-end
-UI.info "Your answer: #{answer.inspect}"
+answer = ui.request 'What is your favorite verb?: '
+abort! unless answer
+ui.info "Your answer: #{answer.inspect}"
 
-answer = UI.request('What is your current password?', password: true)
-unless answer
-  UI.failed 'aborted'
-  exit false
-end
-UI.info "I'll keep your secret!"
+answer = ui.request('What is your current password?:', password: true)
+abort! unless answer
+ui.info "I'll keep your secret!"

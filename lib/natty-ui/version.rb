@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
 module NattyUI
-  # @return [String] the version number of the gem
-  VERSION = '0.7.0'
+  # The version number of the gem.
+  VERSION = '0.8.0'
 end

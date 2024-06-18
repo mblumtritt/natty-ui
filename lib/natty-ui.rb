@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'readline'
 unless defined?(Reline)
   # load the Reline::Unicode part only
   # @!visibility private
@@ -15,7 +14,7 @@ require_relative 'natty-ui/ansi_wrapper'
 
 #
 # Module to create beautiful, nice, nifty, fancy, neat, pretty, cool, lovely,
-# natty user interfaces for your CLI.
+# natty user interfaces for your CLI application.
 #
 # It creates {Wrapper} instances which can optionally support ANSI. The UI
 # consists of {Wrapper::Element}s and {Wrapper::Section}s for different
@@ -27,6 +26,9 @@ module NattyUI
     # @return [IO] IO stream used to read input
     # @raise [TypeError] when a non-readable stream will be assigned
     attr_reader :in_stream
+
+    # @return [Wrapper, Wrapper::Element] active UI element
+    attr_reader :element
 
     # @param [IO] stream to read input
     def in_stream=(stream)
@@ -90,23 +92,28 @@ module NattyUI
           end
           match.empty? or next "[[#{match}]]"
           reset = false
-          Ansi.reset
+          Ansi::RESET
         end
-      reset ? "#{ret}#{Ansi.reset}" : ret
+      reset ? "#{ret}#{Ansi::RESET}" : ret
     end
 
     # Remove embedded attribute descriptions from given string.
     #
     # @param [#to_s] str string to edit
-    # @return ]String] edited string
-    def plain(str)
-      str
-        .to_s
-        .gsub(/(\[\[((?~\]\]))\]\])/) do
-          match = Regexp.last_match[2]
-          next match.empty? ? nil : "[[#{match}]]" if match.delete_prefix!('/')
-          Ansi.try_convert(match) ? nil : "[[#{match}]]"
-        end
+    # @param [:keep,:remove] ansi keep or remove ANSI codes too
+    # @return [String] edited string
+    def plain(str, ansi: :keep)
+      str =
+        str
+          .to_s
+          .gsub(/(\[\[((?~\]\]))\]\])/) do
+            match = Regexp.last_match[2]
+            if match.delete_prefix!('/')
+              next match.empty? ? nil : "[[#{match}]]"
+            end
+            Ansi.try_convert(match) ? nil : "[[#{match}]]"
+          end
+      ansi == :keep ? str : Ansi.blemish(str)
     end
 
     # Calculate monospace (display) width of given String.
@@ -115,7 +122,8 @@ module NattyUI
     # @param [#to_s] str string to calculate
     # @return [Integer] the display size
     def display_width(str)
-      (str = str.to_s).empty? ? 0 : Reline::Unicode.calculate_width(str)
+      return 0 if (str = str.to_s).empty?
+      Reline::Unicode.calculate_width(plain(str), true)
     end
 
     # Convert given arguments into strings and yield each line.
@@ -133,7 +141,7 @@ module NattyUI
     def each_line(*strs, max_width: nil, &block)
       return to_enum(__method__, *strs, max_width: max_width) unless block
       if max_width.nil?
-        strs.each { |str| str.to_s.each_line(chomp: true, &block) }
+        strs.each { _1.to_s.each_line(chomp: true, &block) }
         return nil
       end
       return if (max_width = max_width.to_i) <= 0
@@ -149,37 +157,28 @@ module NattyUI
       nil
     end
 
-    # Read user input line from {.in_stream}.
+    # Read next raw key (keyboard input) from {in_stream}.
     #
-    # This method uses Ruby's Readline implementation (default gem). See there
-    # for more information.
-    #
-    # @see .valid_out?
-    #
-    # @param [#to_s] prompt input prompt
-    # @param [false, nil, #call] completion disable autocompletion, use default
-    #   autocompletion or use given completion proc
-    # @param [IO] stream writeable IO used to display output
-    # @return [String] user input line
-    # @return [nil] when user interrupted input with `^C` or `^D`
-    def readline(prompt = nil, completion: false, stream: StdOut.stream)
-      cp = Readline.completion_proc
-      Readline.completion_proc = completion == false ? ->(*_) {} : completion
-      Readline.output = stream
-      Readline.input = @in_stream
-      Readline.readline(prompt.to_s)
-    rescue Interrupt
-      stream.puts
-      nil
-    ensure
-      Readline.completion_proc = cp
+    # @return [String] read key
+    def read_key
+      return @in_stream.getch unless defined?(@in_stream.getc)
+      return @in_stream.getc unless defined?(@in_stream.raw)
+      @in_stream.raw do |raw|
+        key = raw.getc
+        while (nc = raw.read_nonblock(1, exception: false))
+          nc.is_a?(String) ? key += nc : break
+        end
+        key
+      end
     end
 
     private
 
     def wrapper_class(stream, ansi)
       return AnsiWrapper if ansi == true
-      return Wrapper if ansi == false || ENV.key?('NO_COLOR')
+      if ansi == false || ENV.key?('NO_COLOR') || ENV['TERM'] == 'dumb'
+        return Wrapper
+      end
       stream.tty? ? AnsiWrapper : Wrapper
     end
 
@@ -196,5 +195,10 @@ module NattyUI
   # Instance for standard error output.
   StdErr = stderr_is_stdout? ? StdOut : new(STDERR)
 
+  @element = StdOut
   self.in_stream = STDIN
 end
+
+# @see NattyUI.element
+# @return [NattyUI::Wrapper, NattyUI::Wrapper::Element] active UI element
+def ui = NattyUI.element unless defined?(ui)

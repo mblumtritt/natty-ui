@@ -10,10 +10,9 @@ Gem::Specification.new do |spec|
       'natty user interface you like to have for your CLI.'
   spec.description = <<~DESCRIPTION
     This is the beautiful, nice, nifty, fancy, neat, pretty, cool, lovely,
-    natty user interface you like to have for your command line interfaces
-    (CLI).
-    Here you find elegant, simple and beautiful tools that enhance your
-    command line application functionally and aesthetically.
+    natty user interface tool you like to have for your command line applications.
+    It contains elegant, simple and beautiful features that enhance your
+    command line interfaces functionally and aesthetically.
   DESCRIPTION
 
   spec.author = 'Mike Blumtritt'

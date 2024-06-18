@@ -5,32 +5,25 @@ module NattyUI
   # Features of {NattyUI} - methods to display natty elements.
   #
   module Features
-    # Print a horizontal rule
-    #
-    # @param [#to_s] symbol string to build the horizontal rule
-    # @return [Wrapper, Wrapper::Element] itself
-    def hr(symbol = '═')
-      symbol = symbol.to_s
-      size = _plain_width(symbol)
-      return self if size.zero?
-      msg = symbol * ((available_width - 1) / size)
-      return puts(msg, prefix: Ansi[39], suffix: Ansi.reset) if wrapper.ansi?
-      puts(msg)
+    # @return [Wrapper] assigned output stream wrapper
+    def wrapper
+      return @wrapper if @wrapper
+      @wrapper = @parent
+      @wrapper = @wrapper.parent until @wrapper.is_a?(Wrapper)
+      @wrapper
     end
 
     protected
 
-    def _plain_width(str) = NattyUI.display_width(NattyUI.plain(str))
-    def _blemish_width(str) = NattyUI.display_width(Ansi.blemish(str))
-
     def _element(type, ...)
-      wrapper.class.const_get(type).__send__(:new, self).__send__(:_call, ...)
+      wrapper.class.const_get(type).__send__(:new, self).__send__(:call, ...)
     end
 
-    def _section(owner, type, args, **opts, &block)
-      sec = wrapper.class.const_get(type).__send__(:new, owner, **opts)
+    def _section(type, args = nil, owner: nil, **opts, &block)
+      sec = wrapper.class.const_get(type).__send__(:new, owner || self, **opts)
       sec.puts(*args) if args && !args.empty?
-      block ? sec.__send__(:_call, &block) : sec
+      sec.__send__(:call, &block) if block
+      sec
     end
   end
 end

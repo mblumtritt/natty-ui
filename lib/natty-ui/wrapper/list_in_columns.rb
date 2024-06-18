@@ -11,10 +11,38 @@ module NattyUI
     # The non-compact format prints all columns in same width and order the list
     # items row-wise.
     #
+    # @example simple compact list
+    #   ui.ls('apple', 'banana', 'blueberry', 'pineapple', 'strawberry')
+    #   # => apple   banana   blueberry   pineapple   strawberry
+    #
+    # @example (unordered) list with red dot
+    #   ui.ls('apple', 'banana', 'blueberry', 'pineapple', 'strawberry', glyph: '[[red]]•[[/]]')
+    #   # => • apple   • banana   • blueberry   • pineapple   • strawberry
+    #
+    # @example ordered list
+    #   ui.ls('apple', 'banana', 'blueberry', 'pineapple', 'strawberry', glyph: 1)
+    #   # => 1 apple   2 banana   3 blueberry   4 pineapple   5 strawberry
+    #
+    # @example ordered list, start at 100
+    #   ui.ls('apple', 'banana', 'blueberry', 'pineapple', 'strawberry', glyph: 100)
+    #   # => 1 apple   2 banana   3 blueberry   4 pineapple   5 strawberry
+    #
+    # @example ordered list using, uppercase characters
+    #   ui.ls('apple', 'banana', 'blueberry', 'pineapple', 'strawberry', glyph: :A)
+    #   # => A apple   B banana   C blueberry   D pineapple   E strawberry
+    #
+    # @example ordered list, using lowercase characters
+    #   ui.ls('apple', 'banana', 'blueberry', 'pineapple', 'strawberry', glyph: :a)
+    #   # => a apple   b banana   c blueberry   d pineapple   e strawberry
+    #
     # @param [Array<#to_s>] args items to print
     # @param [Boolean] compact whether to use compact format
+    # @param [nil,#to_s,Integer,Symbol] glyph optional glyph used as element
+    #   prefix
     # @return [Wrapper, Wrapper::Element] itself
-    def ls(*args, compact: true) = _element(:ListInColumns, args, compact)
+    def ls(*args, compact: true, glyph: nil)
+      _element(:ListInColumns, args, compact, glyph)
+    end
   end
 
   class Wrapper
@@ -25,22 +53,48 @@ module NattyUI
     class ListInColumns < Element
       protected
 
-      def _call(list, compact)
+      def call(list, compact, glyph)
+        return @parent if list.empty?
         list.flatten!
-        return parent if list.empty?
-        list.map! { |item| Item.new(item = item.to_s, _plain_width(item)) }
-        if compact
-          each_compacted(list, available_width) { |line| parent.puts(line) }
-        else
-          each(list, available_width) { |line| parent.puts(line) }
+        cvt = cvt(glyph, list.size)
+        list.map! do |item|
+          Item.new(item = cvt[item], NattyUI.display_width(item))
         end
-        parent
+        if compact
+          each_compacted(list, available_width - 1) { @parent.puts(_1) }
+        else
+          each(list, available_width - 1) { @parent.puts(_1) }
+        end
+        @parent
+      end
+
+      def cvt(glyph, size)
+        case glyph
+        when nil, false
+          ->(s) { NattyUI.embellish(s) }
+        when :hex
+          pad = size.to_s(16).size
+          glyph = 0
+          lambda do |s|
+            "#{(glyph += 1).to_s(16).rjust(pad, '0')} #{NattyUI.embellish(s)}"
+          end
+        when Integer
+          pad = (glyph + size).to_s.size
+          glyph -= 1
+          ->(s) { "#{(glyph += 1).to_s.rjust(pad)} #{NattyUI.embellish(s)}" }
+        when Symbol
+          lambda do |s|
+            "#{t = glyph; glyph = glyph.succ; t} #{NattyUI.embellish(s)}"
+          end
+        else
+          ->(s) { "#{glyph} #{NattyUI.embellish(s)}" }
+        end
       end
 
       def each(list, max_width)
         width = list.max_by(&:width).width + 3
         list.each_slice(max_width / width) do |slice|
-          yield(slice.map { |item| item.to_s(width) }.join)
+          yield(slice.map { _1.to_s(width) }.join)
         end
       end
 
@@ -58,7 +112,7 @@ module NattyUI
         widths = [list.max_by(&:width).width]
         1.upto(list.size - 1) do |slice_size|
           candidate = list.each_slice(list.size / slice_size).to_a
-          cwidths = candidate.map { |ary| ary.max_by(&:width).width + 3 }
+          cwidths = candidate.map { _1.max_by(&:width).width + 3 }
           cwidths[-1] -= 3
           break if cwidths.sum > max_width
           found = candidate
@@ -73,9 +127,11 @@ module NattyUI
       end
 
       Item =
-        Data.define(:str, :width) do
+        Struct.new(:str, :width) do
           def to_s(in_width) = "#{str}#{' ' * (in_width - width)}"
         end
+
+      private_constant :Item
     end
   end
 end

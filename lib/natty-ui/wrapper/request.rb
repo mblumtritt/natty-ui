@@ -23,21 +23,32 @@ module NattyUI
     class Request < Element
       protected
 
-      def _call(question, password)
-        return read_password(question) if password
-        NattyUI.readline(prompt(question), stream: wrapper.stream)
-      ensure
-        finish
-      end
-
-      def read_password(question)
-        (wrapper.stream << prompt(question)).flush
-        NattyUI.in_stream.getpass
-      rescue Interrupt
+      def call(question, password)
+        draw(question)
+        return NattyUI.in_stream.getpass if password
+        NattyUI.in_stream.gets(chomp: true)
+      rescue Interrupt, SystemCallError
         nil
+      ensure
+        (wrapper = @parent.wrapper).ansi? and
+          (wrapper.stream << ANSI_FINISH).flush
       end
 
-      def prompt(question) = "#{prefix}▶︎ #{question}: "
+      def draw(question)
+        wrapper = @parent.wrapper
+        glyph = wrapper.glyph(:query)
+        @parent.print(
+          question,
+          prefix: "#{glyph} #{Ansi[255]}",
+          prefix_width: NattyUI.display_width(glyph) + 1,
+          suffix_width: 0
+        )
+        (wrapper.stream << ANSI_PREFIX).flush if wrapper.ansi?
+      end
+
+      ANSI_PREFIX = Ansi::RESET + Ansi[:italic]
+      ANSI_FINISH = Ansi::RESET + Ansi::CURSOR_UP + Ansi::LINE_ERASE
+      private_constant :ANSI_PREFIX, :ANSI_FINISH
     end
   end
 end

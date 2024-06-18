@@ -13,13 +13,13 @@ module NattyUI
     # The default for `yes` includes `ENTER` and `RETURN` key
     #
     # @example
-    #   case sec.ask('Do you like the NattyUI gem?')
+    #   case ui.ask('Do you like the NattyUI gem?')
     #   when true
-    #     sec.info('Yeah!!')
+    #     ui.info('Yeah!!')
     #   when false
-    #     sec.write("That's pity!")
+    #     ui.write("That's pity!")
     #   else
-    #     sec.failed('You should have an opinion!')
+    #     ui.failed('You should have an opinion!')
     #   end
     #
     # @see NattyUI.in_stream
@@ -28,7 +28,7 @@ module NattyUI
     # @param yes [#to_s] chars which will be used to answer 'Yes'
     # @param no [#to_s] chars which will be used to answer 'No'
     # @return [Boolean] whether the answer is yes or no
-    # @return [nil] when input was aborted with `ESC`, `^C` or `^D`
+    # @return [nil] when input was aborted with `^C` or `^D`
     def ask(question, yes: "jotsyd\r\n", no: 'n')
       _element(:Ask, question, yes, no)
     end
@@ -42,27 +42,33 @@ module NattyUI
     class Ask < Element
       protected
 
-      def _call(question, yes, no)
+      def call(question, yes, no)
         yes, no = grab(yes, no)
-        query(question)
-        read(yes, no)
-      ensure
-        finish
-      end
-
-      def query(question)
-        (wrapper.stream << prefix << "▶︎ #{question} ").flush
-      end
-
-      def finish = (wrapper.stream << "\n").flush
-
-      def read(yes, no)
+        draw(question)
         while true
           char = NattyUI.in_stream.getch
-          return if "\3\4\e".include?(char)
+          return if "\3\4".include?(char)
           return true if yes.include?(char)
           return false if no.include?(char)
         end
+      rescue Interrupt, SystemCallError
+        nil
+      ensure
+        if @parent.ansi?
+          (wrapper.stream << Ansi::LINE_CLEAR).flush
+        else
+          @parent.puts
+        end
+      end
+
+      def draw(question)
+        glyph = wrapper.glyph(:query)
+        @parent.print(
+          question,
+          prefix: "#{glyph} #{Ansi[255]}",
+          prefix_width: NattyUI.display_width(glyph) + 1,
+          suffix_width: 0
+        )
       end
 
       def grab(yes, no)

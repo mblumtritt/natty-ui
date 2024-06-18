@@ -7,24 +7,12 @@ module NattyUI
     # Creates a default section and prints given arguments as lines
     # into the section.
     #
-    # @param [Array<#to_s>] args objects to print
+    # @param [Array<#to_s>] args optional objects to print
     # @yieldparam [Wrapper::Section] section the created section
     # @return [Object] the result of the code block
     # @return [Wrapper::Section] itself, when no code block is given
-    def section(*args, &block)
-      _section(self, :Section, args, prefix: '  ', suffix: '  ', &block)
-    end
+    def section(*args, &block) = _section(:Section, args, prefix: '  ', &block)
     alias sec section
-
-    # Creates a quotation section and prints given arguments as lines
-    # into the section.
-    #
-    # @param (see #section)
-    # @yieldparam (see #section)
-    # @return (see #section)
-    def quote(*args, &block)
-      _section(self, :Section, args, prefix: '▍ ', prefix_attr: 39, &block)
-    end
   end
 
   class Wrapper
@@ -34,46 +22,52 @@ module NattyUI
     # A section can contain other elements and sections.
     #
     # @see Features#section
-    # @see Features#quote
     class Section < Element
-      # Close the section.
-      #
-      # @return [Section] itself
-      def close = _close(:closed)
+      # @return [Integer] available columns count within the section
+      def available_width
+        @available_width ||=
+          @parent.available_width - @prefix_width - @suffix_width
+      end
 
-      # Print given arguments as lines into the section.
-      # Optionally limit the line width to given `max_width`.
+      # Print given arguments line-wise into the section.
       #
-      # @overload puts(..., max_width: nil)
+      # @overload puts(...)
       #   @param [#to_s] ... objects to print
-      #   @param [Integer, nil] max_width maximum line width
-      #   @comment @param [#to_s, nil] prefix line prefix
-      #   @comment @param [#to_s, nil] suffix line suffix
       #   @return [Section] itself
-      def puts(*args, max_width: nil, prefix: nil, suffix: nil)
+      def puts(*args, **kwargs)
         return self if @status
         @parent.puts(
           *args,
-          max_width: max_width,
-          prefix: prefix ? "#{@prefix}#{prefix}" : @prefix,
-          suffix: suffix ? "#{suffix}#{@suffix}" : @suffix
+          prefix: "#{@prefix}#{kwargs[:prefix]}",
+          prefix_width: @prefix_width + kwargs[:prefix_width].to_i,
+          suffix: "#{kwargs[:suffix]}#{@suffix}",
+          suffix_width: @suffix_width + kwargs[:suffix_width].to_i
         )
         self
       end
-      alias add puts
+
+      # Print given arguments into the section.
+      #
+      # @overload print(...)
+      #   @param [#to_s] ... objects to print
+      #   @return [Section] itself
+      def print(*args, **kwargs)
+        return self if @status
+        @parent.print(
+          *args,
+          prefix: "#{@prefix}#{kwargs[:prefix]}",
+          prefix_width: @prefix_width + kwargs[:prefix_width].to_i,
+          suffix: "#{kwargs[:suffix]}#{@suffix}",
+          suffix_width: @suffix_width + kwargs[:suffix_width].to_i
+        )
+        self
+      end
 
       # Add at least one empty line
       #
       # @param [#to_i] lines count of lines
       # @return [Section] itself
-      def space(lines = 1)
-        @parent.puts(
-          "\n" * [lines.to_i, 1].max,
-          prefix: @prefix,
-          suffix: @suffix
-        )
-        self
-      end
+      def space(lines = 1) = puts("\n" * [1, lines.to_i].max)
 
       # @note The screen manipulation is only available in ANSI mode see {#ansi?}
       #
@@ -90,12 +84,20 @@ module NattyUI
       # @return [Object] block result
       def temporary = block_given? ? yield(self) : self
 
+      # @!visibility private
+      def inspect = @status ? "#{_to_s[..-2]} status=#{@status}>" : _to_s
+
       protected
 
-      def initialize(parent, prefix: nil, suffix: nil, **opts)
-        super(parent, **opts)
+      def initialize(
+        parent,
+        prefix:,
+        prefix_width: NattyUI.display_width(prefix)
+      )
+        super(parent)
         @prefix = prefix
-        @suffix = suffix
+        @prefix_width = prefix_width
+        @suffix_width = 0
       end
     end
   end
