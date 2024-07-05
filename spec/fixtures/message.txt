@@ -1,0 +1,34 @@
+
+═══════ NattyUI: Message Types ═══════
+
+╭───────────────────────────────────────────────────────────────────────────────
+│ 𝒊 Informative Message
+│   Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod t
+│   empor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam
+│   , quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo 
+│   consequat. 
+│ ! Warning Message
+│   Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod t
+│   empor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam
+│   , quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo 
+│   consequat. 
+│   ╭─────────────────────────────────────────────────────────────────────────
+│   │ >>> Here some important information <<<
+│   ╰─────────────────────────────────────────────────────────────────────────
+│ 𝙓 Error Message
+│   Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod t
+│   empor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam
+│   , quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo 
+│   consequat. 
+│ 𝑭 Fail Message
+│   Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod t
+│   empor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam
+│   , quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo 
+│   consequat. 
+│ 💡 Custom Message
+│    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod 
+│    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veni
+│    am, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commo
+│    do consequat. 
+╰───────────────────────────────────────────────────────────────────────────────
+

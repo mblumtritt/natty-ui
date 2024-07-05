@@ -2,6 +2,7 @@
 
 require 'io/console'
 require_relative 'ansi'
+require_relative 'wrapper/animate'
 require_relative 'wrapper/ask'
 require_relative 'wrapper/framed'
 require_relative 'wrapper/heading'
@@ -65,7 +66,7 @@ module NattyUI
     def print(*args, **kwargs)
       args = prepare_print(args, kwargs).to_a
       @lines_written += args.size - 1
-      @stream.print(args.join("\n"))
+      @stream.print(*args)
       @stream.flush
       self
     end
@@ -148,7 +149,10 @@ module NattyUI
     alias available_width screen_columns
 
     # @!visibility private
-    def prefix = ''
+    alias rcol screen_columns
+
+    # @!visibility private
+    def prefix = nil
 
     # @return [Array<Symbol>] available glyph names
     def glyph_names = GLYPHS.keys
@@ -164,23 +168,24 @@ module NattyUI
     protected
 
     def prepare_print(args, kwargs)
-      prefix = kwargs[:prefix] and prefix = NattyUI.plain(prefix, ansi: false)
-      suffix = kwargs[:suffix] and suffix = NattyUI.plain(suffix, ansi: false)
+      _prepare_print(args, kwargs) { NattyUI.plain(_1, ansi: false) }
+    end
+
+    def _prepare_print(args, kwargs, &cvt)
+      prefix = kwargs[:prefix] and prefix = prefix.empty? ? '' : cvt[prefix]
+      suffix = kwargs[:suffix] and suffix = suffix.empty? ? '' : cvt[suffix]
       return ["#{prefix}#{suffix}"] if args.empty?
       NattyUI
         .each_line(
-          *args.map! { NattyUI.plain(_1, ansi: false) },
-          max_width: max_with(prefix, suffix, kwargs)
+          *args.map!(&cvt),
+          max_width:
+            kwargs.fetch(:max_width) do
+              screen_columns -
+                kwargs.fetch(:prefix_width) { NattyUI.display_width(prefix) } -
+                kwargs.fetch(:suffix_width) { NattyUI.display_width(suffix) }
+            end
         )
         .map { "#{prefix}#{_1}#{suffix}" }
-    end
-
-    def max_with(prefix, suffix, kwargs)
-      mw = kwargs[:max_width] and return mw
-      mw = screen_columns
-      mw -= kwargs[:prefix_width] || NattyUI.display_width(prefix) if prefix
-      mw -= kwargs[:suffix_width] || NattyUI.display_width(suffix) if suffix
-      mw
     end
 
     def temp_func

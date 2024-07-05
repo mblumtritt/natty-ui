@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require_relative 'element'
 
 module NattyUI
@@ -10,11 +11,13 @@ module NattyUI
     #   construction. This means table features are not complete defined and
     #   may change in near future.
     #
+    # Defined values for `type` are
+    # :double, :heavy, :semi, :simple
+    #
     # @overload table(type: simple)
     #   Construct and display a table.
     #
-    #   @param [Symbol] type frame type;
-    #     valid types are `:simple`, `:heavy`, `:semi`, `:double`
+    #   @param [Symbol] type frame type
     #   @yieldparam [Table] table construction helper
     #   @return [Wrapper::Section, Wrapper] it's parent object
     #
@@ -39,8 +42,7 @@ module NattyUI
     #   Display the given arrays as rows of a table.
     #
     #   @param [Array<#to_s>] args one or more arrays representing rows of the table
-    #   @param [Symbol] type frame type;
-    #     valid types are `:simple`, `:heavy`, `:semi`, `:double`
+    #   @param [Symbol] type frame type
     #   @return [Wrapper::Section, Wrapper] it's parent object
     #
     #   @example
@@ -115,7 +117,7 @@ module NattyUI
             raise(ArgumentError, "invalid table type - #{type.inspect}"),
           Ansi[39],
           Ansi::RESET
-        ) { |line| @parent.puts(line) }
+        ) { @parent.puts(_1) }
         @parent
       end
 
@@ -142,7 +144,7 @@ module NattyUI
           @parent.available_width - 1,
           seperator,
           NattyUI.plain(seperator, ansi: false)[-1] == ' '
-        ) { |line| @parent.puts(line) }
+        ) { @parent.puts(_1) }
         @parent
       end
     end
@@ -217,7 +219,7 @@ module NattyUI
 
       def align(str, width, alignment)
         return str unless (width -= NattyUI.display_width(str)).positive?
-        return str << (' ' * width) if alignment == :left
+        return str + (' ' * width) if alignment == :left
         (' ' * width) << str
       end
 
@@ -268,10 +270,8 @@ module NattyUI
 
       def adjusted_widths(col_widths)
         ret = col_widths.dup
-        if ret.sum <=
-             (left = @max_width - (@col_div_size * (col_widths.size - 1)))
-          return ret
-        end
+        left = @max_width - (@col_div_size * (col_widths.size - 1))
+        return ret if ret.sum <= left
         indexed = ret.each_with_index.to_a
         # TODO: optimize this!
         until ret.sum <= left

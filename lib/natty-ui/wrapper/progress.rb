@@ -7,14 +7,23 @@ module NattyUI
   module Features
     # Creates progress element implementing additional {ProgressAttributes}.
     #
-    # A progress element has additional states and can be closed with {#completed}
-    # or {#failed}.
+    # When a `max_value` is given, the progress will by displayed as a bar.
+    # Otherwise the `spinner` is used for a little animation.
+    #
+    # When no pre-defined spinner is specified then spinner will be
+    # used char-wise as a string for the progress animation.
+    #
+    # A progress element has additional states and can be closed with
+    # {#completed} or {#failed}.
     #
     # @param [#to_s] title object to print as progress title
-    # @param [##to_f] max_value maximum value of the progress
+    # @param [#to_f] max_value maximum value of the progress
+    # @param [:bar, :blink, :blocks, :braile, :circle, :colors, :pulse,
+    #   :snake, :swap, :triangles, :vintage, #to_s] spinner type of spinner or
+    #   spinner elements
     # @return [Wrapper::Progress] the created progress element
-    def progress(title, max_value: nil)
-      _element(:Progress, title, max_value)
+    def progress(title, max_value: nil, spinner: :pulse)
+      _element(:Progress, title, max_value, spinner)
     end
   end
 
@@ -29,15 +38,31 @@ module NattyUI
 
       protected
 
-      def call(title, max_value)
+      def call(title, max_value, spinner)
         @final_text = [title]
         @max_value = [0, max_value.to_f].max if max_value
         @value = @progress = 0
-        draw(title)
+        draw(title, SPINNER[spinner] || spinner.to_s)
         self
       end
 
-      def draw(title)
+      SPINNER = {
+        bar: '▁▂▃▄▅▆▇█▇▆▅▄▃▂',
+        blink: '■□▪▫',
+        blocks: '▖▘▝▗',
+        braile: '⣷⣯⣟⡿⢿⣻⣽⣾',
+        braile_reverse: '⡿⣟⣯⣷⣾⣽⣻⢿',
+        circle: '◐◓◑◒',
+        colors: '🟨🟧🟥🟦🟪🟩',
+        pulse: '•✺◉●◉✺',
+        snake: '⠁⠉⠙⠸⢰⣠⣄⡆⠇⠃',
+        swap: '㊂㊀㊁',
+        triangles: '◢◣◤◥',
+        vintage: '-\\|/'
+      }.compare_by_identity.freeze
+      private_constant :SPINNER
+
+      def draw(title, _spinner)
         (wrapper.stream << @parent.prefix << "➔ #{title} ").flush
       end
 

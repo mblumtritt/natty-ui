@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require 'natty-ui'
+require_relative '../lib/natty-ui'
 
 ui.space
-ui.h1 '8-bit Color Support'
+ui.h1 'NattyUI: 8-bit Color Support'
 ui.space
 
 color = ->(i) { "[[bg#{i = i.to_s(16).rjust(2, '0')}]] #{i} " }

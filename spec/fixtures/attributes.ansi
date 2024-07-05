@@ -1,0 +1,11 @@
+
+[38;5;39m━━━━━ [1;38;5;255mNattyUI: ANSI Attributes [22;38;5;39m━━━━━[0m
+
+Some attributes are widely supported, such as [1mbold[0m, [3mitalic[0m, [4munderline[0m, [5mblink[0m, [7min
+[7mvert[0m and [9mstrike[0m, while others are rarely complete or correctly implemented,  lik
+e [2mfaint[0m, [21mdouble underline[0m, [4:3mcurly underline[0m, [4:4mdotted underline[0m, [4
+:5mdashed underline[0m, [6mrapid_blink[0m, [51mframed[0m, [52mencircled[0m, [53moverlined[0m and [26mproportional[0m.
+ 
+Alternative fonts are mostly completely ignored: [10mprimary_font[0m, [20mfraktur[0m, [11mfont1[0m, [12mf
+[12mont2[0m, [13mfont3[0m, [14mfont4[0m, [15mfont5[0m, [16mfont6[0m, [17mfont7[0m, [18mfont8[0m, [19mfont9[0m. 
+

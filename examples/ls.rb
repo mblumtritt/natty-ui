@@ -1,8 +1,12 @@
 # frozen_string_literal: true
 
-require 'natty-ui'
+require_relative '../lib/natty-ui'
 
-LOREM = <<~LOREM
+ui.space
+ui.h1 'NattyUI: Print In Columns'
+ui.space
+
+LOREM = <<~IPSUM.lines(chomp: true)
   Lorem ipsum dolor sit
   amet, consectetur adipisicing
   elit, sed do eiusmod tempor
@@ -21,16 +25,12 @@ LOREM = <<~LOREM
   sunt in culpa qui officia
   deserunt mollit anim id
   est laborum.
-LOREM
+IPSUM
 
-ui.space
-ui.h1 'Print a list in columns'
-ui.space
-
-ui.h2 'Lorem ipsum lines (compact)'
-ui.ls LOREM.lines(chomp: true), glyph: 1
+ui.h2 'Compact Display'
+ui.ls LOREM, glyph: 1
 ui.space
 
-ui.h2 'Lorem ipsum lines (row-wise)'
-ui.ls LOREM.lines(chomp: true), glyph: 1, compact: false
+ui.h2 'Traditional Display'
+ui.ls LOREM, glyph: 1, compact: false
 ui.space

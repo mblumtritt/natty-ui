@@ -51,7 +51,7 @@ module NattyUI
         @parent.puts(
           title,
           prefix: "#{Ansi[39]}#{enclose} #{Ansi[:bold, 255]}",
-          suffix: " #{Ansi[:normal, 39]}#{enclose}#{Ansi::RESET}",
+          suffix: " #{Ansi[:bold_off, 39]}#{enclose}#{Ansi::RESET}",
           max_width: available_width - 2 - (enclose.size * 2)
         )
       end

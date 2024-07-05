@@ -1,0 +1,23 @@
+
+═══════ NattyUI: Tables ═══════
+
+• Constructed Table
+  X ┃ O ┃  
+  ━━╋━━━╋━━
+  O ┃ O ┃ X
+  ━━╋━━━╋━━
+    ┃ X ┃  
+
+• Data Table
+  id │ name   │ mail              │ notes                                      
+  ───┼────────┼───────────────────┼────────────────────────────────────────────
+  1  │ Henry  │ henry@some.test   │ This is fill text to generate a wide column
+     │        │                   │  which maybe rendered as multi line.       
+  ───┼────────┼───────────────────┼────────────────────────────────────────────
+  2  │ Sam    │ sam-sam@some.test │ enforced                                   
+     │        │                   │ multi-line                                 
+  ───┼────────┼───────────────────┼────────────────────────────────────────────
+  3  │ Taylor │ taylor@some.test  │                                            
+  ───┼────────┼───────────────────┼────────────────────────────────────────────
+  3  │ Max    │ maxxx@some.test   │                                            
+

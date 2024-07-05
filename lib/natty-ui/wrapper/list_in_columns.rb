@@ -25,7 +25,7 @@ module NattyUI
     #
     # @example ordered list, start at 100
     #   ui.ls('apple', 'banana', 'blueberry', 'pineapple', 'strawberry', glyph: 100)
-    #   # => 1 apple   2 banana   3 blueberry   4 pineapple   5 strawberry
+    #   # => 100 apple   101 banana   102 blueberry   103 pineapple   104 strawberry
     #
     # @example ordered list using, uppercase characters
     #   ui.ls('apple', 'banana', 'blueberry', 'pineapple', 'strawberry', glyph: :A)
@@ -84,7 +84,11 @@ module NattyUI
           ->(s) { "#{(glyph += 1).to_s.rjust(pad)} #{NattyUI.embellish(s)}" }
         when Symbol
           lambda do |s|
-            "#{t = glyph; glyph = glyph.succ; t} #{NattyUI.embellish(s)}"
+            "#{
+              t = glyph
+              glyph = glyph.succ
+              t
+            } #{NattyUI.embellish(s)}"
           end
         else
           ->(s) { "#{glyph} #{NattyUI.embellish(s)}" }
@@ -122,8 +126,7 @@ module NattyUI
       end
 
       def fill(ary, size)
-        diff = size - ary.size
-        ary.fill(nil, ary.size, diff) if diff.positive?
+        (diff = size - ary.size).positive? && ary.fill(nil, ary.size, diff)
       end
 
       Item =

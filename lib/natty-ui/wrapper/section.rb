@@ -8,10 +8,14 @@ module NattyUI
     # into the section.
     #
     # @param [Array<#to_s>] args optional objects to print
+    # @param [String] prefix used for each printed line
+    # @param [String] suffix used for each printed line
     # @yieldparam [Wrapper::Section] section the created section
     # @return [Object] the result of the code block
     # @return [Wrapper::Section] itself, when no code block is given
-    def section(*args, &block) = _section(:Section, args, prefix: '  ', &block)
+    def section(*args, prefix: '  ', suffix: '  ', &block)
+      _section(:Section, args, prefix: prefix, suffix: suffix, &block)
+    end
     alias sec section
   end
 
@@ -38,10 +42,12 @@ module NattyUI
         return self if @status
         @parent.puts(
           *args,
-          prefix: "#{@prefix}#{kwargs[:prefix]}",
-          prefix_width: @prefix_width + kwargs[:prefix_width].to_i,
-          suffix: "#{kwargs[:suffix]}#{@suffix}",
-          suffix_width: @suffix_width + kwargs[:suffix_width].to_i
+          **kwargs.merge!(
+            prefix: "#{@prefix}#{kwargs[:prefix]}",
+            prefix_width: @prefix_width + kwargs[:prefix_width].to_i,
+            suffix: "#{kwargs[:suffix]}#{@suffix}",
+            suffix_width: @suffix_width + kwargs[:suffix_width].to_i
+          )
         )
         self
       end
@@ -55,10 +61,12 @@ module NattyUI
         return self if @status
         @parent.print(
           *args,
-          prefix: "#{@prefix}#{kwargs[:prefix]}",
-          prefix_width: @prefix_width + kwargs[:prefix_width].to_i,
-          suffix: "#{kwargs[:suffix]}#{@suffix}",
-          suffix_width: @suffix_width + kwargs[:suffix_width].to_i
+          **kwargs.merge!(
+            prefix: "#{@prefix}#{kwargs[:prefix]}",
+            prefix_width: @prefix_width + kwargs[:prefix_width].to_i,
+            suffix: "#{kwargs[:suffix]}#{@suffix}",
+            suffix_width: @suffix_width + kwargs[:suffix_width].to_i
+          )
         )
         self
       end
@@ -87,17 +95,23 @@ module NattyUI
       # @!visibility private
       def inspect = @status ? "#{_to_s[..-2]} status=#{@status}>" : _to_s
 
+      # @!visibility private
+      def rcol = @parent.rcol - @suffix_width
+
       protected
 
       def initialize(
         parent,
         prefix:,
-        prefix_width: NattyUI.display_width(prefix)
+        prefix_width: NattyUI.display_width(prefix),
+        suffix: nil,
+        suffix_width: NattyUI.display_width(suffix)
       )
         super(parent)
         @prefix = prefix
+        @suffix = suffix
         @prefix_width = prefix_width
-        @suffix_width = 0
+        @suffix_width = suffix_width
       end
     end
   end

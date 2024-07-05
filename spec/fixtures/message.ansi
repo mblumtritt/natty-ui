@@ -1,0 +1,34 @@
+
+[38;5;39m═══════ [1;38;5;255mNattyUI: Message Types [22;38;5;39m═══════[0m
+
+[38;5;39m╭──────────────────────────────────────────────────────────────────────────────╮[0m
+[38;5;39m│[0m [1;38;5;119m𝒊[0m [38;5;255mInformative Message[0m[80G[38;5;39m│[0m
+[38;5;39m│[0m   Lorem [33mipsum[0m dolor sit amet, consectetur adipisicing elit, sed do eiusmod t[80G[38;5;39m│[0m
+[38;5;39m│[0m   empor incididunt ut labore et dolore [31mmagna[0m aliqua. Ut enim ad minim veniam[80G[38;5;39m│[0m
+[38;5;39m│[0m   , quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo [1m[80G[38;5;39m│[0m
+[38;5;39m│[0m   [1mconsequat[0m. [80G[38;5;39m│[0m
+[38;5;39m│[0m [1;38;5;221m![0m [38;5;221mWarning Message[0m[80G[38;5;39m│[0m
+[38;5;39m│[0m   Lorem [33mipsum[0m dolor sit amet, consectetur adipisicing elit, sed do eiusmod t[80G[38;5;39m│[0m
+[38;5;39m│[0m   empor incididunt ut labore et dolore [31mmagna[0m aliqua. Ut enim ad minim veniam[80G[38;5;39m│[0m
+[38;5;39m│[0m   , quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo [1m[80G[38;5;39m│[0m
+[38;5;39m│[0m   [1mconsequat[0m. [80G[38;5;39m│[0m
+[38;5;39m│[0m   [38;5;39m╭────────────────────────────────────────────────────────────────────────╮[0m[80G[38;5;39m│[0m
+[38;5;39m│[0m   [38;5;39m│[0m [31m>>>[0m [3mHere some important information[0m [31m<<<[0m[78G[38;5;39m│[0m[80G[38;5;39m│[0m
+[38;5;39m│[0m   [38;5;39m╰────────────────────────────────────────────────────────────────────────╯[0m[80G[38;5;39m│[0m
+[38;5;39m│[0m [1;38;5;208m𝙓[0m [38;5;208mError Message[0m[80G[38;5;39m│[0m
+[38;5;39m│[0m   Lorem [33mipsum[0m dolor sit amet, consectetur adipisicing elit, sed do eiusmod t[80G[38;5;39m│[0m
+[38;5;39m│[0m   empor incididunt ut labore et dolore [31mmagna[0m aliqua. Ut enim ad minim veniam[80G[38;5;39m│[0m
+[38;5;39m│[0m   , quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo [1m[80G[38;5;39m│[0m
+[38;5;39m│[0m   [1mconsequat[0m. [80G[38;5;39m│[0m
+[38;5;39m│[0m [1;38;5;196m𝑭[0m [38;5;196mFail Message[0m[80G[38;5;39m│[0m
+[38;5;39m│[0m   Lorem [33mipsum[0m dolor sit amet, consectetur adipisicing elit, sed do eiusmod t[80G[38;5;39m│[0m
+[38;5;39m│[0m   empor incididunt ut labore et dolore [31mmagna[0m aliqua. Ut enim ad minim veniam[80G[38;5;39m│[0m
+[38;5;39m│[0m   , quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo [1m[80G[38;5;39m│[0m
+[38;5;39m│[0m   [1mconsequat[0m. [80G[38;5;39m│[0m
+[38;5;39m│[0m 💡 [38;5;255m[3;38;2;255;170;221mCustom Message[0m[0m[80G[38;5;39m│[0m
+[38;5;39m│[0m    Lorem [33mipsum[0m dolor sit amet, consectetur adipisicing elit, sed do eiusmod [80G[38;5;39m│[0m
+[38;5;39m│[0m    tempor incididunt ut labore et dolore [31mmagna[0m aliqua. Ut enim ad minim veni[80G[38;5;39m│[0m
+[38;5;39m│[0m    am, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commo[80G[38;5;39m│[0m
+[38;5;39m│[0m    do [1mconsequat[0m. [80G[38;5;39m│[0m
+[38;5;39m╰──────────────────────────────────────────────────────────────────────────────╯[0m
+

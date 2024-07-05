@@ -2,41 +2,77 @@
 
 require_relative 'ansi'
 require_relative 'wrapper'
+require_relative 'line_animation'
 
 module NattyUI
   class AnsiWrapper < Wrapper
     def ansi? = true
+
+    def puts(*args, **kwargs)
+      return super if args.empty? || (animation = kwargs[:animation]).nil?
+
+      prefix = kwargs[:prefix]
+      if prefix && !prefix.empty?
+        prefix = NattyUI.embellish(prefix)
+        prefix_width = kwargs[:prefix_width] || NattyUI.display_width(prefix)
+      else
+        prefix = nil
+        prefix_width = 0
+      end
+      kwargs[:prefix] = prefix
+      kwargs[:prefix_width] = prefix_width
+
+      suffix = kwargs[:suffix]
+      suffix = suffix.empty? ? nil : NattyUI.embellish(suffix) if suffix
+
+      mw = kwargs[:max_width]
+      unless mw
+        mw = screen_columns - prefix_width
+        mw -= kwargs[:suffix_width] || NattyUI.display_width(suffix) if suffix
+      end
+      kwargs[:max_width] = mw
+
+      (@stream << Ansi::CURSOR_HIDE).flush
+      animation = LineAnimation[animation].new(@stream, kwargs)
+      prefix = "#{Ansi::RESET}#{Ansi::CLL}#{prefix}"
+
+      NattyUI
+        .each_line(
+          *args.map! { NattyUI.embellish(Ansi.blemish(_1)) },
+          max_width: mw
+        )
+        .each do |line|
+          @stream << prefix
+          animation.print(line)
+          (@stream << "#{prefix}#{line}#{suffix}\n").flush
+          @lines_written += 1
+        end
+      (@stream << Ansi::CURSOR_SHOW).flush
+      self
+    end
 
     def page
       unless block_given?
         @stream.flush
         return self
       end
-      (@stream << Ansi::BLANK_SLATE).flush
+      (@stream << Ansi::SCREEN_BLANK).flush
       begin
         yield(self)
       ensure
-        (@stream << Ansi::UNBLANK_SLATE).flush
+        (@stream << Ansi::SCREEN_UNBLANK).flush
       end
     end
 
     def cls
-      (@stream << Ansi::CURSOR_HOME << Ansi::SCREEN_ERASE).flush
+      (@stream << Ansi::CLS).flush
       self
     end
 
     protected
 
     def prepare_print(args, kwargs)
-      prefix = kwargs[:prefix] and prefix = NattyUI.embellish(prefix)
-      suffix = kwargs[:suffix] and suffix = NattyUI.embellish(suffix)
-      return ["#{prefix}#{suffix}"] if args.empty?
-      NattyUI
-        .each_line(
-          *args.map! { NattyUI.embellish(_1) },
-          max_width: max_with(prefix, suffix, kwargs)
-        )
-        .map { "#{prefix}#{_1}#{suffix}" }
+      _prepare_print(args, kwargs) { NattyUI.embellish(_1) }
     end
 
     def temp_func
@@ -44,7 +80,7 @@ module NattyUI
       lambda do
         count = @lines_written - count
         if count.nonzero?
-          @stream << Ansi.cursor_line_up(count) << Ansi::SCREEN_ERASE_BELOW
+          @stream << Ansi.cursor_prev_line(count) << Ansi.display(:erase_below)
           @lines_written -= count
         end
         @stream.flush
@@ -53,26 +89,27 @@ module NattyUI
     end
 
     class Progress < Progress
-      def draw(title)
+      def draw(title, spinner)
         @msg =
           "#{@parent.prefix}#{Ansi[:bold, 39]}➔#{Ansi[:reset, 39]} " \
             "#{title}#{Ansi::RESET} "
         (wrapper.stream << @msg << Ansi::CURSOR_HIDE).flush
-        @msg = "#{Ansi::LINE_CLEAR}#{@msg}"
+        @msg = "#{Ansi::CLL}#{@msg}"
         return @msg << BAR_COLOR if @max_value
-        @msg << Ansi[:bold, 220]
-        @indicator = 0
+        spinner_color = Ansi[:bold, 220]
+        @spinner =
+          Enumerator.new do |y|
+            spinner.each_char { y << "#{spinner_color}#{_1}" } while true
+          end
       end
 
       def redraw
-        (wrapper.stream << @msg << (@max_value ? fullbar : indicator)).flush
+        (wrapper.stream << @msg << (@max_value ? fullbar : @spinner.next)).flush
       end
 
       def end_draw
-        (wrapper.stream << Ansi::LINE_CLEAR << Ansi::CURSOR_SHOW).flush
+        (wrapper.stream << Ansi::CLL << Ansi::CURSOR_SHOW).flush
       end
-
-      def indicator = '◐◓◑◒'[(@indicator += 1) % 4]
 
       def fullbar
         percent = @value / @max_value
@@ -101,8 +138,8 @@ module NattyUI
         ensure
           count = wrapper.lines_written - count
           if count.nonzero?
-            wrapper.stream << Ansi.cursor_line_up(count) <<
-              Ansi::SCREEN_ERASE_BELOW
+            wrapper.stream << Ansi.cursor_prev_line(count) <<
+              Ansi.display(:erase_below)
           end
           wrapper.stream.flush
         end
@@ -127,6 +164,14 @@ module NattyUI
 
     class Framed < Framed
       def color(str) = "#{Ansi[39]}#{str}#{Ansi::RESET}"
+
+      def init(deco)
+        @prefix = "#{color(deco[0])} "
+        @suffix = "#{Ansi.cursor_column(parent.rcol)}#{color(deco[4])}"
+        aw = @parent.available_width - 2
+        parent.puts(color("#{deco[1]}#{deco[2] * aw}#{deco[3]}"))
+        @finish = color("#{deco[5]}#{deco[6] * aw}#{deco[7]}")
+      end
     end
     private_constant :Framed
 
