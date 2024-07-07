@@ -46,8 +46,8 @@ module NattyUI
         (wrapper.stream << ANSI_PREFIX).flush if wrapper.ansi?
       end
 
-      ANSI_PREFIX = Ansi::RESET + Ansi[:italic]
-      ANSI_FINISH = Ansi::RESET + Ansi::CURSOR_UP + Ansi::LINE_ERASE
+      ANSI_PREFIX = Ansi::RESET + Ansi::ITALIC
+      ANSI_FINISH = Ansi::RESET + Ansi::LINE_PREVIOUS + Ansi::LINE_ERASE
       private_constant :ANSI_PREFIX, :ANSI_FINISH
     end
   end

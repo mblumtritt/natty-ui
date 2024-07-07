@@ -1,10 +1,11 @@
---readme README.md
 --title 'NattyUI Documentation'
 --charset utf-8
 --markup markdown
+--readme README.md
+--no-private
+--embed-mixins
 --tag comment
 --hide-tag comment
---embed-mixins
 --exclude lib/natty-ui/ansi_wrapper.rb
 lib/**/*.rb
 -

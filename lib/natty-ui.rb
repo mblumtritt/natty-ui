@@ -149,9 +149,12 @@ module NattyUI
         str
           .to_s
           .each_line(chomp: true) do |line|
-            Reline::Unicode.split_by_width(line, max_width)[0].each do |part|
-              yield(part) if part
-            end
+            next yield(line) if line.empty?
+            lines, _height = Reline::Unicode.split_by_width(line, max_width)
+            lines.compact!
+            next if lines.empty?
+            lines.pop if lines[-1].empty?
+            lines.each(&block)
           end
       end
       nil
@@ -159,23 +162,35 @@ module NattyUI
 
     # Read next raw key (keyboard input) from {in_stream}.
     #
+    # The input will be returned as named key codes like "Ctrl+C" by default.
+    # This can be changed by the `mode` parameter:
+    #
+    # - `:named` - name if available (fallback to raw)
+    # - `:raw` - key code "as is"
+    # - `:both` - key code and name if available
+    #
+    # @param [:named, :raw, :both] mode modfies the result
     # @return [String] read key
-    def read_key
+    def read_key(mode: :named)
       return @in_stream.getch unless defined?(@in_stream.getc)
       return @in_stream.getc unless defined?(@in_stream.raw)
-      @in_stream.raw do |raw|
-        key = raw.getc
-        while (nc = raw.read_nonblock(1, exception: false))
+      @in_stream.raw do |raw_stream|
+        key = raw_stream.getc
+        while (nc = raw_stream.read_nonblock(1, exception: false))
           nc.is_a?(String) ? key += nc : break
         end
-        key
+        return key if mode == :raw
+        return key, KEY_MAP[key]&.dup if mode == :both
+        KEY_MAP[key]&.dup || key
       end
+    rescue Interrupt, SystemCallError
+      nil
     end
 
     private
 
     def wrapper_class(stream, ansi)
-      return AnsiWrapper if ansi == true
+      return AnsiWrapper if ansi == true || ENV['ANSI'] == '1'
       if ansi == false || ENV.key?('NO_COLOR') || ENV['TERM'] == 'dumb'
         return Wrapper
       end
@@ -197,8 +212,14 @@ module NattyUI
 
   @element = StdOut
   self.in_stream = STDIN
+
+  autoload(:KEY_MAP, File.join(__dir__, 'natty-ui', 'key_map'))
+  private_constant :KEY_MAP
 end
 
-# @see NattyUI.element
-# @return [NattyUI::Wrapper, NattyUI::Wrapper::Element] active UI element
-def ui = NattyUI.element unless defined?(ui)
+# @!visibility private
+module Kernel
+  # @see NattyUI.element
+  # @return [NattyUI::Wrapper, NattyUI::Wrapper::Element] active UI element
+  def ui = NattyUI.element unless defined?(ui)
+end

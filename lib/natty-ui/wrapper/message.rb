@@ -96,13 +96,13 @@ module NattyUI
       def initialize(parent, title:, glyph:)
         glyph = parent.wrapper.glyph(glyph) || glyph
         prefix_width = NattyUI.display_width(glyph) + 1
-        parent.puts(
-          title,
-          prefix: "#{glyph} ",
+        super(
+          parent,
+          prefix: ' ' * prefix_width,
           prefix_width: prefix_width,
           suffix_width: 0
         )
-        super(parent, prefix: ' ' * prefix_width, prefix_width: prefix_width)
+        parent.puts(title, prefix: "#{glyph} ", prefix_width: prefix_width)
       end
     end
   end

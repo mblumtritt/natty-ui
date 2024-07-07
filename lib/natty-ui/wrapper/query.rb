@@ -63,28 +63,24 @@ module NattyUI
       end
 
       def as_choices(choices, kw_choices)
-        ret = {}
-        choices.each_with_index do |title, i|
-          (i += 1) == 10 ? break : ret[i.to_s] = title.to_s.tr("\r\n\t", ' ')
-        end
-        ret.merge!(
-          kw_choices
-            .transform_keys! { [' ', _1.to_s[0]].max }
-            .transform_values! { _1.to_s.tr("\r\n\t", ' ') }
-        )
+        choices
+          .take(9)
+          .each_with_index
+          .to_h { |str, i| [i + 1, str] }
+          .merge!(kw_choices)
+          .transform_keys!(&:to_s)
+          .transform_values! { _1.to_s.gsub(/[[:space:]]/, ' ') }
       end
 
       def read(choices, result)
         while true
-          char = NattyUI.in_stream.getch
-          return if "\3\4".include?(char)
+          char = NattyUI.read_key
+          return if char == 'Ctrl+C'
           next unless choices.key?(char)
           return char if result == :char
           return choices[char] if result == :title
           return char, choices[char]
         end
-      rescue Interrupt, SystemCallError
-        nil
       end
 
       CHOICE_MARK = Ansi[:bold, 34]

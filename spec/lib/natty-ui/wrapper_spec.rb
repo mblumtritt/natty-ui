@@ -40,6 +40,8 @@ RSpec.describe 'NattyUI::Wrapper' do
 
   context 'when stream does not support #winsize' do
     context 'when ENV is configured' do
+      before { allow(ENV).to receive(:[]) }
+
       it "#screen_rows uses ENV['LINES']" do
         expect(ENV).to receive(:[]).with('LINES').once.and_return('21')
         expect(ENV).to receive(:[]).with('COLUMNS').once.and_return('42')

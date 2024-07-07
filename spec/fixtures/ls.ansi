@@ -1,0 +1,25 @@
+
+[38;5;39m═══════ [1;38;5;255mNattyUI: Print In Columns [22;38;5;39m═══════[0m
+
+[38;5;39m━━━━━ [1;38;5;255mCompact Display [22;38;5;39m━━━━━[0m
+ 1 Lorem ipsum dolor sit           10 aute irure [1;32mdolor[0m in        
+ 2 amet, consectetur adipisicing   11 reprehenderit in voluptate 
+ 3 elit, sed do eiusmod tempor     12 velit [4messe cillum[0m dolore eu
+ 4 incididunt ut labore et         13 fugiat nulla pariatur.     
+ 5 dolore [31mmagna[0m aliqua. Ut         14 Excepteur sint occaecat    
+ 6 enim ad minim veniam, quis      15 cupidatat non proident,    
+ 7 nostrud exercitation ullamco    16 sunt in culpa qui officia  
+ 8 laboris nisi ut aliquip ex      17 deserunt mollit anim id    
+ 9 ea commodo [1mconsequat[0m. Duis      18 est laborum.               
+
+[38;5;39m━━━━━ [1;38;5;255mTraditional Display [22;38;5;39m━━━━━[0m
+ 1 Lorem ipsum dolor sit            2 amet, consectetur adipisicing   
+ 3 elit, sed do eiusmod tempor      4 incididunt ut labore et         
+ 5 dolore [31mmagna[0m aliqua. Ut          6 enim ad minim veniam, quis      
+ 7 nostrud exercitation ullamco     8 laboris nisi ut aliquip ex      
+ 9 ea commodo [1mconsequat[0m. Duis      10 aute irure [1;32mdolor[0m in             
+11 reprehenderit in voluptate      12 velit [4messe cillum[0m dolore eu     
+13 fugiat nulla pariatur.          14 Excepteur sint occaecat         
+15 cupidatat non proident,         16 sunt in culpa qui officia       
+17 deserunt mollit anim id         18 est laborum.                    
+

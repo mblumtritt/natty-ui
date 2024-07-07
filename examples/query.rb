@@ -1,19 +1,21 @@
 # frozen_string_literal: true
 
-require 'natty-ui'
+require_relative '../lib/natty-ui'
 
 ui.space
-ui.h1 'NattyUI Query Demo'
+ui.h1 'NattyUI: User Queries'
 ui.space
 
 # little helper
 def abort!
   ui.failed 'aborted'
+  ui.space
   exit
 end
 
 unless ui.ask('Do you like to continute? (Y|n): ')
   ui.info 'ok, try later!'
+  ui.space
   exit
 end
 
@@ -35,3 +37,5 @@ ui.info "Your answer: #{answer.inspect}"
 answer = ui.request('What is your current password?:', password: true)
 abort! unless answer
 ui.info "I'll keep your secret!"
+
+ui.space

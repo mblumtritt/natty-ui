@@ -8,7 +8,7 @@ module NattyUI
     #
     # @param [#to_s] symbol string to build the horizontal rule
     # @return [Wrapper::Section, Wrapper] it's parent object
-    def hr(symbol = '=') = _element(:HorizontalRule, symbol)
+    def hr(symbol = '─') = _element(:HorizontalRule, symbol)
   end
 
   class Wrapper
@@ -23,8 +23,8 @@ module NattyUI
         size = NattyUI.display_width(symbol = symbol.to_s)
         return @parent.puts if size == 0
         max_width = available_width
-        @parent.puts(
-          symbol * ((max_width / size) - 1),
+        @parent.print(
+          symbol * ((max_width / size)),
           max_width: max_width,
           prefix: Ansi[39],
           prefix_width: 0,

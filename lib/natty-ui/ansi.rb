@@ -5,164 +5,148 @@ module NattyUI
   # Helper module for ANSI escape codes.
   #
   module Ansi
-    # ANSI code to move the cursor down.
-    CURSOR_DOWN = "\e[B"
-
-    # ANSI code to move the cursor up.
-    CURSOR_UP = "\e[A"
-
-    # ANSI code to move the cursor left.
-    CURSOR_LEFT = "\e[D"
-
-    # ANSI code to move the cursor right.
-    CURSOR_RIGHT = "\e[C"
-
-    # ANSI code to move the cursor to beginning of the line below.
-    CURSOR_LINE_DOWN = "\e[E"
-
-    # ANSI code to move the cursor to beginning of the line up.
-    CURSOR_LINE_UP = "\e[F"
-
-    # ANSI code to hide the cursor.
-    CURSOR_HIDE = "\e[?25l"
-
-    # ANSI code to show the cursor (again).
-    CURSOR_SHOW = "\e[?25h"
-
-    # ANSI code to save current cursor position.
-    CURSOR_SAVE_POS = "\e[s"
-
-    # ANSI code to restore saved cursor position.
-    CURSOR_RESTORE_POS = "\e[u"
-
-    # ANSI code to set cursor position on upper left corner.
-    CURSOR_HOME = "\e[H"
-
-    # ANSI code to erase current line and position to first column.
-    LINE_CLEAR = "\e[1K\e[0G"
-
-    # ANSI code to erase current line.
-    LINE_ERASE = "\e[2K"
-
-    # ANSI code to erase to end of current line.
-    LINE_ERASE_TO_END = "\e[0K"
-
-    # ANSI code to erase to begin of current line.
-    LINE_ERASE_TO_BEGIN = "\e[1K"
-
-    # ANSI code to save current screen state.
-    SCREEN_SAVE = "\e[?47h"
-
-    # ANSI code to restore screen state.
-    SCREEN_RESTORE = "\e[?47l"
-
-    # ANSI code to erase screen.
-    SCREEN_ERASE = "\e[2J"
-
-    # ANSI code to erase screen below current cursor position.
-    SCREEN_ERASE_BELOW = "\e[0J"
-
-    # ANSI code to erase screen above current cursor position.
-    SCREEN_ERASE_ABOVE = "\e[1J"
-
-    # ANSI code to alternate screen
-    SCREEN_ALTERNATIVE = "\e[?1049h"
-
-    # ANSI code to set alternate screen off.
-    SCREEN_ALTERNATIVE_OFF = "\e[?1049l"
-
-    # ANSI code to reset all attributes.
-    RESET = "\e[0m"
-
-    # @!visibility private
-    CURSOR_RIGHT_ALIGNED = "\e[9999G\e[D\e[C"
-
-    # @!visibility private
-    BLANK_SLATE = "\e[0m\e[s\e[?47h\e[H\e[2J"
-
-    # @!visibility private
-    UNBLANK_SLATE = "\e[?47l\e[u\e[0m"
-
     class << self
-      # @param lines [Integer] number of lines
-      # @return [String] ANSI code to move the cursor up
-      def cursor_up(lines = nil) = "\e[#{lines}A"
+      # Supported attribute names.
+      # @see []
+      #
+      # @attribute [r] attribute_names
+      # @return [Array<Symbol>] supported attribute names
+      def attribute_names = SATTR.keys.sort!
 
-      # @param lines [Integer] number of lines
-      # @return [String] ANSI code to move the cursor down
-      def cursor_down(lines = nil) = "\e[#{lines}B"
+      # Supported color names.
+      # @see []
+      #
+      # @attribute [r] color_names
+      # @return [Array<Symbol>] supported color names
+      def color_names = SCLR.keys
 
-      # @param columns [Integer] number of columns
-      # @return [String] ANSI code to move the cursor right
-      def cursor_right(columns = nil) = "\e[#{columns}C"
+      # @!group Control functions
 
-      # @param columns [Integer] number of columns
-      # @return [String] ANSI code to move the cursor left
-      def cursor_left(columns = nil) = "\e[#{columns}D"
+      # Move cursor given lines up.
+      #
+      # @param lines [Integer] number of lines to move
+      # @return [String] ANSI control code
+      def cursor_up(lines = 1) = "\e[#{lines}A"
 
-      # @param lines [Integer] number of lines
-      # @return [String] ANSI code to move the cursor to beginning of some lines
-      #   below
-      def cursor_line_down(lines = nil) = "\e[#{lines}E"
+      # Move cursor given lines down.
+      #
+      # @param (see cursor_up)
+      # @return (see cursor_up)
+      def cursor_down(lines = 1) = "\e[#{lines}B"
 
-      # @param lines [Integer] number of lines
-      # @return [String] ANSI code to move the cursor to beginning of some lines
-      #   up
-      def cursor_line_up(lines = nil) = "\e[#{lines}F"
+      # Move cursor given colums forward.
+      #
+      # @param columns [Integer] number of columns to move
+      # @return (see cursor_up)
+      def cursor_forward(columns = 1) = "\e[#{columns}C"
 
-      # @param column [Integer] column number
-      # @return [String] ANSI code to move the cursor to given column
-      def cursor_column(column = nil) = "\e[#{column}G"
+      # Move cursor given colums back.
+      #
+      # @param (see cursor_forward)
+      # @return (see cursor_up)
+      def cursor_back(columns = 1) = "\e[#{columns}D"
 
-      # @param row [Integer] row to set cursor
-      # @param column [Integer] column to set cursor
-      # @return [String] ANSI code to set cursor position
+      # Move cursor of beginning of the given next line.
+      #
+      # @param (see cursor_up)
+      # @return (see cursor_up)
+      def cursor_next_line(lines = 1) = "\e[#{lines}E"
+
+      # Move cursor of beginning of the given previous line.
+      #
+      # @param (see cursor_up)
+      # @return (see cursor_up)
+      def cursor_previous_line(lines = 1) = "\e[#{lines}F"
+      alias cursor_prev_line cursor_previous_line
+
+      # Move cursor to given column in the current row.
+      #
+      # @param column [Integer] column index
+      # @return (see cursor_up)
+      def cursor_column(column = 1) = "\e[#{column}G"
+
+      # Move cursor to given row and column counting from the top left corner.
+      #
+      # @param row [Integer] row index
+      # @param column [Integer] column index
+      # @return (see cursor_up)
       def cursor_pos(row, column = nil)
         return column ? "\e[#{row};#{column}H" : "\e[#{row}H" if row
         column ? "\e[;#{column}H" : "\e[H"
       end
 
-      # Decorate given `str` with ANSI `attributes`.
+      # @comment ??? def cursor_tab(count = 1) = "\e[#{column}I"
+
+      # Erase screen.
       #
-      # @see []
-      #
-      # @param str [#to_s] object to be decorated
-      # @param attributes [Symbol, String] attribute names to be used
-      # @param reset [Boolean] whether to include reset code for ANSI attributes
-      # @return [String] `str` converted and decorated with the ANSI `attributes`
-      def embellish(str, *attributes, reset: true)
-        attributes = self[*attributes]
-        attributes.empty? ? str.to_s : "#{attributes}#{str}#{"\e[0m" if reset}"
+      # @param part [:below, :above, :scrollback, :entire] part to erase
+      # @return (see cursor_up)
+      def screen_erase(part = :entire)
+        return "\e[0J" if part == :below
+        return "\e[1J" if part == :above
+        return "\e[3J" if part == :scrollback
+        "\e[2J"
       end
 
-      # Remove ANSI attribtes from given string.
+      # Clear part of current line.
       #
-      # @see embellish
-      #
-      # @param str [#to_s] string to be modified
-      # @return [String] string without ANSI attributes
-      def blemish(str) = str.to_s.gsub(/(\x1b\[(?~[a-zA-Z])[a-zA-Z])/, '')
+      # @param part [:to_end, :to_start, :entire] part to delete
+      # @return (see cursor_up)
+      def line_erase(part = :entire)
+        return "\e[0K" if part == :to_end
+        return "\e[1K" if part == :to_start
+        "\e[2K"
+      end
 
-      # Combine given ANSI `attributes`.
+      # @comment ??? def line_insert(lines = 1) = "\e[#{lines}L"
+      # @comment ??? def line_delete(lines = 1) = "\e[#{lines}M"
+      # @comment ??? def chars_delete(count = 1) = "\e[#{count}P"
+
+      # Scroll window given lines up.
       #
-      # ANSI attribute names are:
+      # @param lines [Integer] number of lines to scroll
+      # @return (see cursor_up)
+      def scroll_up(lines = 1) = "\e[;#{lines}S"
+
+      # Scroll window given lines down.
       #
-      # `reset`, `bold`, `faint`, `italic`, `underline`, `slow_blink`, `blink`,
-      # `rapid_blink`, `invert`, `reverse`, `conceal`, `hide`, `strike`,
-      # `primary_font`, `default_font`, `font1`, `font2`, `font3`, `font4`,
-      # `font5`, `font6`, `font7`, `font8`, `font9`, `fraktur`,
-      # `double_underline`, `doubly`, `bold_off`, `normal`, `italic_off`,
-      # `fraktur_off`, `underline_off`, `blink_off`, `proportional`, `spacing`,
-      # `invert_off`, `reverse_off`, `reveal`, `strike_off`, `proportional_off`,
-      # `spacing_off`, `framed`, `encircled`, `overlined`, `framed_off`,
-      # `encircled_off`, `overlined_off`.
+      # @param (see scroll_up)
+      # @return (see cursor_up)
+      def scroll_down(lines = 1) = "\e[;#{lines}T"
+
+      # @comment ??? def chars_erase(count = 1) = "\e[#{count}X"
+      # @comment ??? def cursor_reverse_tab(count = 1) = "\e[#{count}Z"
+
+      # set absolute col
+      # @comment ??? doubled! def cursor_column(column = 1) = "\e[#{column}`"
+      # set relative column
+      # @comment ??? def cursor_column_rel(column = 1) = "\e[#{column}a"
+      # set absolute row
+      # @comment ??? def cursor_row(row = 1) = "\e[#{row}d"
+      # set relative row
+      # @comment ??? def cursor_row_rel(row = 1) = "\e[#{row}e"
+
+      # Change window title.
+      # This is not widely supported but by XTerm and iTerm.
       #
-      # Colors can specified by their name for ANSI 3-bit and 4-bit colors:
-      # `black`, `red`, `green`, `yellow`, `blue`, `magenta`, `cyan`, `white`,
-      # `default`, `bright_black`, `bright_red`, `bright_green`,
-      # `bright_yellow`, `bright_blue`, `bright_magenta`, `bright_cyan`,
-      # `bright_white`.
+      # @param [String] title text
+      # @return (see cursor_up)
+      def window_title(title) = "\e]2;#{title}\e\\"
+
+      # Change tab title.
+      # This is not widely supported but by iTerm.
       #
+      # @param [String] title text
+      # @return (see cursor_up)
+      def tab_title(title) = "\e]0;#{title}\a"
+
+      # @!endgroup
+
+      # @!group Tool functions
+
+      # Combine given ANSI {.attribute_names}, {.color_names} and color codes.
+      #
+      # Colors can specified by their name for ANSI 3-bit and 4-bit colors.
       # For 8-bit ANSI colors use 2-digit hexadecimal values `00`...`ff`.
       #
       # To use RGB ANSI colors (24-bit colors) specify 3-digit or 6-digit
@@ -172,11 +156,9 @@ module NattyUI
       #
       # To use a color as background color prefix the color attribute with `bg_`
       # or `on_`.
-      #
       # To use a color as underline color prefix the color attribute with `ul_`.
-      #
-      # To make it more clear a color attribute have to be used as foreground
-      # color the color value can be prefixed with `fg_`.
+      # To clarify that a color attribute have to be used as foreground
+      # color use the prefix `fg_`.
       #
       # @example Valid Foreground Color Attributes
       #   Ansi[:yellow]
@@ -219,12 +201,17 @@ module NattyUI
           attributes
             .map do |arg|
               case arg
-              when Symbol, String
-                ATTRIBUTES[arg] || color(arg) || invalid_argument(arg)
+              when Symbol
+                SATTR[arg] || SCLR[arg] || color(arg.to_s) ||
+                  invalid_argument(arg)
+              when String
+                ATTR[arg] || CLR[arg] || color(arg) || invalid_argument(arg)
               when (0..255)
                 "38;5;#{arg}"
-              when (256..512)
+              when (256..511)
                 "48;5;#{arg}"
+              when (512..767)
+                "58;5;#{arg}"
               else
                 invalid_argument(arg)
               end
@@ -233,8 +220,29 @@ module NattyUI
         }m"
       end
 
-      # Try to combine given ANSI `attributes`. The `attributes` have to be a
-      # string containing attributes separated by space char (" ").
+      # Decorate given `str` with ANSI attributes and colors.
+      #
+      # @see []
+      #
+      # @param str [#to_s] object to be decorated
+      # @param attributes [Symbol, String] attribute names to be used
+      # @param reset [Boolean] whether to include reset code for ANSI attributes
+      # @return [String] `str` converted and decorated with the ANSI `attributes`
+      def embellish(str, *attributes, reset: true)
+        attributes = self[*attributes]
+        attributes.empty? ? str.to_s : "#{attributes}#{str}#{"\e[0m" if reset}"
+      end
+
+      # Remove ANSI functions, attributes and colors from given string.
+      #
+      # @see embellish
+      #
+      # @param str [#to_s] string to be modified
+      # @return [String] string without ANSI attributes
+      def blemish(str) = str.to_s.gsub(/(\e\[(?~[a-zA-Z])[a-zA-Z])/, '')
+
+      # Try to combine given ANSI attributes and colors.
+      # The attributes and colors have to be seperated by space char (" ").
       #
       # @example Valid Attribute String
       #   Ansi.try_convert('bold italic blink red on#00ff00')
@@ -251,9 +259,40 @@ module NattyUI
       def try_convert(attributes)
         return if (attributes = attributes.to_s.split).empty?
         "\e[#{
-          attributes.map { ATTRIBUTES[_1] || color(_1) || return }.join(';')
+          attributes
+            .map! { |a| ATTR[a] || CLR[a] || color(a) || return }
+            .join(';')
         }m"
       end
+
+      # @param str [#to_s] plain text string to enrich with color
+      # @param type [:foreground, :background, :underline] type of coloring
+      # @param frequence [Float] color change frequency
+      # @param spread [Float] number of chars with same color
+      # @param seed [Float] start index on sinus curve
+      # @return [String] fancy text
+      def rainbow(
+        str,
+        type: :foreground,
+        frequence: 0.3,
+        spread: 0.8,
+        seed: 1.1
+      )
+        type = color_type(type)
+        pos = -1
+        str
+          .to_s
+          .chars
+          .map! do |char|
+            i = (seed + ((pos += 1) / spread)) * frequence
+            "\e[#{type};2;#{(Math.sin(i) * 255).abs.to_i};" \
+              "#{(Math.sin(i + PI2_THIRD) * 255).abs.to_i};" \
+              "#{(Math.sin(i + PI4_THIRD) * 255).abs.to_i}m#{char}"
+          end
+          .join
+      end
+
+      # @!endgroup
 
       private
 
@@ -265,195 +304,182 @@ module NattyUI
         )
       end
 
-      def color(val)
-        val = val.to_s.downcase
-        base =
-          if val.delete_prefix!('fg')
-            val.delete_prefix!(':') || val.delete_prefix!('_')
-            '38;'
-          elsif val.delete_prefix!('ul')
-            val.delete_prefix!(':') || val.delete_prefix!('_')
-            '58;'
-          elsif val.delete_prefix!('bg') || val.delete_prefix!('on')
-            val.delete_prefix!(':') || val.delete_prefix!('_')
-            '48;'
-          else
-            '38;'
-          end
-        val.delete_prefix!('#')
-        case val.size
-        when 1, 2
-          "#{base}5;#{val.hex}" if /\A[[:xdigit:]]+\z/.match?(val)
-        when 3
-          if /\A[[:xdigit:]]+\z/.match?(val)
-            "#{base}2;#{(val[0] * 2).hex};#{(val[1] * 2).hex};#{
-              (val[2] * 2).hex
-            }"
-          end
-        when 6
-          if /\A[[:xdigit:]]+\z/.match?(val)
-            "#{base}2;#{val[0, 2].hex};#{val[2, 2].hex};#{val[4, 2].hex}"
-          end
+      def color_type(type)
+        case type
+        when :background, :bg, 'background', 'bg'
+          48
+        when :underline, :ul, 'underline', 'ul'
+          58
+        else
+          38
         end
+      end
+
+      def color(val)
+        base = CLR_PREFIX[val[0, 2]]
+        idx = base ? 2 : 0
+        base ||= '38'
+        idx += 1 if val[idx] == '_' || val[idx] == ':'
+        idx += 1 if val[idx] == '#'
+        val = val[idx..]
+        return "#{base};5;#{val.hex}" if /\A[[:xdigit:]]{1,2}\z/.match?(val)
+        if /\A[[:xdigit:]]{6}\z/.match?(val)
+          return "#{base};2;#{val[0, 2].hex};#{val[2, 2].hex};#{val[4, 2].hex}"
+        end
+        return unless /\A[[:xdigit:]]{3}\z/.match?(val)
+        "#{base};2;#{(val[0] * 2).hex};#{(val[1] * 2).hex};#{(val[2] * 2).hex}"
       end
     end
 
-    ATTRIBUTES =
-      {
-        reset: 0,
-        # ---
-        bold: 1,
-        faint: 2,
-        italic: 3,
-        underline: 4,
-        # ---
-        slow_blink: 5,
-        blink: 5,
-        # ---
-        rapid_blink: 6,
-        # ---
-        invert: 7,
-        # ---
-        conceal: 8,
-        hide: 8,
-        # ---
-        strike: 9,
-        # ---
-        primary_font: 10,
-        default_font: 10,
-        # ---
-        font1: 11,
-        font2: 12,
-        font3: 13,
-        font4: 14,
-        font5: 15,
-        font6: 16,
-        font7: 17,
-        font8: 18,
-        font9: 19,
-        fraktur: 20,
-        # ---
-        double_underline: 21,
-        doubly: 21,
-        bold_off: 21,
-        # ---
-        normal: 22,
-        # ---
-        italic_off: 23,
-        fraktur_off: 23,
-        # ---
-        underline_off: 24,
-        blink_off: 25,
-        # ---
-        proportional: 26,
-        spacing: 26,
-        # ---
-        invert_off: 27,
-        # ---
-        reveal: 28,
-        # ---
-        strike_off: 29,
-        # ---
-        proportional_off: 50,
-        spacing_off: 50,
-        # ---
-        framed: 51,
-        encircled: 52,
-        overlined: 53,
-        framed_off: 54,
-        encircled_off: 54,
-        overlined_off: 55,
-        # foreground colors
-        black: 30,
-        red: 31,
-        green: 32,
-        yellow: 33,
-        blue: 34,
-        magenta: 35,
-        cyan: 36,
-        white: 37,
-        default: 39,
-        bright_black: 90,
-        bright_red: 91,
-        bright_green: 92,
-        bright_yellow: 93,
-        bright_blue: 94,
-        bright_magenta: 95,
-        bright_cyan: 96,
-        bright_white: 97,
-        # background colors
-        on_black: 40,
-        on_red: 41,
-        on_green: 42,
-        on_yellow: 43,
-        on_blue: 44,
-        on_magenta: 45,
-        on_cyan: 46,
-        on_white: 47,
-        on_default: 49,
-        on_bright_black: 100,
-        on_bright_red: 101,
-        on_bright_green: 102,
-        on_bright_yellow: 103,
-        on_bright_blue: 104,
-        on_bright_magenta: 105,
-        on_bright_cyan: 106,
-        on_bright_white: 107,
-        # foreground colors
-        fg_black: 30,
-        fg_red: 31,
-        fg_green: 32,
-        fg_yellow: 33,
-        fg_blue: 34,
-        fg_magenta: 35,
-        fg_cyan: 36,
-        fg_white: 37,
-        fg_default: 39,
-        fg_bright_black: 90,
-        fg_bright_red: 91,
-        fg_bright_green: 92,
-        fg_bright_yellow: 93,
-        fg_bright_blue: 94,
-        fg_bright_magenta: 95,
-        fg_bright_cyan: 96,
-        fg_bright_white: 97,
-        # background colors
-        bg_black: 40,
-        bg_red: 41,
-        bg_green: 42,
-        bg_yellow: 43,
-        bg_blue: 44,
-        bg_magenta: 45,
-        bg_cyan: 46,
-        bg_white: 47,
-        bg_default: 49,
-        bg_bright_black: 100,
-        bg_bright_red: 101,
-        bg_bright_green: 102,
-        bg_bright_yellow: 103,
-        bg_bright_blue: 104,
-        bg_bright_magenta: 105,
-        bg_bright_cyan: 106,
-        bg_bright_white: 107,
-        # underline colors
-        ul_black: '58;2;0;0;0',
-        ul_red: '58;2;128;0;0',
-        ul_green: '58;2;0;128;0',
-        ul_yellow: '58;2;128;128;0',
-        ul_blue: '58;2;0;0;128',
-        ul_magenta: '58;2;128;0;128',
-        ul_cyan: '58;2;0;128;128',
-        ul_white: '58;2;128;128;128',
-        ul_default: '59',
-        ul_bright_black: '58;2;64;64;64',
-        ul_bright_red: '58;2;255;0;0',
-        ul_bright_green: '58;2;0;255;0',
-        ul_bright_yellow: '58;2;255;255;0',
-        ul_bright_blue: '58;2;0;0;255',
-        ul_bright_magenta: '58;2;255;0;255',
-        ul_bright_cyan: '58;2;0;255;255',
-        ul_bright_white: '58;2;255;255;255'
-      }.tap { _1.merge!(_1.transform_keys(&:to_s)).freeze }
-    private_constant :ATTRIBUTES
+    CLR_PREFIX = {
+      'fg' => '38',
+      'bg' => '48',
+      'ul' => '58',
+      'on' => '48'
+    }.freeze
+
+    PI2_THIRD = 2 * Math::PI / 3.0
+    PI4_THIRD = 4 * Math::PI / 3.0
+
+    SATTR =
+      Module
+        .new do
+          def self.to_hash
+            map = {
+              # alternative names
+              slow_blink: 5,
+              conceal: 8,
+              default_font: 10,
+              doubly: 21,
+              faint_off: 22,
+              fraktur_off: 23,
+              spacing: 26,
+              conceal_off: 28,
+              spacing_off: 50,
+              encircled_off: 54,
+              subscript_off: 75,
+              # special
+              curly_underline_off: '4:0',
+              dotted_underline_off: '4:0',
+              dashed_underline_off: '4:0',
+              curly_underline: '4:3',
+              dotted_underline: '4:4',
+              dashed_underline: '4:5'
+            }
+            add = ->(s, n) { n.each_with_index { |a, idx| map[a] = s + idx } }
+            add[
+              0,
+              %i[
+                reset
+                bold
+                faint
+                italic
+                underline
+                blink
+                rapid_blink
+                invert
+                hide
+                strike
+                primary_font
+                font1
+                font2
+                font3
+                font4
+                font5
+                font6
+                font7
+                font8
+                font9
+                fraktur
+                double_underline
+                bold_off
+                italic_off
+                underline_off
+                blink_off
+                proportional
+                invert_off
+                reveal
+                strike_off
+              ]
+            ]
+            add[
+              50,
+              %i[
+                proportional_off
+                framed
+                encircled
+                overlined
+                framed_off
+                overlined_off
+              ]
+            ]
+            add[73, %i[superscript subscript superscript_off]]
+            map
+          end
+        end
+        .to_hash
+        .compare_by_identity
+        .freeze
+
+    CLR =
+      Module
+        .new do
+          def self.to_hash
+            clr = {
+              0 => 'black',
+              1 => 'red',
+              2 => 'green',
+              3 => 'yellow',
+              4 => 'blue',
+              5 => 'magenta',
+              6 => 'cyan',
+              7 => 'white'
+            }
+            map = {}
+            add = ->(s, p) { clr.each_pair { |i, n| map["#{p}#{n}"] = s + i } }
+            ul = ->(r, g, b) { "58;2;#{r};#{g};#{b}" }
+            add[30, nil]
+            map['default'] = 39
+            add[90, 'bright_']
+            add[30, 'fg_']
+            map['fg_default'] = 39
+            add[90, 'fg_bright_']
+            add[40, 'bg_']
+            map['bg_default'] = 49
+            add[100, 'bg_bright_']
+            add[40, 'on_']
+            map['on_default'] = 49
+            add[100, 'on_bright_']
+            map.merge!(
+              'ul_black' => ul[0, 0, 0],
+              'ul_red' => ul[128, 0, 0],
+              'ul_green' => ul[0, 128, 0],
+              'ul_yellow' => ul[128, 128, 0],
+              'ul_blue' => ul[0, 0, 128],
+              'ul_magenta' => ul[128, 0, 128],
+              'ul_cyan' => ul[0, 128, 128],
+              'ul_white' => ul[128, 128, 128],
+              'ul_default' => '59',
+              'ul_bright_black' => ul[64, 64, 64],
+              'ul_bright_red' => ul[255, 0, 0],
+              'ul_bright_green' => ul[0, 255, 0],
+              'ul_bright_yellow' => ul[255, 255, 0],
+              'ul_bright_blue' => ul[0, 0, 255],
+              'ul_bright_magenta' => ul[255, 0, 255],
+              'ul_bright_cyan' => ul[0, 255, 255],
+              'ul_bright_white' => ul[255, 255, 255]
+            )
+          end
+        end
+        .to_hash
+        .freeze
+
+    ATTR = SATTR.transform_keys(&:to_s).freeze
+    SCLR = CLR.transform_keys(&:to_sym).compare_by_identity.freeze
+
+    private_constant :CLR_PREFIX, :PI2_THIRD, :PI4_THIRD
+    private_constant :SATTR, :SCLR, :ATTR, :CLR
   end
 end
+
+require_relative 'ansi_constants'

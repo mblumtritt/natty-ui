@@ -46,19 +46,13 @@ module NattyUI
         yes, no = grab(yes, no)
         draw(question)
         while true
-          char = NattyUI.in_stream.getch
+          char = NattyUI.read_key(mode: :raw)
           return if "\3\4".include?(char)
           return true if yes.include?(char)
           return false if no.include?(char)
         end
-      rescue Interrupt, SystemCallError
-        nil
       ensure
-        if @parent.ansi?
-          (wrapper.stream << Ansi::LINE_CLEAR).flush
-        else
-          @parent.puts
-        end
+        wrapper.ansi? ? (wrapper.stream << Ansi::CLL).flush : @parent.puts
       end
 
       def draw(question)

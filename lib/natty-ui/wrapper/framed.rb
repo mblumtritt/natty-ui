@@ -11,8 +11,7 @@ module NattyUI
     # {Wrapper::Element#close}.
     #
     # @param [Array<#to_s>] args more objects to print
-    # @param [Symbol] type frame type;
-    #   valid types are `:rounded`, `:simple`, `:heavy`, `:semi`, `:double`
+    # @param [:block, :double, :heavy, :rounded, :semi, :simple] type frame type
     # @yieldparam [Wrapper::Framed] framed the created section
     # @return [Object] the result of the code block
     # @return [Wrapper::Framed] itself, when no code block is given
@@ -30,30 +29,36 @@ module NattyUI
       protected
 
       def initialize(parent, type:)
-        @type = FRAME_PARTS[type] or
-          raise(ArgumentError, "invalid frame type - #{type.inspect}")
-        parent.puts(
-          color("#{@type[0]}#{@type[1] * (parent.available_width - 2)}")
-        )
-        super(parent, prefix: "#{color(@type[4])} ", prefix_width: 2)
-        @suffix = ' '
-        @suffix_width = 1
+        deco = as_deco(type)
+        super(parent, prefix: "#{deco[0]} ", prefix_width: 2, suffix_width: 2)
+        init(deco)
       end
 
-      def finish
-        @parent.puts(
-          color("#{@type[3]}#{@type[1] * (@parent.available_width - 2)}")
-        )
+      def as_deco(type)
+        if type.is_a?(Symbol)
+          ret = DECO[type] and return ret
+        elsif type.is_a?(String)
+          return type if type.size == 8
+          return type * 8 if type.size == 1
+        end
+        raise(ArgumentError, "invalid frame type - #{type.inspect}")
       end
 
-      def color(str) = str
+      def init(deco)
+        aw = @parent.available_width - 1
+        parent.puts("#{deco[1]}#{deco[2] * aw}")
+        @finish = "#{deco[5]}#{deco[6] * aw}"
+      end
 
-      FRAME_PARTS = {
-        rounded: '╭─╮╰│╯',
-        simple: '┌─┐└│┘',
-        heavy: '┏━┓┗┃┛',
-        double: '╔═╗╚║╝',
-        semi: '╒═╕╘│╛'
+      def finish = @parent.puts(@finish)
+
+      DECO = {
+        rounded: '│╭─╮│╰─╯',
+        simple: '│┌─┐│└─┘',
+        heavy: '┃┏━┓┃┗━┛',
+        double: '║╔═╗║╚═╝',
+        semi: '│╒═╕│╘═╛',
+        block: '▌▛▀▜▐▙▄▟'
       }.compare_by_identity.freeze
     end
   end
