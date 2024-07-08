@@ -2,5 +2,5 @@
 
 module NattyUI
   # The version number of the gem.
-  VERSION = '0.9.0'
+  VERSION = '0.9.1'
 end
