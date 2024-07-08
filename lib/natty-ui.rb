@@ -83,18 +83,19 @@ module NattyUI
     def embellish(str)
       return +'' if (str = str.to_s).empty?
       reset = false
-      ret =
+      str =
         str.gsub(/(\[\[((?~\]\]))\]\])/) do
           match = Regexp.last_match[2]
-          unless match.delete_prefix!('/')
-            ansi = Ansi.try_convert(match)
-            next ansi ? reset = ansi : "[[#{match}]]"
-          end
-          match.empty? or next "[[#{match}]]"
+          if match[0] == '/'
+            next "[[#{match[1..]}]]" if match.size > 1
           reset = false
           Ansi::RESET
+          else
+            ansi = Ansi.try_convert(match)
+            ansi ? reset = ansi : "[[#{match}]]"
+          end
         end
-      reset ? "#{ret}#{Ansi::RESET}" : ret
+      reset ? "#{str}#{Ansi::RESET}" : str
     end
 
     # Remove embedded attribute descriptions from given string.
