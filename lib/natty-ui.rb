@@ -83,18 +83,19 @@ module NattyUI
     def embellish(str)
       return +'' if (str = str.to_s).empty?
       reset = false
-      ret =
+      str =
         str.gsub(/(\[\[((?~\]\]))\]\])/) do
           match = Regexp.last_match[2]
-          unless match.delete_prefix!('/')
+          if match[0] == '/'
+            next "[[#{match[1..]}]]" if match.size > 1
+            reset = false
+            Ansi::RESET
+          else
             ansi = Ansi.try_convert(match)
-            next ansi ? reset = ansi : "[[#{match}]]"
+            ansi ? reset = ansi : "[[#{match}]]"
           end
-          match.empty? or next "[[#{match}]]"
-          reset = false
-          Ansi::RESET
         end
-      reset ? "#{ret}#{Ansi::RESET}" : ret
+      reset ? "#{str}#{Ansi::RESET}" : str
     end
 
     # Remove embedded attribute descriptions from given string.
@@ -103,16 +104,13 @@ module NattyUI
     # @param [:keep,:remove] ansi keep or remove ANSI codes too
     # @return [String] edited string
     def plain(str, ansi: :keep)
+      return +'' if (str = str.to_s).empty?
       str =
-        str
-          .to_s
-          .gsub(/(\[\[((?~\]\]))\]\])/) do
-            match = Regexp.last_match[2]
-            if match.delete_prefix!('/')
-              next match.empty? ? nil : "[[#{match}]]"
-            end
-            Ansi.try_convert(match) ? nil : "[[#{match}]]"
-          end
+        str.gsub(/(\[\[((?~\]\]))\]\])/) do
+          match = Regexp.last_match[2]
+          next match.size == 1 ? nil : "[[#{match[1..]}]]" if match[0] == '/'
+          Ansi.try_convert(match) ? nil : "[[#{match}]]"
+        end
       ansi == :keep ? str : Ansi.blemish(str)
     end
 
@@ -122,8 +120,21 @@ module NattyUI
     # @param [#to_s] str string to calculate
     # @return [Integer] the display size
     def display_width(str)
-      return 0 if (str = str.to_s).empty?
-      Reline::Unicode.calculate_width(plain(str), true)
+      str = plain(str).encode(Encoding::UTF_8)
+      return 0 if str.empty?
+      width = 0
+      in_zero_width = false
+      str.scan(
+        Reline::Unicode::WIDTH_SCANNER
+      ) do |non_printing_start, non_printing_end, _csi, _osc, gc|
+        if in_zero_width
+          in_zero_width = false if non_printing_end
+          next
+        end
+        next in_zero_width = true if non_printing_start
+        width += Reline::Unicode.get_mbchar_width(gc) if gc
+      end
+      width
     end
 
     # Convert given arguments into strings and yield each line.
@@ -190,10 +201,10 @@ module NattyUI
     private
 
     def wrapper_class(stream, ansi)
-      return AnsiWrapper if ansi == true || ENV['ANSI'] == '1'
-      if ansi == false || ENV.key?('NO_COLOR') || ENV['TERM'] == 'dumb'
-        return Wrapper
-      end
+      return AnsiWrapper if ansi == true
+      return Wrapper if ansi == false || ENV.key?('NO_COLOR')
+      return AnsiWrapper if ENV['ANSI'] == '1'
+      return Wrapper if ENV['TERM'] == 'dumb'
       stream.tty? ? AnsiWrapper : Wrapper
     end
 

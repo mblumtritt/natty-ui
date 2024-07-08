@@ -239,7 +239,7 @@ module NattyUI
       #
       # @param str [#to_s] string to be modified
       # @return [String] string without ANSI attributes
-      def blemish(str) = str.to_s.gsub(/(\e\[(?~[a-zA-Z])[a-zA-Z])/, '')
+      def blemish(str) = str.to_s.gsub(ESC, '')
 
       # Try to combine given ANSI attributes and colors.
       # The attributes and colors have to be seperated by space char (" ").
@@ -330,6 +330,8 @@ module NattyUI
         "#{base};2;#{(val[0] * 2).hex};#{(val[1] * 2).hex};#{(val[2] * 2).hex}"
       end
     end
+
+    ESC = /(#{Reline::Unicode::CSI_REGEXP})|(#{Reline::Unicode::OSC_REGEXP})/
 
     CLR_PREFIX = {
       'fg' => '38',
@@ -477,8 +479,16 @@ module NattyUI
     ATTR = SATTR.transform_keys(&:to_s).freeze
     SCLR = CLR.transform_keys(&:to_sym).compare_by_identity.freeze
 
-    private_constant :CLR_PREFIX, :PI2_THIRD, :PI4_THIRD
-    private_constant :SATTR, :SCLR, :ATTR, :CLR
+    private_constant(
+      :ESC,
+      :CLR_PREFIX,
+      :PI2_THIRD,
+      :PI4_THIRD,
+      :SATTR,
+      :CLR,
+      :ATTR,
+      :SCLR
+    )
   end
 end
 
