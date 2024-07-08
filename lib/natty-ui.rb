@@ -88,8 +88,8 @@ module NattyUI
           match = Regexp.last_match[2]
           if match[0] == '/'
             next "[[#{match[1..]}]]" if match.size > 1
-          reset = false
-          Ansi::RESET
+            reset = false
+            Ansi::RESET
           else
             ansi = Ansi.try_convert(match)
             ansi ? reset = ansi : "[[#{match}]]"
@@ -104,16 +104,13 @@ module NattyUI
     # @param [:keep,:remove] ansi keep or remove ANSI codes too
     # @return [String] edited string
     def plain(str, ansi: :keep)
+      return +'' if (str = str.to_s).empty?
       str =
-        str
-          .to_s
-          .gsub(/(\[\[((?~\]\]))\]\])/) do
-            match = Regexp.last_match[2]
-            if match.delete_prefix!('/')
-              next match.empty? ? nil : "[[#{match}]]"
-            end
-            Ansi.try_convert(match) ? nil : "[[#{match}]]"
-          end
+        str.gsub(/(\[\[((?~\]\]))\]\])/) do
+          match = Regexp.last_match[2]
+          next match.size == 1 ? nil : "[[#{match[1..]}]]" if match[0] == '/'
+          Ansi.try_convert(match) ? nil : "[[#{match}]]"
+        end
       ansi == :keep ? str : Ansi.blemish(str)
     end
 
