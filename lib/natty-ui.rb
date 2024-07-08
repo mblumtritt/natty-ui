@@ -190,10 +190,10 @@ module NattyUI
     private
 
     def wrapper_class(stream, ansi)
-      return AnsiWrapper if ansi == true || ENV['ANSI'] == '1'
-      if ansi == false || ENV.key?('NO_COLOR') || ENV['TERM'] == 'dumb'
-        return Wrapper
-      end
+      return AnsiWrapper if ansi == true
+      return Wrapper if ansi == false || ENV.key?('NO_COLOR')
+      return AnsiWrapper if ENV['ANSI'] == '1'
+      return Wrapper if ENV['TERM'] == 'dumb'
       stream.tty? ? AnsiWrapper : Wrapper
     end
 
