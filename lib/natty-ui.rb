@@ -122,8 +122,21 @@ module NattyUI
     # @param [#to_s] str string to calculate
     # @return [Integer] the display size
     def display_width(str)
-      return 0 if (str = str.to_s).empty?
-      Reline::Unicode.calculate_width(plain(str), true)
+      str = plain(str).encode(Encoding::UTF_8)
+      return 0 if str.empty?
+      width = 0
+      in_zero_width = false
+      str.scan(
+        Reline::Unicode::WIDTH_SCANNER
+      ) do |non_printing_start, non_printing_end, _csi, _osc, gc|
+        if in_zero_width
+          in_zero_width = false if non_printing_end
+          next
+        end
+        next in_zero_width = true if non_printing_start
+        width += Reline::Unicode.get_mbchar_width(gc) if gc
+      end
+      width
     end
 
     # Convert given arguments into strings and yield each line.
