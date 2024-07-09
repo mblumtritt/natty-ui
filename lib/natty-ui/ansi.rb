@@ -209,9 +209,9 @@ module NattyUI
               when (0..255)
                 "38;5;#{arg}"
               when (256..511)
-                "48;5;#{arg}"
+                "48;5;#{arg - 256}"
               when (512..767)
-                "58;5;#{arg}"
+                "58;5;#{arg - 512}"
               else
                 invalid_argument(arg)
               end
@@ -331,7 +331,12 @@ module NattyUI
       end
     end
 
-    ESC = /(#{Reline::Unicode::CSI_REGEXP})|(#{Reline::Unicode::OSC_REGEXP})/
+    CSI = /\e\[[\d;:]*[ABCDEFGHJKSTfminsuhl]/
+    OSC = /\e\]\d+(?:;[^;\a\e]+)*(?:\a|\e\\)/
+    ESC = /(#{CSI})|(#{OSC})/
+
+    # @!visibility private
+    WIDTH_SCANNER = /\G(?:(\1)|(\2)|(#{CSI})|(#{OSC})|(\X))/
 
     CLR_PREFIX = {
       'fg' => '38',
@@ -340,8 +345,8 @@ module NattyUI
       'on' => '48'
     }.freeze
 
-    PI2_THIRD = 2 * Math::PI / 3.0
-    PI4_THIRD = 4 * Math::PI / 3.0
+    PI2_THIRD = 2 * Math::PI / 3
+    PI4_THIRD = 4 * Math::PI / 3
 
     SATTR =
       Module
@@ -480,6 +485,8 @@ module NattyUI
     SCLR = CLR.transform_keys(&:to_sym).compare_by_identity.freeze
 
     private_constant(
+      :CSI,
+      :OSC,
       :ESC,
       :CLR_PREFIX,
       :PI2_THIRD,
