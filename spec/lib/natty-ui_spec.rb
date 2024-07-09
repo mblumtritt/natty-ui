@@ -104,16 +104,19 @@ RSpec.describe NattyUI do
   end
 
   describe '.plain' do
+    let(:all_attributes) do
+      (NattyUI::Ansi.attribute_names + NattyUI::Ansi.color_names)
+    end
+
     it 'removes embedded ANSI attributes' do
       expect(
         NattyUI.plain('[[bold]]Hello [[blink ff00ff onfafafa]]World[[/]]!')
       ).to eq('Hello World!')
     end
 
-    it 'removes additionally ANSI control codes' do
-      expect(
-        NattyUI.plain("\e[1K\e[0G[[bold]]Hello [[blink]]World!", ansi: :remove)
-      ).to eq('Hello World!')
+    it 'removes all supported attributes' do
+      str = all_attributes.map { "[[#{_1}]]C" }.join
+      expect(NattyUI.plain(str)).to eq('C' * all_attributes.size)
     end
 
     it 'does not remove escaped and invalid attributes' do
@@ -122,12 +125,15 @@ RSpec.describe NattyUI do
       )
     end
 
-    it 'handles all supported Ansi attributes' do
-      all =
-        "[[#{
-          (NattyUI::Ansi.attribute_names + NattyUI::Ansi.color_names).join(' ')
-        }]] Test"
-      expect(NattyUI.plain(all)).to eq ' Test'
+    it 'removes ANSI control codes too' do
+      expect(
+        NattyUI.plain("\e[1K\e[0G[[bold]]Hello [[blink]]World!", ansi: :remove)
+      ).to eq('Hello World!')
+    end
+
+    it 'removes all supported ANSI control codes' do
+      str = all_attributes.map { "#{NattyUI::Ansi[_1]}C" }.join
+      expect(NattyUI.plain(str, ansi: :remove)).to eq('C' * all_attributes.size)
     end
   end
 
