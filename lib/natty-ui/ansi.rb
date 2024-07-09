@@ -349,6 +349,7 @@ module NattyUI
           def self.to_hash
             map = {
               # alternative names
+              reset: '',
               slow_blink: 5,
               conceal: 8,
               default_font: 10,
@@ -370,9 +371,8 @@ module NattyUI
             }
             add = ->(s, n) { n.each_with_index { |a, idx| map[a] = s + idx } }
             add[
-              0,
+              1,
               %i[
-                reset
                 bold
                 faint
                 italic

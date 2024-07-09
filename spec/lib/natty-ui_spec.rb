@@ -93,7 +93,7 @@ RSpec.describe NattyUI do
     it 'translates embedded ANSI attributes' do
       expect(
         NattyUI.embellish('[[bold]]Hello [[blink ff00ff onfafafa]]World[[/]]!')
-      ).to eq "\e[1mHello \e[5;38;2;255;0;255;48;2;250;250;250mWorld\e[0m!"
+      ).to eq "\e[1mHello \e[5;38;2;255;0;255;48;2;250;250;250mWorld\e[m!"
     end
 
     it 'respects escaped and invalid attributes' do
@@ -120,6 +120,14 @@ RSpec.describe NattyUI do
       expect(NattyUI.plain('[[/some test]] Hello [[another test]]')).to eq(
         '[[some test]] Hello [[another test]]'
       )
+    end
+
+    it 'handles all supported Ansi attributes' do
+      all =
+        "[[#{
+          (NattyUI::Ansi.attribute_names + NattyUI::Ansi.color_names).join(' ')
+        }]] Test"
+      expect(NattyUI.plain(all)).to eq ' Test'
     end
   end
 
