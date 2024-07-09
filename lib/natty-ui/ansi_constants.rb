@@ -25,9 +25,6 @@ module NattyUI
     SCREEN_ALTERNATE = "\e[?1049h"
     SCREEN_ALTERNATE_OFF = "\e[?1049l"
 
-    # SCREEN_SAVE_ATTRIBUTES = '\e[#{'
-    # SCREEN_RESTORE_ATTRIBUTES = '\e[#}'
-
     LINE_PREVIOUS = cursor_previous_line(1).freeze
     LINE_NEXT = cursor_next_line(1).freeze
     LINE_ERASE = line_erase(:entire)
@@ -67,9 +64,6 @@ module NattyUI
 
     # @!visibility private
     CLL = (CURSOR_FIRST_COLUMN + LINE_ERASE).freeze
-
-    # # @!visibility private
-    # CURSOR_ALIGN_RIGHT = "\e[9999G\e[1D\e[1C"
 
     # @!visibility private
     SCREEN_BLANK =
