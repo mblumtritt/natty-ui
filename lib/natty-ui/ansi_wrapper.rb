@@ -80,7 +80,7 @@ module NattyUI
       lambda do
         count = @lines_written - count
         if count.nonzero?
-          @stream << Ansi.cursor_prev_line(count) << Ansi.display(:erase_below)
+          @stream << Ansi.cursor_prev_line(count) << Ansi.screen_erase(:below)
           @lines_written -= count
         end
         @stream.flush
