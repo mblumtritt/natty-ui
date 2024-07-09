@@ -1,12 +1,12 @@
 
-[38;5;39m═══════ [1;38;5;255mNattyUI: 3/4-bit Color Support [22;38;5;39m═══════[0m
+[38;5;39m═══════ [1;38;5;255mNattyUI: 3/4-bit Color Support [22;38;5;39m═══════[m
 
-[30mblack         [0m [40m sample text [0m    [90mbright_black  [0m [100m sample text [0m
-[31mred           [0m [41m sample text [0m    [91mbright_red    [0m [101m sample text [0m
-[32mgreen         [0m [42m sample text [0m    [92mbright_green  [0m [102m sample text [0m
-[33myellow        [0m [43m sample text [0m    [93mbright_yellow [0m [103m sample text [0m
-[34mblue          [0m [44m sample text [0m    [94mbright_blue   [0m [104m sample text [0m
-[35mmagenta       [0m [45m sample text [0m    [95mbright_magenta[0m [105m sample text [0m
-[36mcyan          [0m [46m sample text [0m    [96mbright_cyan   [0m [106m sample text [0m
-[37mwhite         [0m [47m sample text [0m    [97mbright_white  [0m [107m sample text [0m
+[30mblack         [m [40m sample text [m    [90mbright_black  [m [100m sample text [m
+[31mred           [m [41m sample text [m    [91mbright_red    [m [101m sample text [m
+[32mgreen         [m [42m sample text [m    [92mbright_green  [m [102m sample text [m
+[33myellow        [m [43m sample text [m    [93mbright_yellow [m [103m sample text [m
+[34mblue          [m [44m sample text [m    [94mbright_blue   [m [104m sample text [m
+[35mmagenta       [m [45m sample text [m    [95mbright_magenta[m [105m sample text [m
+[36mcyan          [m [46m sample text [m    [96mbright_cyan   [m [106m sample text [m
+[37mwhite         [m [47m sample text [m    [97mbright_white  [m [107m sample text [m
 

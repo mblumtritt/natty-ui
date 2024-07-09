@@ -4,42 +4,31 @@ module NattyUI
   module Ansi
     CURSOR_SHOW = "\e[?25h"
     CURSOR_HIDE = "\e[?25l"
+
     CURSOR_HOME = cursor_pos(nil, nil)
     CURSOR_FIRST_ROW = cursor_pos(1).freeze
     CURSOR_FIRST_COLUMN = cursor_column(1).freeze
+
     CURSOR_SAFE_POS_SCO = "\e[s"
-    CURSOR_RESTORE_POS_SCO = "\e[u"
     CURSOR_SAFE_POS_DEC = "\e7"
-    CURSOR_RESTORE_POS_DEC = "\e8"
     CURSOR_SAFE_POS = CURSOR_SAFE_POS_DEC
+
+    CURSOR_RESTORE_POS_SCO = "\e[u"
+    CURSOR_RESTORE_POS_DEC = "\e8"
     CURSOR_RESTORE_POS = CURSOR_RESTORE_POS_DEC
 
-    CURSOR_ALIGN_RIGHT = "\e[9999G\e[1D\e[1C" # @!visibility private
-
     SCREEN_ERASE = screen_erase(:entire)
+
     SCREEN_SAVE = "\e[?47h"
     SCREEN_RESTORE = "\e[?47l"
+
     SCREEN_ALTERNATE = "\e[?1049h"
     SCREEN_ALTERNATE_OFF = "\e[?1049l"
-    SCREEN_SAVE_ATTRIBUTES = '\e[#{'
-    SCREEN_RESTORE_ATTRIBUTES = '\e[#}'
-
-    SCREEN_BLANK = "\e[0m\e[s\e[?47h\e[H\e[2J" # @!visibility private
-    SCREEN_UNBLANK = "\e[?47l\e[u\e[0m" # @!visibility private
 
     LINE_PREVIOUS = cursor_previous_line(1).freeze
     LINE_NEXT = cursor_next_line(1).freeze
     LINE_ERASE = line_erase(:entire)
 
-    # ANSI control code sequence to erase the screen and set cursor position on
-    # upper left corner.
-    CLS = (CURSOR_HOME + SCREEN_ERASE).freeze
-
-    # ANSI control code sequence to erase current line and position to first
-    # column.
-    CLL = (LINE_ERASE + CURSOR_FIRST_COLUMN).freeze
-
-    # ANSI control code to reset all attributes.
     RESET = self[:reset].freeze
 
     BOLD = self[:bold].freeze
@@ -69,5 +58,20 @@ module NattyUI
 
     HIDE = self[:hide].freeze
     REVEAL = self[:reveal].freeze
+
+    # @!visibility private
+    CLS = (CURSOR_HOME + SCREEN_ERASE).freeze
+
+    # @!visibility private
+    CLL = (CURSOR_FIRST_COLUMN + LINE_ERASE).freeze
+
+    # @!visibility private
+    SCREEN_BLANK =
+      (
+        CURSOR_SAFE_POS + SCREEN_ALTERNATE + CURSOR_HOME + SCREEN_ERASE + RESET
+      ).freeze
+
+    # @!visibility private
+    SCREEN_UNBLANK = (RESET + SCREEN_ALTERNATE_OFF + CURSOR_RESTORE_POS).freeze
   end
 end
