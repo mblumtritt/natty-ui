@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 require_relative 'ansi'
+require_relative 'ansi_constants'
 require_relative 'wrapper'
-require_relative 'line_animation'
 
 module NattyUI
   class AnsiWrapper < Wrapper
@@ -36,17 +36,15 @@ module NattyUI
       animation = LineAnimation[animation].new(@stream, kwargs)
       prefix = "#{Ansi::RESET}#{Ansi::CLL}#{prefix}"
 
-      NattyUI
-        .each_line(
-          *args.map! { NattyUI.embellish(Ansi.blemish(_1)) },
-          max_width: mw
-        )
-        .each do |line|
-          @stream << prefix
-          animation.print(line)
-          (@stream << "#{prefix}#{line}#{suffix}\n").flush
-          @lines_written += 1
-        end
+      NattyUI.each_line(
+        *args.map! { NattyUI.embellish(Ansi.blemish(_1)) },
+        max_width: mw
+      ) do |line|
+        @stream << prefix
+        animation.print(line)
+        (@stream << "#{prefix}#{line}#{suffix}\n").flush
+        @lines_written += 1
+      end
       (@stream << Ansi::CURSOR_SHOW).flush
       self
     end

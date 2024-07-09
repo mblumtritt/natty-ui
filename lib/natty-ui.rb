@@ -1,14 +1,7 @@
 # frozen_string_literal: true
 
-unless defined?(Reline)
-  # load the Reline::Unicode part only
-  # @!visibility private
-  module Reline
-    # @!visibility private
-    def self.ambiguous_width = 1
-  end
-  require 'reline/unicode'
-end
+require_relative 'natty-ui/ansi'
+require_relative 'natty-ui/ansi_constants'
 require_relative 'natty-ui/wrapper'
 require_relative 'natty-ui/ansi_wrapper'
 
@@ -130,7 +123,7 @@ module NattyUI
           next
         end
         next in_zero_width = true if np_start
-        width += Reline::Unicode.get_mbchar_width(gc) if gc
+        width += get_mbchar_width(gc) if gc
       end
       width
     end
@@ -159,11 +152,7 @@ module NattyUI
           .to_s
           .each_line(chomp: true) do |line|
             next yield(line) if line.empty?
-            lines, _height = Reline::Unicode.split_by_width(line, max_width)
-            lines.compact!
-            next if lines.empty?
-            lines.pop if lines[-1].empty?
-            lines.each(&block)
+            split_by_width(line, max_width, line.encoding).each(&block)
           end
       end
       nil
@@ -211,6 +200,55 @@ module NattyUI
     rescue IOError, SystemCallError
       false
     end
+
+    def split_by_width(str, max_width, encoding)
+      lines = [(seq = String.new(encoding: encoding)).dup]
+      width = 0
+      in_zero_width = false
+      str
+        .encode(Encoding::UTF_8)
+        .scan(Ansi::WIDTH_SCANNER) do |np_start, np_end, csi, osc, gc|
+          if np_start
+            lines.last << "\1"
+            next in_zero_width = true
+          end
+          if np_end
+            lines.last << "\2"
+            next in_zero_width = false
+          end
+          if osc
+            lines.last << osc
+            next seq << osc
+          end
+          if csi
+            lines.last << csi
+            next if in_zero_width
+            next csi == "\e[m" || csi == "\e[0m" ? seq.clear : seq << csi
+          end
+          next lines.last << gc if in_zero_width
+          mbchar_width = get_mbchar_width(gc)
+          if (width += mbchar_width) > max_width
+            width = mbchar_width
+            lines << seq.dup
+          end
+          lines.last << gc
+        end
+      lines
+    end
+
+    def get_mbchar_width(mbchar)
+      ord = mbchar.ord
+      return 2 if ord <= 0x1F
+      return 1 if ord <= 0x7E
+      size = EastAsianWidth[ord]
+      return 1 if size == -1 # ambiguous width
+      if size == 1 && mbchar.size >= 2
+        sco = mbchar[1].ord
+        # Halfwidth Dakuten Handakuten
+        return sco == 0xFF9E || sco == 0xFF9F ? 2 : 1
+      end
+      size
+    end
   end
 
   # Instance for standard output.
@@ -222,8 +260,11 @@ module NattyUI
   @element = StdOut
   self.in_stream = STDIN
 
-  autoload(:KEY_MAP, File.join(__dir__, 'natty-ui', 'key_map'))
-  private_constant :KEY_MAP
+  dir = __dir__
+  autoload(:LineAnimation, File.join(dir, 'natty-ui', 'line_animation'))
+  autoload(:EastAsianWidth, File.join(dir, 'natty-ui', 'east_asian_width'))
+  autoload(:KEY_MAP, File.join(dir, 'natty-ui', 'key_map'))
+  private_constant :LineAnimation, :EastAsianWidth, :KEY_MAP
 end
 
 # @!visibility private

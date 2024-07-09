@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../lib/natty-ui'
+require_relative '../lib/natty-ui/preload'
 
 $stdout.sync = $stderr.sync = $VERBOSE = true
 RSpec.configure(&:disable_monkey_patching!)

@@ -260,7 +260,7 @@ module NattyUI
         return if (attributes = attributes.to_s.split).empty?
         "\e[#{
           attributes
-            .map! { |a| ATTR[a] || CLR[a] || color(a) || return }
+            .map! { ATTR[_1] || CLR[_1] || color(_1) || return }
             .join(';')
         }m"
       end
@@ -498,5 +498,3 @@ module NattyUI
     )
   end
 end
-
-require_relative 'ansi_constants'

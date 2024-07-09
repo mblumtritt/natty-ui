@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative 'ansi'
-
 module NattyUI
   module LineAnimation
     def self.defined = @defined.keys
@@ -45,10 +43,7 @@ module NattyUI
       default: "#{dir}/line_animation/default",
       matrix: "#{dir}/line_animation/matrix",
       rainbow: "#{dir}/line_animation/rainbow",
-      type_writer: "#{dir}/line_animation/type_writer",
-      test: "#{dir}/line_animation/test"
+      type_writer: "#{dir}/line_animation/type_writer"
     }.compare_by_identity
   end
-
-  private_constant :LineAnimation
 end

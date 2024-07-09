@@ -3,9 +3,8 @@
 
 Some attributes are widely supported, such as [1mbold[m, [3mitalic[m, [4munderline[m, [5mblink[m, [7min
 [7mvert[m and [9mstrike[m, while others are rarely complete or correctly implemented,  lik
-e [2mfaint[m, [21mdouble underline[m, [4:3mcurly underline[m, [4:4mdotted underline[m, [4
-:5mdashed underline[m, [6mrapid_blink[m, [51mframed[m, [52mencircled[m, [53moverlined[m and [26mproportional[m.
- 
+e [2mfaint[m, [21mdouble underline[m, [4:3mcurly underline[m, [4:4mdotted underline[m, [4:5mdashed underline[m, [6m
+[6mrapid_blink[m, [51mframed[m, [52mencircled[m, [53moverlined[m and [26mproportional[m. 
 Alternative fonts are mostly completely ignored: [10mprimary_font[m, [20mfraktur[m, [11mfont1[m, [12mf
 [12mont2[m, [13mfont3[m, [14mfont4[m, [15mfont5[m, [16mfont6[m, [17mfont7[m, [18mfont8[m, [19mfont9[m. 
 
