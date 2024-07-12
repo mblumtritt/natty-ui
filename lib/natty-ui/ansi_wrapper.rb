@@ -75,10 +75,10 @@ module NattyUI
     def temp_func
       count = @lines_written
       lambda do
-        count = @lines_written - count
-        if count.nonzero?
-          @stream << Ansi.cursor_prev_line(count) << Ansi.screen_erase(:below)
-          @lines_written -= count
+        if (c = @lines_written - count).nonzero?
+          @stream << Ansi.cursor_prev_line(c) << Ansi.screen_erase(:below) <<
+            Ansi::CURSOR_FIRST_COLUMN
+          @lines_written -= c
         end
         @stream.flush
         self
