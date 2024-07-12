@@ -47,17 +47,6 @@ module NattyUI
       wrapper_class(stream, ansi).__send__(:new, stream)
     end
 
-    # Test if the given `stream` can be used for output
-    #
-    # @param [IO] stream IO instance to test
-    # @return [Boolean] whether if the given stream is usable
-    def valid_out?(stream)
-      (stream.is_a?(IO) && !stream.closed? && stream.stat.writable?) ||
-        (stream.is_a?(StringIO) && !stream.closed_write?)
-    rescue StandardError
-      false
-    end
-
     # Test if the given `stream` can be used for input
     #
     # @param [IO] stream IO instance to test
@@ -65,6 +54,17 @@ module NattyUI
     def valid_in?(stream)
       (stream.is_a?(IO) && !stream.closed? && stream.stat.readable?) ||
         (stream.is_a?(StringIO) && !stream.closed_read?)
+    rescue StandardError
+      false
+    end
+
+    # Test if the given `stream` can be used for output
+    #
+    # @param [IO] stream IO instance to test
+    # @return [Boolean] whether if the given stream is usable
+    def valid_out?(stream)
+      (stream.is_a?(IO) && !stream.closed? && stream.stat.writable?) ||
+        (stream.is_a?(StringIO) && !stream.closed_write?)
     rescue StandardError
       false
     end
@@ -132,12 +132,12 @@ module NattyUI
     # Optionally limit the line width to given `max_width`.
     #
     # @overload each_line(..., max_width: nil)
-    #   @param [#to_s] ... objects to print
+    #   @param [#to_s] ... objects converted to text lines
     #   @param [#to_i, nil] max_width maximum line width
     #   @yieldparam [String] line string line
     #   @return [nil]
     # @overload each_line(..., max_width: nil)
-    #   @param [#to_s] ... objects to print
+    #   @param [#to_s] ... objects converted to text lines
     #   @param [#to_i, nil] max_width maximum line width
     #   @return [Enumerator] line enumerator
     def each_line(*strs, max_width: nil, &block)

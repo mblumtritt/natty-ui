@@ -45,6 +45,7 @@ module NattyUI
         (@stream << "#{prefix}#{line}#{suffix}\n").flush
         @lines_written += 1
       end
+
       (@stream << Ansi::CURSOR_SHOW).flush
       self
     end
@@ -105,9 +106,7 @@ module NattyUI
         (wrapper.stream << @msg << (@max_value ? fullbar : @spinner.next)).flush
       end
 
-      def end_draw
-        (wrapper.stream << Ansi::CLL << Ansi::CURSOR_SHOW).flush
-      end
+      def end_draw = (wrapper.stream << Ansi::CLL << Ansi::CURSOR_SHOW).flush
 
       def fullbar
         percent = @value / @max_value
@@ -122,7 +121,6 @@ module NattyUI
       BAR_BACK = Ansi[236, 492].freeze
       BAR_INK = Ansi[:bold, 255, :on_default].freeze
     end
-    private_constant :Progress
 
     module Temporary
       def temporary
@@ -143,12 +141,10 @@ module NattyUI
         end
       end
     end
-    private_constant :Temporary
 
     class Section < Section
       include Temporary
     end
-    private_constant :Section
 
     class Quote < Quote
       include Temporary
@@ -158,7 +154,6 @@ module NattyUI
         @prefix = "#{Ansi[39]}#{@prefix}#{Ansi::RESET}"
       end
     end
-    private_constant :Quote
 
     class Framed < Framed
       def color(str) = "#{Ansi[39]}#{str}#{Ansi::RESET}"
@@ -171,7 +166,6 @@ module NattyUI
         @finish = color("#{deco[5]}#{deco[6] * aw}#{deco[7]}")
       end
     end
-    private_constant :Framed
 
     class Message < Section
       protected
@@ -202,13 +196,11 @@ module NattyUI
         query: Ansi[255]
       }.compare_by_identity.freeze
     end
-    private_constant :Message
 
     class Task < Message
       include ProgressAttributes
       include TaskMethods
     end
-    private_constant :Task
   end
 
   private_constant :AnsiWrapper

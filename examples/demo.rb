@@ -42,7 +42,7 @@ ui.page do
   loop do
     choice =
       ui.query(
-        'Which example do you like to watch?',
+        'Which example do you like to run?',
         display: :compact,
         **choices
       ) or break
