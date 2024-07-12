@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative 'ansi'
-require_relative 'ansi_constants'
 require_relative 'wrapper'
 
 module NattyUI

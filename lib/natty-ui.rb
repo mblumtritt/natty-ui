@@ -257,14 +257,16 @@ module NattyUI
   # Instance for standard error output.
   StdErr = stderr_is_stdout? ? StdOut : new(STDERR)
 
-  @element = StdOut
-  self.in_stream = STDIN
-
   dir = __dir__
   autoload(:LineAnimation, File.join(dir, 'natty-ui', 'line_animation'))
   autoload(:EastAsianWidth, File.join(dir, 'natty-ui', 'east_asian_width'))
   autoload(:KEY_MAP, File.join(dir, 'natty-ui', 'key_map'))
-  private_constant :LineAnimation, :EastAsianWidth, :KEY_MAP
+
+  private_constant :WIDTH_SCANNER, :SPECIAL_CHARS, :EastAsianWidth
+  private_constant :LineAnimation, :KEY_MAP
+
+  @element = StdOut
+  self.in_stream = STDIN
 end
 
 # @!visibility private

@@ -331,12 +331,13 @@ module NattyUI
       end
     end
 
+    # @!visibility private
     CSI = /\e\[[\d;:]*[ABCDEFGHJKSTfminsuhl]/
-    OSC = /\e\]\d+(?:;[^;\a\e]+)*(?:\a|\e\\)/
-    ESC = /(#{CSI})|(#{OSC})/
 
     # @!visibility private
-    WIDTH_SCANNER = /\G(?:(\1)|(\2)|(#{CSI})|(#{OSC})|(\X))/
+    OSC = /\e\]\d+(?:;[^;\a\e]+)*(?:\a|\e\\)/
+
+    ESC = /(#{CSI})|(#{OSC})/
 
     CLR_PREFIX = {
       'fg' => '38',
@@ -485,8 +486,6 @@ module NattyUI
     SCLR = CLR.transform_keys(&:to_sym).compare_by_identity.freeze
 
     private_constant(
-      :CSI,
-      :OSC,
       :ESC,
       :CLR_PREFIX,
       :PI2_THIRD,
@@ -498,3 +497,5 @@ module NattyUI
     )
   end
 end
+
+require_relative 'ansi/constants'
