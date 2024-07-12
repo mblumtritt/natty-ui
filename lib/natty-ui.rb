@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative 'natty-ui/ansi'
-require_relative 'natty-ui/ansi_constants'
 require_relative 'natty-ui/wrapper'
 require_relative 'natty-ui/ansi_wrapper'
 
@@ -74,19 +72,16 @@ module NattyUI
     # @param [#to_s] str string to edit
     # @return [String] edited string
     def embellish(str)
-      return +'' if (str = str.to_s).empty?
       reset = false
       str =
-        str.gsub(/(\[\[((?~\]\]))\]\])/) do
-          match = Regexp.last_match[2]
+        str_translate(str) do |match|
           if match[0] == '/'
             next "[[#{match[1..]}]]" if match.size > 1
             reset = false
-            Ansi::RESET
-          else
-            ansi = Ansi.try_convert(match)
-            ansi ? reset = ansi : "[[#{match}]]"
+            next Ansi::RESET
           end
+          ansi = Ansi.try_convert(match)
+          ansi ? reset = ansi : "[[#{match}]]"
         end
       reset ? "#{str}#{Ansi::RESET}" : str
     end
@@ -97,10 +92,8 @@ module NattyUI
     # @param [:keep,:remove] ansi keep or remove ANSI codes too
     # @return [String] edited string
     def plain(str, ansi: :keep)
-      return +'' if (str = str.to_s).empty?
       str =
-        str.gsub(/(\[\[((?~\]\]))\]\])/) do
-          match = Regexp.last_match[2]
+        str_translate(str) do |match|
           next match.size == 1 ? nil : "[[#{match[1..]}]]" if match[0] == '/'
           Ansi.try_convert(match) ? nil : "[[#{match}]]"
         end
@@ -113,17 +106,18 @@ module NattyUI
     # @param [#to_s] str string to calculate
     # @return [Integer] the display size
     def display_width(str)
-      str = plain(str).encode(Encoding::UTF_8)
+      str = plain(str)
       return 0 if str.empty?
+      str = str.encode(Encoding::UTF_8) if str.encoding != Encoding::UTF_8
       width = 0
       in_zero_width = false
-      str.scan(Ansi::WIDTH_SCANNER) do |np_start, np_end, _csi, _osc, gc|
+      str.scan(WIDTH_SCANNER) do |np_start, np_end, _csi, _osc, gc|
         if in_zero_width
           in_zero_width = false if np_end
           next
         end
         next in_zero_width = true if np_start
-        width += get_mbchar_width(gc) if gc
+        width += str_char_width(gc) if gc
       end
       width
     end
@@ -144,7 +138,7 @@ module NattyUI
       return to_enum(__method__, *strs, max_width: max_width) unless block
       if max_width.nil?
         strs.each { _1.to_s.each_line(chomp: true, &block) }
-        return nil
+        return
       end
       return if (max_width = max_width.to_i) <= 0
       strs.each do |str|
@@ -152,10 +146,42 @@ module NattyUI
           .to_s
           .each_line(chomp: true) do |line|
             next yield(line) if line.empty?
-            split_by_width(line, max_width, line.encoding).each(&block)
+            str_split(line, max_width, line.encoding).each(&block)
           end
       end
       nil
+    end
+
+    # Returns first line of a given text.
+    # Optionally limit the line width to given `max_width`.
+    #
+    # @param [#to_s] text
+    # @param [#to_i, nil] max_width maximum line width to return
+    # @return [String] first text line
+    def first_line(text, max_width: nil)
+      text = text.to_s.each_line(chomp: true).first or return +''
+      return text if max_width.nil? || text.empty?
+      seq = String.new(encoding: text.encoding)
+      return seq if (max_width = max_width.to_i) <= 0
+      line = seq.dup
+      width = 0
+      in_zero_width = false
+      text = text.encode(Encoding::UTF_8) if text.encoding != Encoding::UTF_8
+      text.scan(WIDTH_SCANNER) do |np_start, np_end, csi, osc, gc|
+        next in_zero_width = (line << "\1") if np_start
+        next in_zero_width = !(line << "\2") if np_end
+        next (line << osc) && (seq << osc) if osc
+        if csi
+          line << csi
+          next if in_zero_width
+          next csi == "\e[m" || csi == "\e[0m" ? seq.clear : seq << csi
+        end
+        next line << gc if in_zero_width
+        cw = str_char_width(gc)
+        return line if (width += cw) > max_width
+        line << gc
+      end
+      line
     end
 
     # Read next raw key (keyboard input) from {in_stream}.
@@ -201,55 +227,88 @@ module NattyUI
       false
     end
 
-    def split_by_width(str, max_width, encoding)
+    def str_translate(str)
+      return +'' if (str = str.to_s).empty?
+      str.gsub(/(\[\[((?~\]\]))\]\])/) { yield(Regexp.last_match[2]) }
+    end
+
+    def str_split(str, max_width, encoding)
       lines = [(seq = String.new(encoding: encoding)).dup]
       width = 0
       in_zero_width = false
-      str
-        .encode(Encoding::UTF_8)
-        .scan(Ansi::WIDTH_SCANNER) do |np_start, np_end, csi, osc, gc|
-          if np_start
-            lines.last << "\1"
-            next in_zero_width = true
-          end
-          if np_end
-            lines.last << "\2"
-            next in_zero_width = false
-          end
-          if osc
-            lines.last << osc
-            next seq << osc
-          end
-          if csi
-            lines.last << csi
-            next if in_zero_width
-            next csi == "\e[m" || csi == "\e[0m" ? seq.clear : seq << csi
-          end
-          next lines.last << gc if in_zero_width
-          mbchar_width = get_mbchar_width(gc)
-          if (width += mbchar_width) > max_width
-            width = mbchar_width
-            lines << seq.dup
-          end
-          lines.last << gc
+      str = str.encode(Encoding::UTF_8) if str.encoding != Encoding::UTF_8
+      str.scan(WIDTH_SCANNER) do |np_start, np_end, csi, osc, gc|
+        next in_zero_width = (lines.last << "\1") if np_start
+        next in_zero_width = !(lines.last << "\2") if np_end
+        next (lines.last << osc) && (seq << osc) if osc
+        if csi
+          lines.last << csi
+          next if in_zero_width
+          next csi == "\e[m" || csi == "\e[0m" ? seq.clear : seq << csi
         end
+        next lines.last << gc if in_zero_width
+        cw = str_char_width(gc)
+        if (width += cw) > max_width
+          width = cw
+          lines << seq.dup
+        end
+        lines.last << gc
+      end
       lines
     end
 
-    def get_mbchar_width(mbchar)
-      ord = mbchar.ord
-      return 2 if ord <= 0x1F
-      return 1 if ord <= 0x7E
+    def str_char_width(char)
+      ord = char.ord
+      return SPECIAL_CHARS[ord] || 2 if ord <= 0x1f
+      return 1 if ord <= 0x7e
       size = EastAsianWidth[ord]
-      return 1 if size == -1 # ambiguous width
-      if size == 1 && mbchar.size >= 2
-        sco = mbchar[1].ord
+      return @ambiguous_char_width if size == -1
+      if size == 1 && char.size >= 2
+        sco = char[1].ord
         # Halfwidth Dakuten Handakuten
-        return sco == 0xFF9E || sco == 0xFF9F ? 2 : 1
+        return sco == 0xff9e || sco == 0xff9f ? 2 : 1
       end
       size
     end
   end
+
+  WIDTH_SCANNER = /\G(?:(\1)|(\2)|(#{Ansi::CSI})|(#{Ansi::OSC})|(\X))/
+
+  SPECIAL_CHARS = {
+    0x00 => 0,
+    0x01 => 1,
+    0x02 => 1,
+    0x03 => 1,
+    0x04 => 1,
+    0x05 => 0,
+    0x06 => 1,
+    0x07 => 0,
+    0x08 => 0,
+    0x09 => 8,
+    0x0a => 0,
+    0x0b => 0,
+    0x0c => 0,
+    0x0d => 0,
+    0x0e => 0,
+    0x0f => 0,
+    0x10 => 1,
+    0x11 => 1,
+    0x12 => 1,
+    0x13 => 1,
+    0x14 => 1,
+    0x15 => 1,
+    0x16 => 1,
+    0x17 => 1,
+    0x18 => 1,
+    0x19 => 1,
+    0x1a => 1,
+    0x1b => 1,
+    0x1c => 1,
+    0x1d => 1,
+    0x1e => 1,
+    0x1f => 1
+  }.compare_by_identity.freeze
+  @ambiguous_char_width = 1
 
   # Instance for standard output.
   StdOut = new(STDOUT)

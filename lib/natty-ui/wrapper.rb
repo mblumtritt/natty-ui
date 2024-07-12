@@ -51,9 +51,8 @@ module NattyUI
     #   @param [#to_s] ... objects to print
     #   @return [Wrapper] itself
     def puts(*args, **kwargs)
-      args = prepare_print(args, kwargs)
+      @stream.puts(args = prepare_print(args, kwargs))
       @lines_written += args.size
-      @stream.puts(args)
       @stream.flush
       self
     end
@@ -64,9 +63,8 @@ module NattyUI
     #   @param [#to_s] ... objects to print
     #   @return [Wrapper] itself
     def print(*args, **kwargs)
-      args = prepare_print(args, kwargs).to_a
+      @stream.print(*(args = prepare_print(args, kwargs).to_a))
       @lines_written += args.size - 1
-      @stream.print(*args)
       @stream.flush
       self
     end
