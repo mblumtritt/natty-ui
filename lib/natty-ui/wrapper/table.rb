@@ -53,8 +53,8 @@ module NattyUI
     #       %w[kiwi 1.5$ Newzeeland]
     #     )
     def table(*table, type: :simple)
-      table = Table.new(*table)
-      yield(table) if block_given?
+      return _element(:Table, table, type) unless block_given?
+      yield(table = Table.new(table))
       _element(:Table, table.rows, type)
     end
 
@@ -74,7 +74,7 @@ module NattyUI
     #   #   kiwi: 1.5$
     #
     def pairs(seperator = ': ', **kwargs)
-      _element(:Pairs, Table.new(**kwargs).rows, seperator)
+      _element(:Pairs, kwargs.to_a, seperator)
     end
 
     class Table
@@ -93,11 +93,7 @@ module NattyUI
         self
       end
 
-      def initialize(*args, **kwargs)
-        @rows = []
-        args.each { add_row(*_1) }
-        kwargs.each_pair { add_row(*_1) }
-      end
+      def initialize(rows) = (@rows = rows)
     end
     private_constant :Table
   end
@@ -239,9 +235,10 @@ module NattyUI
           diff.each do |col_idx|
             adjust_to = adjusted[col_idx]
             next if matrix[row_idx][col_idx] <= adjust_to
-            ary = NattyUI.each_line(*row[col_idx], max_width: adjust_to).to_a
-            ary.pop if ary.last.empty?
-            row[col_idx] = ary
+            row[col_idx] = NattyUI.each_line(
+              *row[col_idx],
+              max_width: adjust_to
+            ).to_a
           end
         end
         adjusted
