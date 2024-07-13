@@ -235,7 +235,10 @@ module NattyUI
           diff.each do |col_idx|
             adjust_to = adjusted[col_idx]
             next if matrix[row_idx][col_idx] <= adjust_to
-            row[col_idx] = Text.as_lines(row[col_idx], adjust_to)
+            row[col_idx] = Text.as_embellished_lines_min(
+              row[col_idx],
+              adjust_to
+            )
           end
         end
         adjusted

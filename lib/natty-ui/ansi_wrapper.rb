@@ -34,10 +34,7 @@ module NattyUI
       animation = LineAnimation[animation].new(@stream, kwargs)
       prefix = "#{Ansi::RESET}#{Ansi::CLL}#{prefix}"
 
-      Text.each_line(
-        args.map! { Text.embellish(Ansi.blemish(_1)) },
-        mw
-      ) do |line|
+      Text.each_embellished_line(args.map! { Ansi.blemish(_1) }, mw) do |line|
         @stream << prefix
         animation.print(line)
         (@stream << "#{prefix}#{line}#{suffix}\n").flush
@@ -68,10 +65,17 @@ module NattyUI
 
     protected
 
-    def prepare_print(args, kwargs)
-      Text.prepare_print(args, kwargs, -> { screen_columns }) do |str|
-        Text.embellish(str)
-      end
+    def pprint(args, kwargs)
+      prefix = kwargs[:prefix] and prefix = Text.embellish(prefix)
+      suffix = kwargs[:suffix] and suffix = Text.embellish(suffix)
+      return yield("#{prefix}#{suffix}") if args.empty?
+      Text.each_embellished_line(
+        args,
+        kwargs.fetch(:max_width) do
+          screen_columns - kwargs.fetch(:prefix_width) { Text.width(prefix) } -
+            kwargs.fetch(:suffix_width) { Text.width(suffix) }
+        end
+      ) { yield("#{prefix}#{_1}#{suffix}") }
     end
 
     def temp_func

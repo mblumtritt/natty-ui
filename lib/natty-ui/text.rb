@@ -68,99 +68,115 @@ module NattyUI
         nil
       end
 
-      def each_line(strs, max_width)
+      def each_plain_line(strs, max_width)
         return if (max_width = max_width.to_i) <= 0
         strs.each do |str|
-          str
-            .to_s
-            .each_line(chomp: true) do |line|
-              next yield(line) if line.empty?
-              current = String.new(encoding: line.encoding)
-              seq = current.dup
-              width = 0
-              in_zero_width = false
-              line = line.encode(UTF_8) if line.encoding != UTF_8
-              line.scan(WIDTH_SCANNER) do |np_start, np_end, csi, osc, gc|
-                next in_zero_width = (current << "\1") if np_start
-                next in_zero_width = !(current << "\2") if np_end
-                next (current << osc) && (seq << osc) if osc
-                if csi
-                  current << csi
-                  next if in_zero_width
-                  next seq.clear if csi == "\e[m" || csi == "\e[0m"
-                  next seq << csi
-                end
-                next current << gc if in_zero_width
-                cw = char_width(gc)
-                if (width += cw) > max_width
-                  yield(current)
-                  width = cw
-                  current = seq.dup
-                end
-                current << gc
+          plain_but_ansi(str).each_line(chomp: true) do |line|
+            next yield(line, 0) if line.empty?
+            empty = String.new(encoding: line.encoding)
+            current = empty.dup
+            width = 0
+            in_zero_width = false
+            line = line.encode(UTF_8) if line.encoding != UTF_8
+            line.scan(WIDTH_SCANNER) do |np_start, np_end, csi, osc, gc|
+              next in_zero_width = (current << "\1") if np_start
+              next in_zero_width = !(current << "\2") if np_end
+              next if osc || csi
+              next current << gc if in_zero_width
+              cw = char_width(gc)
+              if (width += cw) > max_width
+                yield(current, width - cw)
+                width = cw
+                current = empty.dup
               end
-              yield(current)
+              current << gc
             end
+            yield(current, width)
+          end
         end
         nil
       end
 
-      def each_line_with_size(strs, max_width)
+      def first_plain_line(str, max_width)
         return if (max_width = max_width.to_i) <= 0
-        strs.each do |str|
-          str
-            .to_s
-            .each_line(chomp: true) do |line|
-              next yield(line, 0) if line.empty?
-              current = String.new(encoding: line.encoding)
-              seq = current.dup
-              width = 0
-              in_zero_width = false
-              line = line.encode(UTF_8) if line.encoding != UTF_8
-              line.scan(WIDTH_SCANNER) do |np_start, np_end, csi, osc, gc|
-                next in_zero_width = (current << "\1") if np_start
-                next in_zero_width = !(current << "\2") if np_end
-                next (current << osc) && (seq << osc) if osc
-                if csi
-                  current << csi
-                  next if in_zero_width
-                  next seq.clear if csi == "\e[m" || csi == "\e[0m"
-                  next seq << csi
-                end
-                next current << gc if in_zero_width
-                cw = char_width(gc)
-                if (width += cw) > max_width
-                  yield(current, width - cw)
-                  width = cw
-                  current = seq.dup
-                end
-                current << gc
-              end
-              yield(current, width)
-            end
+        plain_but_ansi(str).each_line(chomp: true) do |line|
+          return line, 0 if line.empty?
+          current = String.new(encoding: line.encoding)
+          width = 0
+          in_zero_width = false
+          line = line.encode(UTF_8) if line.encoding != UTF_8
+          line.scan(WIDTH_SCANNER) do |np_start, np_end, csi, osc, gc|
+            next in_zero_width = (current << "\1") if np_start
+            next in_zero_width = !(current << "\2") if np_end
+            next if osc || csi
+            next current << gc if in_zero_width
+            cw = char_width(gc)
+            return current, width - cw if (width += cw) > max_width
+            current << gc
+          end
+          return current, width
         end
-        nil
+        [+'', 0]
       end
 
-      def as_lines(strs, max_width)
+      def as_plain_lines(strs, width, height)
         ret = []
-        each_line(strs, max_width) { ret << _1 }
+        each_plain_line(strs, width) do |*info|
+          ret << info
+          break if ret.size == height
+        end
         ret
       end
 
-      def prepare_print(args, kwargs, screen_columns, &cvt)
-        prefix = kwargs[:prefix] and prefix = prefix.empty? ? '' : cvt[prefix]
-        suffix = kwargs[:suffix] and suffix = suffix.empty? ? '' : cvt[suffix]
-        return ["#{prefix}#{suffix}"] if args.empty?
-        ret = []
-        each_line(
-          args.map!(&cvt),
-          kwargs.fetch(:max_width) do
-            screen_columns.call -
-              kwargs.fetch(:prefix_width) { width(prefix) } -
-              kwargs.fetch(:suffix_width) { width(suffix) }
+      def each_embellished_line(strs, max_width)
+        return if (max_width = max_width.to_i) <= 0
+        simple_each_line(strs) do |line|
+          line = embellish(line)
+          next yield(line, 0) if line.empty?
+          current = String.new(encoding: line.encoding)
+          seq = current.dup
+          width = 0
+          in_zero_width = false
+          line = line.encode(UTF_8) if line.encoding != UTF_8
+          line.scan(WIDTH_SCANNER) do |np_start, np_end, csi, osc, gc|
+            next in_zero_width = (current << "\1") if np_start
+            next in_zero_width = !(current << "\2") if np_end
+            next (current << osc) && (seq << osc) if osc
+            if csi
+              current << csi
+              next if in_zero_width
+              next seq.clear if csi == "\e[m" || csi == "\e[0m"
+              next seq << csi
+            end
+            next current << gc if in_zero_width
+            cw = char_width(gc)
+            if (width += cw) > max_width
+              yield(current, width - cw)
+              width = cw
+              current = seq.dup
+            end
+            current << gc
           end
-        ) { ret << "#{prefix}#{_1}#{suffix}" }
+          yield(current, width)
+        end
+      end
+
+      def as_embellished_lines(strs, width, height = nil)
+        ret = []
+        if height
+          each_embellished_line(strs, width) do |*info|
+            ret << info
+            break if ret.size == height
+          end
+        else
+          each_embellished_line(strs, width) { |*info| ret << info }
+        end
+        ret
+      end
+
+      def as_embellished_lines_min(strs, width)
+        ret = []
+        each_embellished_line(strs, width) { ret << _1 }
         ret
       end
     end
