@@ -26,7 +26,7 @@ module NattyUI
       mw = kwargs[:max_width]
       unless mw
         mw = screen_columns - prefix_width
-        mw -= kwargs[:suffix_width] || Text.(suffix) if suffix
+        mw -= kwargs[:suffix_width] || Text.width(suffix) if suffix
       end
       kwargs[:max_width] = mw
 
