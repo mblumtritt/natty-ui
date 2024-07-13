@@ -26,7 +26,7 @@ module NattyUI
       mw = kwargs[:max_width]
       unless mw
         mw = screen_columns - prefix_width
-        mw -= kwargs[:suffix_width] || Text.(suffix) if suffix
+        mw -= kwargs[:suffix_width] || Text.width(suffix) if suffix
       end
       kwargs[:max_width] = mw
 
@@ -34,10 +34,7 @@ module NattyUI
       animation = LineAnimation[animation].new(@stream, kwargs)
       prefix = "#{Ansi::RESET}#{Ansi::CLL}#{prefix}"
 
-      Text.each_line(
-        args.map! { Text.embellish(Ansi.blemish(_1)) },
-        mw
-      ) do |line|
+      Text.each_embellished_line(args.map! { Ansi.blemish(_1) }, mw) do |line|
         @stream << prefix
         animation.print(line)
         (@stream << "#{prefix}#{line}#{suffix}\n").flush
@@ -68,10 +65,17 @@ module NattyUI
 
     protected
 
-    def prepare_print(args, kwargs)
-      Text.prepare_print(args, kwargs, -> { screen_columns }) do |str|
-        Text.embellish(str)
-      end
+    def pprint(args, kwargs)
+      prefix = kwargs[:prefix] and prefix = Text.embellish(prefix)
+      suffix = kwargs[:suffix] and suffix = Text.embellish(suffix)
+      return yield("#{prefix}#{suffix}") if args.empty?
+      Text.each_embellished_line(
+        args,
+        kwargs.fetch(:max_width) do
+          screen_columns - kwargs.fetch(:prefix_width) { Text.width(prefix) } -
+            kwargs.fetch(:suffix_width) { Text.width(suffix) }
+        end
+      ) { yield("#{prefix}#{_1}#{suffix}") }
     end
 
     def temp_func
@@ -158,12 +162,12 @@ module NattyUI
     class Framed < Framed
       def color(str) = "#{Ansi[39]}#{str}#{Ansi::RESET}"
 
-      def init(deco)
-        @prefix = "#{color(deco[0])} "
-        @suffix = "#{Ansi.cursor_column(parent.rcol)}#{color(deco[4])}"
+      def init(type)
+        @prefix = "#{color(type[0])} "
+        @suffix = "#{Ansi.cursor_column(parent.rcol)}#{color(type[4])}"
         aw = @parent.available_width - 2
-        parent.puts(color("#{deco[1]}#{deco[2] * aw}#{deco[3]}"))
-        @finish = color("#{deco[5]}#{deco[6] * aw}#{deco[7]}")
+        parent.puts(color("#{type[1]}#{type[2] * aw}#{type[3]}"))
+        @finish = color("#{type[5]}#{type[6] * aw}#{type[7]}")
       end
     end
 
@@ -171,9 +175,8 @@ module NattyUI
       protected
 
       def initialize(parent, title:, glyph:)
-        wrapper = parent.wrapper
         color = COLORS[glyph] || COLORS[:default]
-        glyph = wrapper.glyph(glyph) || glyph
+        glyph = NattyUI.glyph(glyph) || glyph
         prefix_width = Text.width(glyph) + 1
         parent.puts(
           title,

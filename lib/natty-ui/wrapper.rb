@@ -51,8 +51,10 @@ module NattyUI
     #   @param [#to_s] ... objects to print
     #   @return [Wrapper] itself
     def puts(*args, **kwargs)
-      @stream.puts(args = prepare_print(args, kwargs))
-      @lines_written += args.size
+      pprint(args, kwargs) do |line|
+        @stream.puts(line)
+        @lines_written += 1
+      end
       @stream.flush
       self
     end
@@ -63,8 +65,11 @@ module NattyUI
     #   @param [#to_s] ... objects to print
     #   @return [Wrapper] itself
     def print(*args, **kwargs)
-      @stream.print(*(args = prepare_print(args, kwargs)))
-      @lines_written += args.size - 1
+      pprint(args, kwargs) do |line|
+        @stream.print(line)
+        @lines_written += 1
+      end
+      @lines_written -= 1
       @stream.flush
       self
     end
@@ -152,21 +157,19 @@ module NattyUI
     # @!visibility private
     def prefix = nil
 
-    # @return [Array<Symbol>] available glyph names
-    def glyph_names = GLYPHS.keys
-
-    #
-    # Get a pre-defined glyph
-    #
-    # @param [Symbol] name glyph name
-    # @return [String] the named glyph
-    # @return [nil] when glyph is not defined
-    def glyph(name) = GLYPHS[name]
-
     protected
 
-    def prepare_print(args, kwargs)
-      Text.prepare_print(args, kwargs, -> { screen_columns }) { Text.plain(_1) }
+    def pprint(args, kwargs)
+      prefix = kwargs[:prefix] and prefix = Text.plain(prefix)
+      suffix = kwargs[:suffix] and suffix = Text.plain(suffix)
+      return yield("#{prefix}#{suffix}") if args.empty?
+      Text.each_plain_line(
+        args,
+        kwargs.fetch(:max_width) do
+          screen_columns - kwargs.fetch(:prefix_width) { Text.width(prefix) } -
+            kwargs.fetch(:suffix_width) { Text.width(suffix) }
+        end
+      ) { yield("#{prefix}#{_1}#{suffix}") }
     end
 
     def temp_func
@@ -206,28 +209,5 @@ module NattyUI
     rescue SystemCallError
       nil
     end
-
-    GLYPHS = {
-      default: "#{Ansi[:bold, 255]}•#{Ansi::RESET}",
-      information: "#{Ansi[:bold, 119]}𝒊#{Ansi::RESET}",
-      warning: "#{Ansi[:bold, 221]}!#{Ansi::RESET}",
-      error: "#{Ansi[:bold, 208]}𝙓#{Ansi::RESET}",
-      completed: "#{Ansi[:bold, 82]}✓#{Ansi::RESET}",
-      failed: "#{Ansi[:bold, 196]}𝑭#{Ansi::RESET}",
-      task: "#{Ansi[:bold, 39]}➔#{Ansi::RESET}",
-      query: "#{Ansi[:bold, 39]}▸#{Ansi::RESET}"
-    }.compare_by_identity.freeze
-
-    # GLYPHS = {
-    #   default: '●',
-    #   information: '🅸 ',
-    #   warning: '🆆 ',
-    #   error: '🅴 ',
-    #   completed: '✓',
-    #   failed: '🅵 ',
-    #   task: '➔',
-    #   query: '🆀 '
-    # }.compare_by_identity.freeze
-    private_constant :GLYPHS
   end
 end

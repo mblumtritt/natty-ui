@@ -13,7 +13,7 @@ Here you find elegant, simple and beautiful tools that enhance your command line
 You can simply decorate your text with named ANSI attributes and colors
 
 ```ruby
-ui.puts "[[bold]]Hello [[ff7bfd]]World[[/]]!"
+ui.puts '[[bold underline]]Hello [[ff7bfd]]World[[/]]!'
 ```
 
 or use different types of messages

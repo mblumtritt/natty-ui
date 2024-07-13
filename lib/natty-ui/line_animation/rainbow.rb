@@ -26,5 +26,6 @@ module NattyUI
     end
 
     define rainbow: Rainbow
+    private_constant :Rainbow
   end
 end

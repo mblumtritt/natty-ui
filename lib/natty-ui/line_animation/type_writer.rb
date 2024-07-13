@@ -40,5 +40,6 @@ module NattyUI
     end
 
     define type_writer: TypeWriter
+    private_constant :TypeWriter
   end
 end
