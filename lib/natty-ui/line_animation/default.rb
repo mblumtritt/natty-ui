@@ -11,7 +11,7 @@ module NattyUI
       end
 
       def print(line)
-        line = plain(line)
+        line = Text.plain(line)
         time = 0.5 / line.size
         @stream << @color
         if (@num += 1).odd?

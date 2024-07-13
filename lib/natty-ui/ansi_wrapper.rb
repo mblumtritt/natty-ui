@@ -11,8 +11,8 @@ module NattyUI
 
       prefix = kwargs[:prefix]
       if prefix && !prefix.empty?
-        prefix = NattyUI.embellish(prefix)
-        prefix_width = kwargs[:prefix_width] || NattyUI.display_width(prefix)
+        prefix = Text.embellish(prefix)
+        prefix_width = kwargs[:prefix_width] || Text.width(prefix)
       else
         prefix = nil
         prefix_width = 0
@@ -21,12 +21,12 @@ module NattyUI
       kwargs[:prefix_width] = prefix_width
 
       suffix = kwargs[:suffix]
-      suffix = suffix.empty? ? nil : NattyUI.embellish(suffix) if suffix
+      suffix = suffix.empty? ? nil : Texct.embellish(suffix) if suffix
 
       mw = kwargs[:max_width]
       unless mw
         mw = screen_columns - prefix_width
-        mw -= kwargs[:suffix_width] || NattyUI.display_width(suffix) if suffix
+        mw -= kwargs[:suffix_width] || Text.(suffix) if suffix
       end
       kwargs[:max_width] = mw
 
@@ -34,9 +34,9 @@ module NattyUI
       animation = LineAnimation[animation].new(@stream, kwargs)
       prefix = "#{Ansi::RESET}#{Ansi::CLL}#{prefix}"
 
-      NattyUI.each_line(
-        *args.map! { NattyUI.embellish(Ansi.blemish(_1)) },
-        max_width: mw
+      Text.each_line(
+        args.map! { Text.embellish(Ansi.blemish(_1)) },
+        mw
       ) do |line|
         @stream << prefix
         animation.print(line)
@@ -69,7 +69,9 @@ module NattyUI
     protected
 
     def prepare_print(args, kwargs)
-      _prepare_print(args, kwargs) { NattyUI.embellish(_1) }
+      Text.prepare_print(args, kwargs, -> { screen_columns }) do |str|
+        Text.embellish(str)
+      end
     end
 
     def temp_func
@@ -172,7 +174,7 @@ module NattyUI
         wrapper = parent.wrapper
         color = COLORS[glyph] || COLORS[:default]
         glyph = wrapper.glyph(glyph) || glyph
-        prefix_width = NattyUI.display_width(glyph) + 1
+        prefix_width = Text.width(glyph) + 1
         parent.puts(
           title,
           prefix: "#{glyph} #{color}",

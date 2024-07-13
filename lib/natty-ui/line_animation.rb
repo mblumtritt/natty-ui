@@ -21,13 +21,12 @@ module NattyUI
         @options = options
       end
 
-      def print(_line) = nil
+      def print(_line) = raise(NotImplementedError)
 
       protected
 
       def to_column = Ansi.cursor_column(@options[:prefix_width] + 1)
       def color = attribute(:color, :default)
-      def plain(str) = NattyUI.plain(str, ansi: false)
 
       def attribute(name, *default)
         att = @options[name] or return Ansi[*default]

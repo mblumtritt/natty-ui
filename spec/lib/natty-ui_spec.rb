@@ -257,37 +257,4 @@ RSpec.describe NattyUI do
   xdescribe '.each_line' do
     # TODO
   end
-
-  describe '.first_line' do
-    it 'returns text of single line text' do
-      line = "\e]0;Hello\aWorld!\e[H"
-      expect(NattyUI.first_line(line)).to eq line
-    end
-
-    it 'returns first line of a text' do
-      line = "\e]0;Hello\a\nWorld!\e[H\nHelooooo"
-      expect(NattyUI.first_line(line)).to eq "\e]0;Hello\a"
-    end
-
-    it 'returns empty string when empty string was given' do
-      expect(NattyUI.first_line(nil)).to eq ''
-    end
-
-    context 'when max_width is given' do
-      it 'returns text limited to max_width' do
-        line = "\e]0;Hello\aRuby World!\e[H"
-        expect(NattyUI.first_line(line, max_width: 4)).to eq "\e]0;Hello\aRuby"
-      end
-
-      it 'returns first line even when max_width was not reached' do
-        line = "\e]0;Hello\a\nRuby World!\e[H"
-        expect(NattyUI.first_line(line, max_width: 10)).to eq "\e]0;Hello\a"
-      end
-
-      it 'returns empty string when max_width is invalid' do
-        line = "\e]0;Hello\aRuby World!\e[H"
-        expect(NattyUI.first_line(line, max_width: -1)).to eq ''
-      end
-    end
-  end
 end

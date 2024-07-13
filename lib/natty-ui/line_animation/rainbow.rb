@@ -9,7 +9,7 @@ module NattyUI
       end
 
       def print(line)
-        line = plain(line)
+        line = Text.plain(line)
         11.upto(200) do |spread|
           (
             @stream << @prefix <<

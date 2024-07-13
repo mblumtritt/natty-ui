@@ -12,7 +12,7 @@ module NattyUI
       end
 
       def print(line)
-        line = plain(line)
+        line = Text.plain(line)
         if (@num += 1).odd?
           line.each_char { (@stream << cursor(_1)).flush }
         else

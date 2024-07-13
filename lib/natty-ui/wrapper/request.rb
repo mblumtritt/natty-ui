@@ -40,7 +40,7 @@ module NattyUI
         @parent.print(
           question,
           prefix: "#{glyph} #{Ansi[255]}",
-          prefix_width: NattyUI.display_width(glyph) + 1,
+          prefix_width: Text.width(glyph) + 1,
           suffix_width: 0
         )
         (wrapper.stream << ANSI_PREFIX).flush if wrapper.ansi?
