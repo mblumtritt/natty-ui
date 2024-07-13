@@ -171,9 +171,8 @@ module NattyUI
       protected
 
       def initialize(parent, title:, glyph:)
-        wrapper = parent.wrapper
         color = COLORS[glyph] || COLORS[:default]
-        glyph = wrapper.glyph(glyph) || glyph
+        glyph = NattyUI.glyph(glyph) || glyph
         prefix_width = Text.width(glyph) + 1
         parent.puts(
           title,

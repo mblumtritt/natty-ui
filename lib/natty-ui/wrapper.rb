@@ -152,17 +152,6 @@ module NattyUI
     # @!visibility private
     def prefix = nil
 
-    # @return [Array<Symbol>] available glyph names
-    def glyph_names = GLYPHS.keys
-
-    #
-    # Get a pre-defined glyph
-    #
-    # @param [Symbol] name glyph name
-    # @return [String] the named glyph
-    # @return [nil] when glyph is not defined
-    def glyph(name) = GLYPHS[name]
-
     protected
 
     def prepare_print(args, kwargs)
@@ -206,28 +195,5 @@ module NattyUI
     rescue SystemCallError
       nil
     end
-
-    GLYPHS = {
-      default: "#{Ansi[:bold, 255]}•#{Ansi::RESET}",
-      information: "#{Ansi[:bold, 119]}𝒊#{Ansi::RESET}",
-      warning: "#{Ansi[:bold, 221]}!#{Ansi::RESET}",
-      error: "#{Ansi[:bold, 208]}𝙓#{Ansi::RESET}",
-      completed: "#{Ansi[:bold, 82]}✓#{Ansi::RESET}",
-      failed: "#{Ansi[:bold, 196]}𝑭#{Ansi::RESET}",
-      task: "#{Ansi[:bold, 39]}➔#{Ansi::RESET}",
-      query: "#{Ansi[:bold, 39]}▸#{Ansi::RESET}"
-    }.compare_by_identity.freeze
-
-    # GLYPHS = {
-    #   default: '●',
-    #   information: '🅸 ',
-    #   warning: '🆆 ',
-    #   error: '🅴 ',
-    #   completed: '✓',
-    #   failed: '🅵 ',
-    #   task: '➔',
-    #   query: '🆀 '
-    # }.compare_by_identity.freeze
-    private_constant :GLYPHS
   end
 end

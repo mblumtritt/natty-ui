@@ -135,6 +135,34 @@ module NattyUI
       nil
     end
 
+    # @return [Array<Symbol>] available glyph names
+    def glyph_names = GLYPH.keys
+
+    # Get a pre-defined glyph.
+    #
+    # @param [Symbol] name glyph name
+    # @return [String] the glyph
+    # @return [nil] when glyph is not defined
+    def glyph(name) = GLYPH[name]
+
+    # @return [Array<Symbol>] available frame names
+    def frame_names = FRAME.keys
+
+    # Get a frame definition.
+    #
+    # @param [Symbol] name frame type name
+    # @return [String] the frame definition
+    # @raise [ArgumentError] when an invalid name is specified
+    def frame(name)
+      if name.is_a?(Symbol)
+        ret = FRAME[name] and return ret
+      elsif name.is_a?(String)
+        return name if name.size == 8
+        return name * 8 if name.size == 1
+      end
+      raise(ArgumentError, "invalid frame type - #{name.inspect}")
+    end
+
     private
 
     def wrapper_class(stream, ansi)
@@ -162,7 +190,38 @@ module NattyUI
   autoload(:LineAnimation, File.join(dir, 'natty-ui', 'line_animation'))
   autoload(:KEY_MAP, File.join(dir, 'natty-ui', 'key_map'))
 
-  private_constant :LineAnimation, :KEY_MAP
+  GLYPH = {
+    default: "#{Ansi[:bold, 255]}•#{Ansi::RESET}",
+    information: "#{Ansi[:bold, 119]}𝒊#{Ansi::RESET}",
+    warning: "#{Ansi[:bold, 221]}!#{Ansi::RESET}",
+    error: "#{Ansi[:bold, 208]}𝙓#{Ansi::RESET}",
+    completed: "#{Ansi[:bold, 82]}✓#{Ansi::RESET}",
+    failed: "#{Ansi[:bold, 196]}𝑭#{Ansi::RESET}",
+    task: "#{Ansi[:bold, 39]}➔#{Ansi::RESET}",
+    query: "#{Ansi[:bold, 39]}▸#{Ansi::RESET}"
+  }.compare_by_identity.freeze
+
+  # GLYPH = {
+  #   default: '●',
+  #   information: '🅸 ',
+  #   warning: '🆆 ',
+  #   error: '🅴 ',
+  #   completed: '✓',
+  #   failed: '🅵 ',
+  #   task: '➔',
+  #   query: '🆀 '
+  # }.compare_by_identity.freeze
+
+  FRAME = {
+    rounded: '│╭─╮│╰─╯',
+    simple: '│┌─┐│└─┘',
+    heavy: '┃┏━┓┃┗━┛',
+    double: '║╔═╗║╚═╝',
+    semi: '│╒═╕│╘═╛',
+    block: '▌▛▀▜▐▙▄▟'
+  }.compare_by_identity.freeze
+
+  private_constant :LineAnimation, :KEY_MAP, :GLYPH, :FRAME
 
   @element = StdOut
   self.in_stream = STDIN

@@ -94,7 +94,7 @@ module NattyUI
       protected
 
       def initialize(parent, title:, glyph:)
-        glyph = parent.wrapper.glyph(glyph) || glyph
+        glyph = NattyUI.glyph(glyph) || glyph
         prefix_width = Text.width(glyph) + 1
         super(
           parent,
