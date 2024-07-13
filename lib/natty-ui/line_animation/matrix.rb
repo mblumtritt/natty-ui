@@ -24,5 +24,6 @@ module NattyUI
     end
 
     define matrix: Matrix
+    private_constant :Matrix
   end
 end

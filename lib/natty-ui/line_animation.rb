@@ -36,6 +36,7 @@ module NattyUI
 
       SPACE = /[[:space:]]/
     end
+    private_constant :None
 
     dir = __dir__
     @defined = {

@@ -31,5 +31,6 @@ module NattyUI
     end
 
     define default: Default
+    private_constant :Default
   end
 end

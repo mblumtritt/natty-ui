@@ -205,6 +205,7 @@ module NattyUI
     }.compare_by_identity.freeze
 
     autoload(:EastAsianWidth, File.join(__dir__, 'text', 'east_asian_width'))
+    private_constant :EastAsianWidth
 
     @ambiguous_char_width = 1
   end
