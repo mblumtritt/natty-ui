@@ -16,7 +16,7 @@ module NattyUI
     # @return [Object] the result of the code block
     # @return [Wrapper::Framed] itself, when no code block is given
     def framed(*args, type: :rounded, &block)
-      _section(:Framed, args, type: type, &block)
+      _section(:Framed, args, type: NattyUI.frame(type), &block)
     end
   end
 
@@ -29,15 +29,14 @@ module NattyUI
       protected
 
       def initialize(parent, type:)
-        deco = NattyUI.frame(type)
-        super(parent, prefix: "#{deco[0]} ", prefix_width: 2, suffix_width: 2)
-        init(deco)
+        super(parent, prefix: "#{type[0]} ", prefix_width: 2, suffix_width: 2)
+        init(type)
       end
 
-      def init(deco)
+      def init(type)
         aw = @parent.available_width - 1
-        parent.puts("#{deco[1]}#{deco[2] * aw}")
-        @finish = "#{deco[5]}#{deco[6] * aw}"
+        parent.puts("#{type[1]}#{type[2] * aw}")
+        @finish = "#{type[5]}#{type[6] * aw}"
       end
 
       def finish = @parent.puts(@finish)
