@@ -51,9 +51,8 @@ module NattyUI
     #   @param [#to_s] ... objects to print
     #   @return [Wrapper] itself
     def puts(*args, **kwargs)
-      args = prepare_print(args, kwargs)
+      @stream.puts(args = prepare_print(args, kwargs))
       @lines_written += args.size
-      @stream.puts(args)
       @stream.flush
       self
     end
@@ -64,9 +63,8 @@ module NattyUI
     #   @param [#to_s] ... objects to print
     #   @return [Wrapper] itself
     def print(*args, **kwargs)
-      args = prepare_print(args, kwargs).to_a
+      @stream.print(*(args = prepare_print(args, kwargs)))
       @lines_written += args.size - 1
-      @stream.print(*args)
       @stream.flush
       self
     end
@@ -168,24 +166,7 @@ module NattyUI
     protected
 
     def prepare_print(args, kwargs)
-      _prepare_print(args, kwargs) { NattyUI.plain(_1, ansi: false) }
-    end
-
-    def _prepare_print(args, kwargs, &cvt)
-      prefix = kwargs[:prefix] and prefix = prefix.empty? ? '' : cvt[prefix]
-      suffix = kwargs[:suffix] and suffix = suffix.empty? ? '' : cvt[suffix]
-      return ["#{prefix}#{suffix}"] if args.empty?
-      NattyUI
-        .each_line(
-          *args.map!(&cvt),
-          max_width:
-            kwargs.fetch(:max_width) do
-              screen_columns -
-                kwargs.fetch(:prefix_width) { NattyUI.display_width(prefix) } -
-                kwargs.fetch(:suffix_width) { NattyUI.display_width(suffix) }
-            end
-        )
-        .map { "#{prefix}#{_1}#{suffix}" }
+      Text.prepare_print(args, kwargs, -> { screen_columns }) { Text.plain(_1) }
     end
 
     def temp_func

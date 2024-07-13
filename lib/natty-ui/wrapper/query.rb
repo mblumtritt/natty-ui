@@ -69,7 +69,6 @@ module NattyUI
           .to_h { |str, i| [i + 1, str] }
           .merge!(kw_choices)
           .transform_keys!(&:to_s)
-          .transform_values! { _1.to_s.gsub(/[[:space:]]/, ' ') }
       end
 
       def read(choices, result)

@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative 'ansi'
-
 module NattyUI
   module LineAnimation
     def self.defined = @defined.keys
@@ -23,13 +21,12 @@ module NattyUI
         @options = options
       end
 
-      def print(_line) = nil
+      def print(_line) = raise(NotImplementedError)
 
       protected
 
       def to_column = Ansi.cursor_column(@options[:prefix_width] + 1)
       def color = attribute(:color, :default)
-      def plain(str) = NattyUI.plain(str, ansi: false)
 
       def attribute(name, *default)
         att = @options[name] or return Ansi[*default]
@@ -45,10 +42,7 @@ module NattyUI
       default: "#{dir}/line_animation/default",
       matrix: "#{dir}/line_animation/matrix",
       rainbow: "#{dir}/line_animation/rainbow",
-      type_writer: "#{dir}/line_animation/type_writer",
-      test: "#{dir}/line_animation/test"
+      type_writer: "#{dir}/line_animation/type_writer"
     }.compare_by_identity
   end
-
-  private_constant :LineAnimation
 end

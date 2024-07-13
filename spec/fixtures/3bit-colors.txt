@@ -1,12 +1,12 @@
 
 ═══════ NattyUI: 3/4-bit Color Support ═══════
 
-black           sample text     bright_black    sample text 
-red             sample text     bright_red      sample text 
-green           sample text     bright_green    sample text 
-yellow          sample text     bright_yellow   sample text 
-blue            sample text     bright_blue     sample text 
-magenta         sample text     bright_magenta  sample text 
-cyan            sample text     bright_cyan     sample text 
-white           sample text     bright_white    sample text 
+black    sample text     bright_black    sample text 
+red      sample text     bright_red      sample text 
+green    sample text     bright_green    sample text 
+yellow   sample text     bright_yellow   sample text 
+blue     sample text     bright_blue     sample text 
+magenta  sample text     bright_magenta  sample text 
+cyan     sample text     bright_cyan     sample text 
+white    sample text     bright_white    sample text 
 

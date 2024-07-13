@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'ansi'
 require_relative 'wrapper'
-require_relative 'line_animation'
 
 module NattyUI
   class AnsiWrapper < Wrapper
@@ -13,8 +11,8 @@ module NattyUI
 
       prefix = kwargs[:prefix]
       if prefix && !prefix.empty?
-        prefix = NattyUI.embellish(prefix)
-        prefix_width = kwargs[:prefix_width] || NattyUI.display_width(prefix)
+        prefix = Text.embellish(prefix)
+        prefix_width = kwargs[:prefix_width] || Text.width(prefix)
       else
         prefix = nil
         prefix_width = 0
@@ -23,12 +21,12 @@ module NattyUI
       kwargs[:prefix_width] = prefix_width
 
       suffix = kwargs[:suffix]
-      suffix = suffix.empty? ? nil : NattyUI.embellish(suffix) if suffix
+      suffix = suffix.empty? ? nil : Texct.embellish(suffix) if suffix
 
       mw = kwargs[:max_width]
       unless mw
         mw = screen_columns - prefix_width
-        mw -= kwargs[:suffix_width] || NattyUI.display_width(suffix) if suffix
+        mw -= kwargs[:suffix_width] || Text.(suffix) if suffix
       end
       kwargs[:max_width] = mw
 
@@ -36,17 +34,16 @@ module NattyUI
       animation = LineAnimation[animation].new(@stream, kwargs)
       prefix = "#{Ansi::RESET}#{Ansi::CLL}#{prefix}"
 
-      NattyUI
-        .each_line(
-          *args.map! { NattyUI.embellish(Ansi.blemish(_1)) },
-          max_width: mw
-        )
-        .each do |line|
-          @stream << prefix
-          animation.print(line)
-          (@stream << "#{prefix}#{line}#{suffix}\n").flush
-          @lines_written += 1
-        end
+      Text.each_line(
+        args.map! { Text.embellish(Ansi.blemish(_1)) },
+        mw
+      ) do |line|
+        @stream << prefix
+        animation.print(line)
+        (@stream << "#{prefix}#{line}#{suffix}\n").flush
+        @lines_written += 1
+      end
+
       (@stream << Ansi::CURSOR_SHOW).flush
       self
     end
@@ -72,16 +69,18 @@ module NattyUI
     protected
 
     def prepare_print(args, kwargs)
-      _prepare_print(args, kwargs) { NattyUI.embellish(_1) }
+      Text.prepare_print(args, kwargs, -> { screen_columns }) do |str|
+        Text.embellish(str)
+      end
     end
 
     def temp_func
       count = @lines_written
       lambda do
-        count = @lines_written - count
-        if count.nonzero?
-          @stream << Ansi.cursor_prev_line(count) << Ansi.screen_erase(:below)
-          @lines_written -= count
+        if (c = @lines_written - count).nonzero?
+          @stream << Ansi.cursor_prev_line(c) << Ansi.screen_erase(:below) <<
+            Ansi::CURSOR_FIRST_COLUMN
+          @lines_written -= c
         end
         @stream.flush
         self
@@ -107,9 +106,7 @@ module NattyUI
         (wrapper.stream << @msg << (@max_value ? fullbar : @spinner.next)).flush
       end
 
-      def end_draw
-        (wrapper.stream << Ansi::CLL << Ansi::CURSOR_SHOW).flush
-      end
+      def end_draw = (wrapper.stream << Ansi::CLL << Ansi::CURSOR_SHOW).flush
 
       def fullbar
         percent = @value / @max_value
@@ -124,7 +121,6 @@ module NattyUI
       BAR_BACK = Ansi[236, 492].freeze
       BAR_INK = Ansi[:bold, 255, :on_default].freeze
     end
-    private_constant :Progress
 
     module Temporary
       def temporary
@@ -145,12 +141,10 @@ module NattyUI
         end
       end
     end
-    private_constant :Temporary
 
     class Section < Section
       include Temporary
     end
-    private_constant :Section
 
     class Quote < Quote
       include Temporary
@@ -160,7 +154,6 @@ module NattyUI
         @prefix = "#{Ansi[39]}#{@prefix}#{Ansi::RESET}"
       end
     end
-    private_constant :Quote
 
     class Framed < Framed
       def color(str) = "#{Ansi[39]}#{str}#{Ansi::RESET}"
@@ -173,7 +166,6 @@ module NattyUI
         @finish = color("#{deco[5]}#{deco[6] * aw}#{deco[7]}")
       end
     end
-    private_constant :Framed
 
     class Message < Section
       protected
@@ -182,7 +174,7 @@ module NattyUI
         wrapper = parent.wrapper
         color = COLORS[glyph] || COLORS[:default]
         glyph = wrapper.glyph(glyph) || glyph
-        prefix_width = NattyUI.display_width(glyph) + 1
+        prefix_width = Text.width(glyph) + 1
         parent.puts(
           title,
           prefix: "#{glyph} #{color}",
@@ -204,13 +196,11 @@ module NattyUI
         query: Ansi[255]
       }.compare_by_identity.freeze
     end
-    private_constant :Message
 
     class Task < Message
       include ProgressAttributes
       include TaskMethods
     end
-    private_constant :Task
   end
 
   private_constant :AnsiWrapper

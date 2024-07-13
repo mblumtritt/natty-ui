@@ -53,8 +53,8 @@ module NattyUI
     #       %w[kiwi 1.5$ Newzeeland]
     #     )
     def table(*table, type: :simple)
-      table = Table.new(*table)
-      yield(table) if block_given?
+      return _element(:Table, table, type) unless block_given?
+      yield(table = Table.new(table))
       _element(:Table, table.rows, type)
     end
 
@@ -74,7 +74,7 @@ module NattyUI
     #   #   kiwi: 1.5$
     #
     def pairs(seperator = ': ', **kwargs)
-      _element(:Pairs, Table.new(**kwargs).rows, seperator)
+      _element(:Pairs, kwargs.to_a, seperator)
     end
 
     class Table
@@ -93,11 +93,7 @@ module NattyUI
         self
       end
 
-      def initialize(*args, **kwargs)
-        @rows = []
-        args.each { add_row(*_1) }
-        kwargs.each_pair { add_row(*_1) }
-      end
+      def initialize(rows) = (@rows = rows)
     end
     private_constant :Table
   end
@@ -143,7 +139,7 @@ module NattyUI
           rows,
           @parent.available_width - 1,
           seperator,
-          NattyUI.plain(seperator, ansi: false)[-1] == ' '
+          Text.plain(seperator)[-1] == ' '
         ) { @parent.puts(_1) }
         @parent
       end
@@ -170,7 +166,7 @@ module NattyUI
 
       def self.each_simple_line(rows, max_width, col_div, first_right)
         return if rows.empty?
-        gen = new(rows, max_width, NattyUI.display_width(col_div))
+        gen = new(rows, max_width, Text.width(col_div))
         return unless gen.ok?
         gen.aligns[0] = :right if first_right
         gen.each { yield(_1.join(col_div)) }
@@ -182,7 +178,7 @@ module NattyUI
         @rows =
           rows.map do |row|
             row.map do |col|
-              col = NattyUI.embellish(col).each_line(chomp: true).to_a
+              col = Text.embellish(col).each_line(chomp: true).to_a
               col.empty? ? col << '' : col
             end
           end
@@ -218,7 +214,7 @@ module NattyUI
       private
 
       def align(str, width, alignment)
-        return str unless (width -= NattyUI.display_width(str)).positive?
+        return str unless (width -= Text.width(str)).positive?
         return str + (' ' * width) if alignment == :left
         (' ' * width) << str
       end
@@ -239,9 +235,7 @@ module NattyUI
           diff.each do |col_idx|
             adjust_to = adjusted[col_idx]
             next if matrix[row_idx][col_idx] <= adjust_to
-            ary = NattyUI.each_line(*row[col_idx], max_width: adjust_to).to_a
-            ary.pop if ary.last.empty?
-            row[col_idx] = ary
+            row[col_idx] = Text.as_lines(row[col_idx], adjust_to)
           end
         end
         adjusted
@@ -249,9 +243,7 @@ module NattyUI
 
       def create_matrix
         ret =
-          @rows.map do |row|
-            row.map { |col| col.map { NattyUI.display_width(_1) }.max }
-          end
+          @rows.map { |row| row.map { |col| col.map { Text.width(_1) }.max } }
         cc = ret.max_by(&:size).size
         ret.each { (add = cc - _1.size).nonzero? and _1.fill(0, _1.size, add) }
       end

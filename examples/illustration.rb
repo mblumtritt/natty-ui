@@ -7,8 +7,10 @@ ui.framed do
     This is the [[c4]]beautiful[[/]], [[c5]]nice[[/]], [[c6]]nifty[[/]],
     [[c7]]fancy[[/]], [[c8]]neat[[/]], [[c9]]pretty[[/]],  [[ca]]cool[[/]],
     [[cb]]lovely[[/]], [[cc]]natty[[/]] [[bold]]user interface[[/]] you like to
-    have for your command line applications. It contains [[italic]]elegant[[/]],
-    [[italic]]simple[[/]] and [[italic]]beautiful[[/]] tools that enhance your
+    have for your command line applications. It contains
+    [[italic curly_underline ulc4]]elegant[[/]],
+    [[italic underline ulc7]]simple[[/]] and
+    [[italic dotted_underline ulca]]beautiful[[/]] tools that enhance your
     command line interfaces functionally and aesthetically.
   TEXT
 

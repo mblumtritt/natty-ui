@@ -57,9 +57,7 @@ module NattyUI
         return @parent if list.empty?
         list.flatten!
         cvt = cvt(glyph, list.size)
-        list.map! do |item|
-          Item.new(item = cvt[item], NattyUI.display_width(item))
-        end
+        list.map! { |item| Item.new(item = cvt[item], Text.width(item)) }
         if compact
           each_compacted(list, available_width - 1) { @parent.puts(_1) }
         else
@@ -71,27 +69,27 @@ module NattyUI
       def cvt(glyph, size)
         case glyph
         when nil, false
-          ->(s) { NattyUI.embellish(s) }
+          ->(s) { Text.embellish(s) }
         when :hex
           pad = size.to_s(16).size
           glyph = 0
           lambda do |s|
-            "#{(glyph += 1).to_s(16).rjust(pad, '0')} #{NattyUI.embellish(s)}"
+            "#{(glyph += 1).to_s(16).rjust(pad, '0')} #{Text.embellish(s)}"
           end
         when Integer
           pad = (glyph + size).to_s.size
           glyph -= 1
-          ->(s) { "#{(glyph += 1).to_s.rjust(pad)} #{NattyUI.embellish(s)}" }
+          ->(s) { "#{(glyph += 1).to_s.rjust(pad)} #{Text.embellish(s)}" }
         when Symbol
           lambda do |s|
             "#{
               t = glyph
               glyph = glyph.succ
               t
-            } #{NattyUI.embellish(s)}"
+            } #{Text.embellish(s)}"
           end
         else
-          ->(s) { "#{glyph} #{NattyUI.embellish(s)}" }
+          ->(s) { "#{glyph} #{Text.embellish(s)}" }
         end
       end
 

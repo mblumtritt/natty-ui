@@ -9,7 +9,7 @@ module NattyUI
       end
 
       def print(line)
-        line = plain(line)
+        line = Text.plain(line)
         str = Array.new(line.size) { CHARS.sample }.join
         pos = Array.new(line.size, &:itself).shuffle
         until pos.size < 4

@@ -103,9 +103,9 @@ module NattyUI
       def initialize(
         parent,
         prefix:,
-        prefix_width: NattyUI.display_width(prefix),
+        prefix_width: Text.width(prefix),
         suffix: nil,
-        suffix_width: NattyUI.display_width(suffix)
+        suffix_width: Text.width(suffix)
       )
         super(parent)
         @prefix = prefix

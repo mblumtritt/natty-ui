@@ -1,14 +1,6 @@
 # frozen_string_literal: true
 
-unless defined?(Reline)
-  # load the Reline::Unicode part only
-  # @!visibility private
-  module Reline
-    # @!visibility private
-    def self.ambiguous_width = 1
-  end
-  require 'reline/unicode'
-end
+require_relative 'natty-ui/text'
 require_relative 'natty-ui/wrapper'
 require_relative 'natty-ui/ansi_wrapper'
 
@@ -54,17 +46,6 @@ module NattyUI
       wrapper_class(stream, ansi).__send__(:new, stream)
     end
 
-    # Test if the given `stream` can be used for output
-    #
-    # @param [IO] stream IO instance to test
-    # @return [Boolean] whether if the given stream is usable
-    def valid_out?(stream)
-      (stream.is_a?(IO) && !stream.closed? && stream.stat.writable?) ||
-        (stream.is_a?(StringIO) && !stream.closed_write?)
-    rescue StandardError
-      false
-    end
-
     # Test if the given `stream` can be used for input
     #
     # @param [IO] stream IO instance to test
@@ -76,27 +57,22 @@ module NattyUI
       false
     end
 
+    # Test if the given `stream` can be used for output
+    #
+    # @param [IO] stream IO instance to test
+    # @return [Boolean] whether if the given stream is usable
+    def valid_out?(stream)
+      (stream.is_a?(IO) && !stream.closed? && stream.stat.writable?) ||
+        (stream.is_a?(StringIO) && !stream.closed_write?)
+    rescue StandardError
+      false
+    end
+
     # Translate embedded attribute descriptions into ANSI control codes.
     #
     # @param [#to_s] str string to edit
     # @return [String] edited string
-    def embellish(str)
-      return +'' if (str = str.to_s).empty?
-      reset = false
-      str =
-        str.gsub(/(\[\[((?~\]\]))\]\])/) do
-          match = Regexp.last_match[2]
-          if match[0] == '/'
-            next "[[#{match[1..]}]]" if match.size > 1
-            reset = false
-            Ansi::RESET
-          else
-            ansi = Ansi.try_convert(match)
-            ansi ? reset = ansi : "[[#{match}]]"
-          end
-        end
-      reset ? "#{str}#{Ansi::RESET}" : str
-    end
+    def embellish(str) = Text.embellish(str)
 
     # Remove embedded attribute descriptions from given string.
     #
@@ -104,14 +80,7 @@ module NattyUI
     # @param [:keep,:remove] ansi keep or remove ANSI codes too
     # @return [String] edited string
     def plain(str, ansi: :keep)
-      return +'' if (str = str.to_s).empty?
-      str =
-        str.gsub(/(\[\[((?~\]\]))\]\])/) do
-          match = Regexp.last_match[2]
-          next match.size == 1 ? nil : "[[#{match[1..]}]]" if match[0] == '/'
-          Ansi.try_convert(match) ? nil : "[[#{match}]]"
-        end
-      ansi == :keep ? str : Ansi.blemish(str)
+      ansi == :keep ? Text.plain_but_ansi(str) : Text.plain(str)
     end
 
     # Calculate monospace (display) width of given String.
@@ -119,54 +88,24 @@ module NattyUI
     #
     # @param [#to_s] str string to calculate
     # @return [Integer] the display size
-    def display_width(str)
-      str = plain(str).encode(Encoding::UTF_8)
-      return 0 if str.empty?
-      width = 0
-      in_zero_width = false
-      str.scan(Ansi::WIDTH_SCANNER) do |np_start, np_end, _csi, _osc, gc|
-        if in_zero_width
-          in_zero_width = false if np_end
-          next
-        end
-        next in_zero_width = true if np_start
-        width += Reline::Unicode.get_mbchar_width(gc) if gc
-      end
-      width
-    end
+    def display_width(str) = Text.width(str)
 
     # Convert given arguments into strings and yield each line.
     # Optionally limit the line width to given `max_width`.
     #
     # @overload each_line(..., max_width: nil)
-    #   @param [#to_s] ... objects to print
+    #   @param [#to_s] ... objects converted to text lines
     #   @param [#to_i, nil] max_width maximum line width
     #   @yieldparam [String] line string line
     #   @return [nil]
     # @overload each_line(..., max_width: nil)
-    #   @param [#to_s] ... objects to print
+    #   @param [#to_s] ... objects converted to text lines
     #   @param [#to_i, nil] max_width maximum line width
     #   @return [Enumerator] line enumerator
     def each_line(*strs, max_width: nil, &block)
       return to_enum(__method__, *strs, max_width: max_width) unless block
-      if max_width.nil?
-        strs.each { _1.to_s.each_line(chomp: true, &block) }
-        return nil
-      end
-      return if (max_width = max_width.to_i) <= 0
-      strs.each do |str|
-        str
-          .to_s
-          .each_line(chomp: true) do |line|
-            next yield(line) if line.empty?
-            lines, _height = Reline::Unicode.split_by_width(line, max_width)
-            lines.compact!
-            next if lines.empty?
-            lines.pop if lines[-1].empty?
-            lines.each(&block)
-          end
-      end
-      nil
+      return Text.simple_each_line(strs, &block) unless max_width
+      Text.each_line(strs, max_width, &block)
     end
 
     # Read next raw key (keyboard input) from {in_stream}.
@@ -219,11 +158,14 @@ module NattyUI
   # Instance for standard error output.
   StdErr = stderr_is_stdout? ? StdOut : new(STDERR)
 
+  dir = __dir__
+  autoload(:LineAnimation, File.join(dir, 'natty-ui', 'line_animation'))
+  autoload(:KEY_MAP, File.join(dir, 'natty-ui', 'key_map'))
+
+  private_constant :LineAnimation, :KEY_MAP
+
   @element = StdOut
   self.in_stream = STDIN
-
-  autoload(:KEY_MAP, File.join(__dir__, 'natty-ui', 'key_map'))
-  private_constant :KEY_MAP
 end
 
 # @!visibility private

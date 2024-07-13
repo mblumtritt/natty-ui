@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../features'
+require_relative 'features'
 
 module NattyUI
   class Wrapper
