@@ -163,11 +163,11 @@ module NattyUI
       def color(str) = "#{Ansi[39]}#{str}#{Ansi::RESET}"
 
       def init(type)
-        @prefix = "#{color(type[0])} "
+        @prefix = "#{color(type[4])} "
         @suffix = "#{Ansi.cursor_column(parent.rcol)}#{color(type[4])}"
         aw = @parent.available_width - 2
-        parent.puts(color("#{type[1]}#{type[2] * aw}#{type[3]}"))
-        @finish = color("#{type[5]}#{type[6] * aw}#{type[7]}")
+        parent.puts(color("#{type[0]}#{type[5] * aw}#{type[1]}"))
+        @finish = color("#{type[2]}#{type[5] * aw}#{type[3]}")
       end
     end
 

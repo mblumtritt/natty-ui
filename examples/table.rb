@@ -28,7 +28,8 @@ ui.message 'Data Table' do
       1,
       'Henry',
       'henry@some.test',
-      'This is fill text to generate a wide column which maybe rendered as multi line.'
+      'This is fill text to generate a wide column ' \
+        'which maybe rendered as multi line.'
     ),
     User.new(2, 'Sam', 'sam-sam@some.test', "enforced\nmulti-line"),
     User.new(3, 'Taylor', 'taylor@some.test'),

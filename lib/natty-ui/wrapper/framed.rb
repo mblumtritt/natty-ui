@@ -11,7 +11,7 @@ module NattyUI
     # {Wrapper::Element#close}.
     #
     # @param [Array<#to_s>] args more objects to print
-    # @param [:block, :double, :heavy, :rounded, :semi, :simple] type frame type
+    # @param [:double, :heavy, :rounded, :semi, :simple] type frame type
     # @yieldparam [Wrapper::Framed] framed the created section
     # @return [Object] the result of the code block
     # @return [Wrapper::Framed] itself, when no code block is given
@@ -29,14 +29,14 @@ module NattyUI
       protected
 
       def initialize(parent, type:)
-        super(parent, prefix: "#{type[0]} ", prefix_width: 2, suffix_width: 2)
+        super(parent, prefix: "#{type[4]} ", prefix_width: 2, suffix_width: 2)
         init(type)
       end
 
       def init(type)
         aw = @parent.available_width - 1
-        parent.puts("#{type[1]}#{type[2] * aw}")
-        @finish = "#{type[5]}#{type[6] * aw}"
+        parent.puts("#{type[0]}#{type[5] * aw}")
+        @finish = "#{type[2]}#{type[5] * aw}"
       end
 
       def finish = @parent.puts(@finish)

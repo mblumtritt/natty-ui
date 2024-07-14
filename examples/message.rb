@@ -20,7 +20,7 @@ ui.framed do
   ui.info 'Informative Message', TEXT
   ui.warning 'Warning Message' do
     ui.puts TEXT
-    ui.framed { ui.puts IMPORTANT }
+    ui.framed(type: :double) { ui.puts IMPORTANT }
   end
   ui.error 'Error Message', TEXT
   ui.failed 'Fail Message', TEXT

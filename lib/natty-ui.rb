@@ -157,8 +157,8 @@ module NattyUI
       if name.is_a?(Symbol)
         ret = FRAME[name] and return ret
       elsif name.is_a?(String)
-        return name if name.size == 8
-        return name * 8 if name.size == 1
+        return name if name.size == 11
+        return name * 11 if name.size == 1
       end
       raise(ArgumentError, "invalid frame type - #{name.inspect}")
     end
@@ -213,12 +213,12 @@ module NattyUI
   # }.compare_by_identity.freeze
 
   FRAME = {
-    rounded: '│╭─╮│╰─╯',
-    simple: '│┌─┐│└─┘',
-    heavy: '┃┏━┓┃┗━┛',
-    double: '║╔═╗║╚═╝',
-    semi: '│╒═╕│╘═╛',
-    block: '▌▛▀▜▐▙▄▟'
+    rounded: '╭╮╰╯│─┼┬┴├┤',
+    simple: '┌┐└┘│─┼┬┴├┤',
+    heavy: '┏┓┗┛┃━╋┳┻┣┫',
+    double: '╔╗╚╝║═╬╦╩╠╣',
+    semi: '╒╕╘╛│═╪╤╧╞╡',
+    semi2: '╓╖╙╜│─╫╥╨╟╢'
   }.compare_by_identity.freeze
 
   private_constant :LineAnimation, :KEY_MAP, :GLYPH, :FRAME

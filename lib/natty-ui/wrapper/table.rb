@@ -41,7 +41,7 @@ module NattyUI
     # @overload table(*args, type: simple)
     #   Display the given arrays as rows of a table.
     #
-    #   @param [Array<#to_s>] args one or more arrays representing rows of the table
+    #   @param [#map<#map<#to_s>>] args one or more arrays representing rows of the table
     #   @param [Symbol] type frame type
     #   @return [Wrapper::Section, Wrapper] it's parent object
     #
@@ -53,6 +53,7 @@ module NattyUI
     #       %w[kiwi 1.5$ Newzeeland]
     #     )
     def table(*table, type: :simple)
+      type = NattyUI.frame(type)
       return _element(:Table, table, type) unless block_given?
       yield(table = Table.new(table))
       _element(:Table, table.rows, type)
@@ -81,15 +82,16 @@ module NattyUI
       attr_reader :rows
 
       def add_row(*columns)
+        columns = columns[0] if columns.size == 1 && columns[0].is_a?(Array)
         @rows << columns
         self
       end
       alias add add_row
 
-      def add_col(*columns)
-        columns.each_with_index do |col, row_idx|
-          (@rows[row_idx] ||= []) << col
-        end
+      def add_col(*rows)
+        rows = rows[0] if rows.size == 1 && rows[0].is_a?(Array)
+        row_idx = -1
+        rows.each { |row| (@rows[row_idx += 1] ||= []) << row }
         self
       end
 
@@ -106,26 +108,13 @@ module NattyUI
       protected
 
       def call(rows, type)
-        TableGenerator.each_line(
-          rows,
-          @parent.available_width - 1,
-          ORNAMENTS[type] ||
-            raise(ArgumentError, "invalid table type - #{type.inspect}"),
-          Ansi[39],
-          Ansi::RESET
-        ) { @parent.puts(_1) }
+        TableGen.each_line(rows, @parent.available_width - 1, type) do |line|
+          @parent.puts(line)
+        end
         @parent
       end
 
       def coloring = [nil, nil]
-
-      ORNAMENTS = {
-        rounded: '│─┼',
-        simple: '│─┼',
-        heavy: '┃━╋',
-        double: '║═╬',
-        semi: '║╴╫'
-      }.compare_by_identity.freeze
     end
 
     # An {Element} to print key/value pairs.
@@ -135,159 +124,131 @@ module NattyUI
       protected
 
       def call(rows, seperator)
-        TableGenerator.each_simple_line(
+        TableGen.each_simple(
           rows,
           @parent.available_width - 1,
-          seperator,
-          Text.plain(seperator)[-1] == ' '
-        ) { @parent.puts(_1) }
+          seperator
+        ) { |line| @parent.puts(line) }
         @parent
       end
     end
 
-    class TableGenerator
-      def self.each_line(rows, max_width, ornament, opref, osuff)
-        return if rows.empty?
-        gen = new(rows, max_width, 3)
-        return unless gen.ok?
-        last_row = 0
-        col_div = " #{opref}#{ornament[0]}#{osuff} "
-        row_div = "#{ornament[1]}#{ornament[2]}#{ornament[1]}"
-        row_div =
-          "#{opref}#{gen.widths.map { ornament[1] * _1 }.join(row_div)}#{osuff}"
-        gen.each do |line, number|
-          if last_row != number
-            last_row = number
-            yield(row_div)
+    class TableGen
+      COLOR = Ansi[39]
+
+      class << self
+        def each_line(rows, max_width, frame)
+          gen = new(rows, max_width, 3)
+          return unless gen.ok?
+          col_div = " #{COLOR}#{frame[4]}#{Ansi::RESET} "
+          row_div = "#{frame[5]}#{frame[6]}#{frame[5]}"
+          row_div =
+            "#{COLOR}#{
+              gen.widths.map { frame[5] * _1 }.join(row_div)
+            }#{Ansi::RESET}"
+          last_row = 0
+          gen.each do |number, line|
+            if last_row != number
+              last_row = number
+              yield(row_div)
+            end
+            yield(line.join(col_div))
           end
-          yield(line.join(col_div))
+        end
+
+        def each_simple(rows, max_width, seperator)
+          gen = new(rows, max_width, 3)
+          return unless gen.ok?
+          seperator = seperator.to_s
+          gen.alignments[0] = :right if Text.plain(seperator)[1] == ' '
+          gen.each { yield(_2.join(seperator)) }
         end
       end
 
-      def self.each_simple_line(rows, max_width, col_div, first_right)
-        return if rows.empty?
-        gen = new(rows, max_width, Text.width(col_div))
-        return unless gen.ok?
-        gen.aligns[0] = :right if first_right
-        gen.each { yield(_1.join(col_div)) }
-      end
+      attr_reader :widths, :alignments
 
-      attr_reader :widths, :aligns
+      def ok? = @alignments != nil
 
-      def initialize(rows, max_width, col_div_size)
-        @rows =
-          rows.map do |row|
-            row.map do |col|
-              col = Text.embellish(col).each_line(chomp: true).to_a
-              col.empty? ? col << '' : col
+      def initialize(rows, max_width, coldiv_size)
+        @tab = rows.map { |row| row.map { |col| col.to_s.lines(chomp: true) } }
+        col_count = @tab.max_by(&:size)&.size or return
+        return if col_count.zero?
+        coldiv_sum = (col_count - 1) * coldiv_size
+        max_col_width = max_width - col_count - coldiv_sum
+        @widths = Array.new(col_count, 1)
+        if max_col_width > 1
+          @tab.each do |row|
+            row.each_with_index do |col, idx|
+              next if col.empty?
+              width = col.map { Text.width(_1) }.max
+              width = max_col_width if width > max_col_width
+              @widths[idx] = width if @widths[idx] < width
             end
           end
-        @max_width = max_width
-        @col_div_size = col_div_size
-        @widths = create_widths.freeze
-        @aligns = Array.new(@widths.size, :left)
+        end
+        if (size = max_width - coldiv_sum) < @widths.sum
+          @widths = adjusted_sizes(widths, size, coldiv_size)
+        end
+        @alignments = Array.new(col_count, :left)
       end
 
-      def ok? = (@widths != nil)
-
       def each
-        return unless @widths
-        col_empty = @widths.map { ' ' * _1 }
-        @rows.each_with_index do |row, row_idx|
-          row
-            .max_by(&:size)
-            .size
-            .times do |line_nr|
-              col_idx = -1
-              yield(
-                @widths.map do |col_width|
-                  cell = row[col_idx += 1] or next col_empty[col_idx]
-                  next col_empty[col_idx] if (line = cell[line_nr]).nil?
-                  align(line.to_s, col_width, @aligns[col_idx])
-                end,
-                row_idx
-              )
-            end
+        unless @empties
+          @tab = adjust(@tab, @widths)
+          @empties = @widths.map { ' ' * _1 }
+        end
+        @tab.each_with_index do |row, ridx|
+          line_count = row.max_by(&:size).size
+          line_count.times do |line_nr|
+            cidx = -1
+            yield(ridx, @empties.map { row.dig(cidx += 1, line_nr) || _1 })
+          end
         end
       end
 
       private
 
-      def align(str, width, alignment)
-        return str unless (width -= Text.width(str)).positive?
-        return str + (' ' * width) if alignment == :left
-        (' ' * width) << str
+      def str_align(how, str, str_size, size)
+        return str unless (size -= str_size).positive?
+        return str + (' ' * size) if how == :left
+        (' ' * size) + str
       end
 
-      def create_widths
-        matrix = create_matrix
-        col_widths = find_col_widths(matrix)
-        adjusted = adjusted_widths(col_widths)
-        return if adjusted.empty? # nothing to draw
-        return adjusted if col_widths == adjusted # all fine
-        if (size = adjusted.size) != col_widths.size
-          @rows.map! { _1.take(size) }
-          matrix.map! { _1.take(size) }
-          col_widths = col_widths.take(size)
-        end
-        diff = diff(col_widths, adjusted)
-        @rows.each_with_index do |row, row_idx|
-          diff.each do |col_idx|
-            adjust_to = adjusted[col_idx]
-            next if matrix[row_idx][col_idx] <= adjust_to
-            row[col_idx] = Text.as_embellished_lines_min(
-              row[col_idx],
-              adjust_to
-            )
+      def adjust(tab, widths)
+        tab.each do |row|
+          idx = -1
+          row.map! do |col|
+            width = widths[idx += 1]
+            next col if col.empty?
+            lines = []
+            Text.each_embellished_line(col, width) do |line, size|
+              lines << str_align(@alignments[idx], line, size, width)
+            end
+            lines
           end
         end
-        adjusted
       end
 
-      def create_matrix
-        ret =
-          @rows.map { |row| row.map { |col| col.map { Text.width(_1) }.max } }
-        cc = ret.max_by(&:size).size
-        ret.each { (add = cc - _1.size).nonzero? and _1.fill(0, _1.size, add) }
-      end
-
-      def find_col_widths(matrix)
-        ret = nil
-        matrix.each do |row|
-          next ret = row.dup unless ret
-          row.each_with_index do |size, idx|
-            hs = ret[idx]
-            ret[idx] = size if hs < size
+      def adjusted_sizes(widths, size, coldiv_size)
+        ws = widths.dup
+        sum = ws.sum
+        until sum <= size
+          max = ws.max
+          if max == 1
+            ws = widths.take(ws.size - 1)
+            sum = ws.sum
+            size += coldiv_size
+          else
+            while (idx = ws.rindex(max)) && (sum > size)
+              ws[idx] -= 1
+              sum -= 1
+            end
           end
         end
-        ret
-      end
-
-      def adjusted_widths(col_widths)
-        ret = col_widths.dup
-        left = @max_width - (@col_div_size * (col_widths.size - 1))
-        return ret if ret.sum <= left
-        indexed = ret.each_with_index.to_a
-        # TODO: optimize this!
-        until ret.sum <= left
-          indexed.sort! { |b, a| (a[0] <=> b[0]).nonzero? || (a[1] <=> b[1]) }
-          pair = indexed[0]
-          next ret[pair[1]] = pair[0] if (pair[0] -= 1).nonzero?
-          indexed.shift
-          return [] if indexed.empty?
-          ret.pop
-        end
-        ret
-      end
-
-      def diff(col_widths, adjusted)
-        ret = []
-        col_widths.each_with_index do |val, idx|
-          ret << idx if val != adjusted[idx]
-        end
-        ret
+        ws
       end
     end
-    private_constant :TableGenerator
+
+    private_constant :TableGen
   end
 end
