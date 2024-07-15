@@ -17,6 +17,7 @@ TEXT
   default: 'Default Animation',
   type_writer: 'Typewriter Like',
   rainbow: 'Shiny Rainbow',
+  binary: 'Binary Encoded',
   matrix: 'Matrix Style'
 }.each_pair do |type, title|
   ui.message(title, glyph: '[[27]]◉') { ui.animate TEXT, animation: type }

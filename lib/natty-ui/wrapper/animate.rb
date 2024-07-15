@@ -6,7 +6,7 @@ module NattyUI
     #
     # @overload animate(..., animation: :default)
     #   @param [#to_s] ... objects to print
-    #   @param [:default, :matrix, :rainbow, :type_writer]
+    #   @param [:binary, :default, :matrix, :rainbow, :type_writer]
     #     animation type of animation
     #   @return [Wrapper::Section, Wrapper] it's parent object
     def animate(*args, **kwargs)

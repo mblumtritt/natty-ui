@@ -20,7 +20,7 @@ module NattyUI
         end
       end
 
-      CHARS = '2598Z*):.\=+-¦|_ｦｱｳｴｵｶｷｹｺｻｼｽｾｿﾀﾂﾃﾅﾆﾇﾈﾊﾋﾎﾏﾐﾑﾒﾓﾔﾕﾗﾘﾜ'.chars
+      CHARS = '2598Z*):.\=+-¦|_ｦｱｳｴｵｶｷｹｺｻｼｽｾｿﾀﾂﾃﾅﾆﾇﾈﾊﾋﾎﾏﾐﾑﾒﾓﾔﾕﾗﾘﾜ'.chars.freeze
     end
 
     define matrix: Matrix

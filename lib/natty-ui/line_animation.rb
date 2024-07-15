@@ -40,6 +40,7 @@ module NattyUI
 
     dir = __dir__
     @defined = {
+      binary: "#{dir}/line_animation/binary",
       default: "#{dir}/line_animation/default",
       matrix: "#{dir}/line_animation/matrix",
       rainbow: "#{dir}/line_animation/rainbow",

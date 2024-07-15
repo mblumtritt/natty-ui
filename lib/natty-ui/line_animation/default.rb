@@ -12,7 +12,7 @@ module NattyUI
 
       def print(line)
         line = Text.plain(line)
-        time = 0.5 / line.size
+        time = 0.4 / line.size
         @stream << @color
         if (@num += 1).odd?
           line.each_char do |char|

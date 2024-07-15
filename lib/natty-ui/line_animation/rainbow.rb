@@ -10,13 +10,13 @@ module NattyUI
 
       def print(line)
         line = Text.plain(line)
-        11.upto(200) do |spread|
+        11.upto(180) do |spread|
           (
             @stream << @prefix <<
               Ansi.rainbow(
                 line,
-                frequence: 0.1,
                 spread: spread / 100.0,
+                frequence: 0.1,
                 seed: 0
               )
           ).flush
