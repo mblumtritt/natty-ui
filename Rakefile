@@ -27,6 +27,7 @@ FIXTURES = FileList.new
   8bit-colors
   24bit-colors
   attributes
+  attributes_list
   illustration
   ls
   message
