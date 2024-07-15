@@ -7,14 +7,23 @@ module NattyUI
         super
         @column = Ansi.cursor_column(@options[:prefix_width] + 1)
         @color = color
+        @bright_color = attribute(:bright_color, :bright_white)
       end
 
       def print(line)
-        line = Text.plain(line)
-        @stream << @color
+        size = Text.width(line)
         10.times do
           (
-            @stream << @column << Array.new(line.size) { CHARS.sample }.join
+            @stream << @column << @color <<
+              Array
+                .new(size) do
+                  if rand < 0.1
+                    "#{@bright_color}#{CHARS.sample}#{@color}"
+                  else
+                    CHARS.sample
+                  end
+                end
+                .join
           ).flush
           sleep(0.08)
         end
