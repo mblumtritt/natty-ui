@@ -6,7 +6,7 @@ ui.space
 ui.h2 'NattyUI: ANSI Attributes'
 ui.space
 
-ui.puts <<~PARA1.tr("\n", ' '), <<~PARA2.tr("\n", ' ')
+ui.puts <<~PARA1.tr("\n", ' ')
   Some attributes are widely supported, such as [[bold]]bold[[/]],
   [[italic]]italic[[/]], [[underline]]underline[[/]], [[blink]]blink[[/]],
   [[invert]]invert[[/]] and [[strike]]strike[[/]], while others are rarely
@@ -17,6 +17,8 @@ ui.puts <<~PARA1.tr("\n", ' '), <<~PARA2.tr("\n", ' ')
   [[framed]]framed[[/]], [[encircled]]encircled[[/]],
   [[overlined]]overlined[[/]] and [[proportional]]proportional[[/]].
 PARA1
+
+ui.puts <<~PARA2.tr("\n", ' ')
   Alternative fonts are mostly completely ignored:
   [[primary_font]]primary_font[[/]], [[fraktur]]fraktur[[/]],
   [[font1]]font1[[/]], [[font2]]font2[[/]], [[font3]]font3[[/]],
