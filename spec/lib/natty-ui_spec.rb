@@ -121,8 +121,10 @@ RSpec.describe NattyUI do
   describe '.embellish' do
     it 'translates embedded ANSI attributes' do
       expect(
-        NattyUI.embellish('[[bold]]Hello [[blink ff00ff onfafafa]]World[[/]]!')
-      ).to eq "\e[1mHello \e[5;38;2;255;0;255;48;2;250;250;250mWorld\e[m!"
+        NattyUI.embellish(
+          '[[bold]]Hello[[!bold]] [[blink ff00ff onfafafa]]World[[/]]!'
+        )
+      ).to eq "\e[1mHello\e[22m \e[5;38;2;255;0;255;48;2;250;250;250mWorld\e[m!"
     end
 
     it 'respects escaped and invalid attributes' do

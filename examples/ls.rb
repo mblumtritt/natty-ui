@@ -15,8 +15,8 @@ LOREM = <<~IPSUM.lines(chomp: true)
   enim ad minim veniam, quis
   nostrud exercitation ullamco
   laboris nisi ut aliquip ex
-  ea commodo [[bold]]consequat[[/]]. Duis
-  aute irure [[bold green]]dolor[[/]] in
+  ea commodo [[bold]]consequat[[!bold]]. Duis
+  aute irure [[bold green]]dolor[[!fg]] in[[/]]
   reprehenderit in voluptate
   velit [[underline]]esse cillum[[/]] dolore eu
   fugiat nulla pariatur.
