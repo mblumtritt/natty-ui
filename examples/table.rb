@@ -36,7 +36,7 @@ ui.message 'Data Table' do
     User.new(4, 'Max', 'maxxx@some.test')
   ]
   header = User.members.map { "[[bold green]]#{_1.capitalize}[[/]]" }
-  ui.table(header, *users)
+  ui.table header, *users
 end
 
 ui.space

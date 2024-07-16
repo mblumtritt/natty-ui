@@ -218,7 +218,10 @@ module NattyUI
     heavy: '┏┓┗┛┃━╋┳┻┣┫',
     double: '╔╗╚╝║═╬╦╩╠╣',
     semi: '╒╕╘╛│═╪╤╧╞╡',
-    semi2: '╓╖╙╜│─╫╥╨╟╢'
+    semi2: '╓╖╙╜│─╫╥╨╟╢',
+    rows: '     ──    ',
+    cols: '    │ │    ',
+    undecorated: '           '
   }.compare_by_identity.freeze
 
   private_constant :LineAnimation, :KEY_MAP, :GLYPH, :FRAME

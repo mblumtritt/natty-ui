@@ -88,12 +88,13 @@ module NattyUI
       end
       alias add add_row
 
-      def add_col(*rows)
+      def add_column(*rows)
         rows = rows[0] if rows.size == 1 && rows[0].is_a?(Array)
         row_idx = -1
         rows.each { |row| (@rows[row_idx += 1] ||= []) << row }
         self
       end
+      alias add_col add_column
 
       def initialize(rows) = (@rows = rows)
     end
@@ -210,8 +211,12 @@ module NattyUI
 
       def str_align(how, str, str_size, size)
         return str unless (size -= str_size).positive?
-        return str + (' ' * size) if how == :left
-        (' ' * size) + str
+        return str + (' ' * size) if how == :right
+        if how == :center
+          right = size / 2
+          return "#{' ' * (size - right)}#{str}#{' ' * right}"
+        end
+        str + (' ' * size)
       end
 
       def adjust(tab, widths)
