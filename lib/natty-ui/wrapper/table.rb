@@ -221,7 +221,7 @@ module NattyUI
             width = widths[idx += 1]
             next col if col.empty?
             lines = []
-            Text.each_embellished_line(col, width) do |line, size|
+            Text.each_line(col, width) do |line, size|
               lines << str_align(@alignments[idx], line, size, width)
             end
             lines

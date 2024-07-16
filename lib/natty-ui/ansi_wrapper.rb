@@ -24,7 +24,7 @@ module NattyUI
       animation = LineAnimation[animation].new(@stream, kwargs)
       prefix = "#{Ansi::RESET}#{Ansi::CLL}#{prefix}"
 
-      Text.each_embellished_line(args.map! { Ansi.blemish(_1) }, mw) do |line|
+      Text.each_line(args.map! { Ansi.blemish(_1) }, mw) do |line|
         @stream << prefix
         animation.print(line)
         (@stream << "#{prefix}#{line}#{suffix}\n").flush
@@ -55,17 +55,32 @@ module NattyUI
 
     protected
 
-    def pprint(args, kwargs)
-      prefix = kwargs[:prefix] and prefix = Text.embellish(prefix)
-      suffix = kwargs[:suffix] and suffix = Text.embellish(suffix)
-      return yield("#{prefix}#{suffix}") if args.empty?
-      Text.each_embellished_line(
-        args,
-        kwargs.fetch(:max_width) do
-          screen_columns - kwargs.fetch(:prefix_width) { Text.width(prefix) } -
-            kwargs.fetch(:suffix_width) { Text.width(suffix) }
+    def pprint(strs, opts)
+      prefix = opts[:prefix] and prefix = Text.embellish(prefix)
+      suffix = opts[:suffix] and suffix = Text.embellish(suffix)
+      return yield("#{prefix}#{suffix}") if strs.empty?
+      max_width =
+        opts.fetch(:max_width) do
+          screen_columns - (opts[:prefix_width] || Text.width(prefix)) -
+            (opts[:suffix_width] || Text.width(suffix))
         end
-      ) { yield("#{prefix}#{_1}#{suffix}") }
+      case opts[:align]
+      when :right
+        Text.each_line(strs, max_width) do |line, width|
+          width = max_width - width
+          yield("#{prefix}#{' ' * width}#{line}#{suffix}")
+        end
+      when :center
+        Text.each_line(strs, max_width) do |line, width|
+          width = max_width - width
+          right = width / 2
+          yield(
+            "#{prefix}#{' ' * (width - right)}#{line}#{' ' * right}#{suffix}"
+          )
+        end
+      else
+        Text.each_line(strs, max_width) { yield("#{prefix}#{_1}#{suffix}") }
+      end
     end
 
     def temp_func
@@ -164,7 +179,7 @@ module NattyUI
     class Message < Section
       protected
 
-      def initialize(parent, title:, glyph:)
+      def initialize(parent, title:, glyph:, **opts)
         color = COLORS[glyph] || COLORS[:default]
         glyph = NattyUI.glyph(glyph) || glyph
         prefix_width = Text.width(glyph) + 1
@@ -175,7 +190,12 @@ module NattyUI
           suffix: Ansi::RESET,
           suffix_width: 0
         )
-        super(parent, prefix: ' ' * prefix_width, prefix_width: prefix_width)
+        super(
+          parent,
+          prefix: ' ' * prefix_width,
+          prefix_width: prefix_width,
+          **opts
+        )
       end
 
       COLORS = {

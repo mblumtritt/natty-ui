@@ -47,11 +47,11 @@ module NattyUI
 
     # Print given arguments line-wise to the output stream.
     #
-    # @overload puts(...)
-    #   @param [#to_s] ... objects to print
-    #   @return [Wrapper] itself
-    def puts(*args, **kwargs)
-      pprint(args, kwargs) do |line|
+    # @param [#to_s] args objects to print
+    # @option options [:left, :right, :center] :align text alignment
+    # @return [Wrapper] itself
+    def puts(*args, **options)
+      pprint(args, options) do |line|
         @stream.puts(line)
         @lines_written += 1
       end
@@ -61,11 +61,11 @@ module NattyUI
 
     # Print given arguments to the output stream.
     #
-    # @overload print(...)
-    #   @param [#to_s] ... objects to print
-    #   @return [Wrapper] itself
-    def print(*args, **kwargs)
-      pprint(args, kwargs) do |line|
+    # @param [#to_s] args objects to print
+    # @option options [:left, :right, :center] :align text alignment
+    # @return [Wrapper] itself
+    def print(*args, **options)
+      pprint(args, options) do |line|
         @stream.print(line)
         @lines_written += 1
       end
@@ -159,17 +159,34 @@ module NattyUI
 
     protected
 
-    def pprint(args, kwargs)
-      prefix = kwargs[:prefix] and prefix = Text.plain(prefix)
-      suffix = kwargs[:suffix] and suffix = Text.plain(suffix)
-      return yield("#{prefix}#{suffix}") if args.empty?
-      Text.each_plain_line(
-        args,
-        kwargs.fetch(:max_width) do
-          screen_columns - kwargs.fetch(:prefix_width) { Text.width(prefix) } -
-            kwargs.fetch(:suffix_width) { Text.width(suffix) }
+    def pprint(strs, opts)
+      prefix = opts[:prefix] and prefix = Text.plain(prefix)
+      suffix = opts[:suffix] and suffix = Text.plain(suffix)
+      return yield("#{prefix}#{suffix}") if strs.empty?
+      max_width =
+        opts.fetch(:max_width) do
+          screen_columns - (opts[:prefix_width] || Text.width(prefix)) -
+            (opts[:suffix_width] || Text.width(suffix))
         end
-      ) { yield("#{prefix}#{_1}#{suffix}") }
+      case opts[:align]
+      when :right
+        Text.each_line_plain(strs, max_width) do |line, width|
+          width = max_width - width
+          yield("#{prefix}#{' ' * width}#{line}#{suffix}")
+        end
+      when :center
+        Text.each_line_plain(strs, max_width) do |line, width|
+          width = max_width - width
+          right = width / 2
+          yield(
+            "#{prefix}#{' ' * (width - right)}#{line}#{' ' * right}#{suffix}"
+          )
+        end
+      else
+        Text.each_line_plain(strs, max_width) do |line|
+          yield("#{prefix}#{line}#{suffix}")
+        end
+      end
     end
 
     def temp_func

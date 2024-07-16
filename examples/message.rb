@@ -19,8 +19,8 @@ IMPORTANT =
 ui.framed do
   ui.info 'Informative Message', TEXT
   ui.warning 'Warning Message' do
-    ui.puts TEXT
-    ui.framed(type: :double) { ui.puts IMPORTANT }
+    ui.framed(type: :double) { ui.puts(IMPORTANT, align: :center) }
+    ui.puts('[[italic f4]]Ut enim ad minim veniam', align: :right)
   end
   ui.error 'Error Message', TEXT
   ui.failed 'Fail Message', TEXT

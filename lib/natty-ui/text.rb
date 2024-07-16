@@ -68,7 +68,7 @@ module NattyUI
         nil
       end
 
-      def each_plain_line(strs, max_width)
+      def each_line_plain(strs, max_width)
         return if (max_width = max_width.to_i) <= 0
         strs.each do |str|
           plain_but_ansi(str).each_line(chomp: true) do |line|
@@ -97,38 +97,16 @@ module NattyUI
         nil
       end
 
-      def first_plain_line(str, max_width)
-        return if (max_width = max_width.to_i) <= 0
-        plain_but_ansi(str).each_line(chomp: true) do |line|
-          return line, 0 if line.empty?
-          current = String.new(encoding: line.encoding)
-          width = 0
-          in_zero_width = false
-          line = line.encode(UTF_8) if line.encoding != UTF_8
-          line.scan(WIDTH_SCANNER) do |np_start, np_end, csi, osc, gc|
-            next in_zero_width = (current << "\1") if np_start
-            next in_zero_width = !(current << "\2") if np_end
-            next if osc || csi
-            next current << gc if in_zero_width
-            cw = char_width(gc)
-            return current, width - cw if (width += cw) > max_width
-            current << gc
-          end
-          return current, width
-        end
-        [+'', 0]
-      end
-
-      def as_plain_lines(strs, width, height)
+      def as_lines_plain(strs, width, height = nil)
         ret = []
-        each_plain_line(strs, width) do |*info|
+        each_line_plain(strs, width) do |*info|
           ret << info
           break if ret.size == height
         end
         ret
       end
 
-      def each_embellished_line(strs, max_width)
+      def each_line(strs, max_width)
         return if (max_width = max_width.to_i) <= 0
         simple_each_line(strs) do |line|
           line = embellish(line)
@@ -161,22 +139,12 @@ module NattyUI
         end
       end
 
-      def as_embellished_lines(strs, width, height = nil)
+      def as_lines(strs, width, height = nil)
         ret = []
-        if height
-          each_embellished_line(strs, width) do |*info|
-            ret << info
-            break if ret.size == height
-          end
-        else
-          each_embellished_line(strs, width) { |*info| ret << info }
+        each_line(strs, width) do |*info|
+          ret << info
+          break if ret.size == height
         end
-        ret
-      end
-
-      def as_embellished_lines_min(strs, width)
-        ret = []
-        each_embellished_line(strs, width) { ret << _1 }
         ret
       end
     end
