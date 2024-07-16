@@ -13,9 +13,11 @@ RGB_COLORS = <<~SAMPLES.lines(chomp: true).map!(&:split)
   #ee4e4e #78aba8 #57a6a1 #ffdb00 #d10363 #e6a4b4
 SAMPLES
 
-RGB_COLORS.each { ui.puts _1.map { |v| " [[#{v}]]#{v}[[/]] " }.join }
+RGB_COLORS.each { |code| ui.puts code.map { |v| " [[#{v}]]#{v}[[/]] " }.join }
 ui.space
-RGB_COLORS.each { ui.puts _1.map { |v| " [[on:#{v}]]#{v}[[/]] " }.join }
+RGB_COLORS.each do |code|
+  ui.puts code.map { |v| " [[on:#{v}]]#{v}[[/]] " }.join
+end
 ui.space
 RGB_COLORS.each do |code|
   ui.puts code.map { |v| " [[underline ul:#{v}]]#{v}[[/]] " }.join
