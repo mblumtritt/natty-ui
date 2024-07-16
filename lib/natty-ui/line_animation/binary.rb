@@ -5,16 +5,16 @@ module NattyUI
     class Binary < None
       def initialize(*_)
         super
-        @column = Ansi.cursor_column(@options[:prefix_width] + 1)
         @color = color
         @bright_color = attribute(:bright_color, :bright_white)
+        @column = Ansi.cursor_column(@options[:prefix_width] + 1) + @color
       end
 
       def print(line)
         size = Text.width(line)
         10.times do
           (
-            @stream << @column << @color <<
+            @stream << @column <<
               Array
                 .new(size) do
                   if rand < 0.1
