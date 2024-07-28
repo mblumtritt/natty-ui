@@ -5,14 +5,6 @@ module NattyUI
   # Features of {NattyUI} - methods to display natty elements.
   #
   module Features
-    # @return [Wrapper] assigned output stream wrapper
-    def wrapper
-      return @wrapper if @wrapper
-      @wrapper = @parent
-      @wrapper = @wrapper.parent until @wrapper.is_a?(Wrapper)
-      @wrapper
-    end
-
     protected
 
     def _element(type, ...)
