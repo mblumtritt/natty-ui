@@ -187,7 +187,7 @@ module NattyUI
   StdErr = stderr_is_stdout? ? StdOut : new(STDERR)
 
   dir = __dir__
-  autoload(:LineAnimation, File.join(dir, 'natty-ui', 'line_animation'))
+  autoload(:Animation, File.join(dir, 'natty-ui', 'animation'))
   autoload(:KEY_MAP, File.join(dir, 'natty-ui', 'key_map'))
 
   GLYPH = {
@@ -224,7 +224,7 @@ module NattyUI
     undecorated: '           '
   }.compare_by_identity.freeze
 
-  private_constant :LineAnimation, :KEY_MAP, :GLYPH, :FRAME
+  private_constant :Animation, :KEY_MAP, :GLYPH, :FRAME
 
   @element = StdOut
   self.in_stream = STDIN

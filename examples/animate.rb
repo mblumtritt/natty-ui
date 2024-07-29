@@ -13,13 +13,32 @@ TEXT = <<~TEXT.tr("\n", ' ')
   aliquip ex ea commodo [[bold]]consequat[[/]].
 TEXT
 
-{
-  default: 'Default Animation',
-  type_writer: 'Typewriter Like',
-  rainbow: 'Shiny Rainbow',
-  binary: 'Binary Encoded',
-  matrix: 'Matrix Style'
-}.each_pair do |type, title|
-  ui.message(title, glyph: '[[27]]◉') { ui.animate TEXT, animation: type }
-  ui.space
+glyph = '[[27]]◉'
+
+ui.message('Default Animation', glyph: glyph) do
+  ui.animate TEXT, animation: :default
 end
+ui.space
+
+ui.message('Shiny Rainbow', glyph: glyph) do
+  ui.animate TEXT, animation: :rainbow
+end
+ui.space
+
+ui.message('Binary Encoded', glyph: glyph) do
+  ui.animate TEXT, animation: :binary, style: 'green', alt_style: :bright_green
+end
+ui.space
+
+ui.message('Matrix Style', glyph: glyph) { ui.animate TEXT, animation: :matrix }
+ui.space
+
+ui.message('Typewriter Like', glyph: glyph) do
+  ui.animate TEXT, animation: :type_writer
+end
+ui.space
+
+ui.message('Default Styled', glyph: glyph) do
+  ui.animate TEXT, style: 'bold bright_white on_red'
+end
+ui.space

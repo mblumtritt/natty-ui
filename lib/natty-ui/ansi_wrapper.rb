@@ -8,29 +8,10 @@ module NattyUI
 
     def puts(*args, **kwargs)
       return super if args.empty? || (animation = kwargs[:animation]).nil?
-
-      prefix = kwargs[:prefix] = Text.embellish(kwargs[:prefix])
-      prefix_width = kwargs[:prefix_width]
-      prefix_width ||= kwargs[:prefix_width] = Text.width(prefix)
-
-      suffix = kwargs[:suffix] = Text.embellish(kwargs[:suffix])
-      suffix_width = kwargs[:suffix_width]
-      suffix_width ||= kwargs[:suffix_width] = Text.width(suffix)
-
-      mw = kwargs[:max_width]
-      mw ||= kwargs[:max_width] = screen_columns - prefix_width - suffix_width
-
-      (@stream << Ansi::CURSOR_HIDE).flush
-      animation = LineAnimation[animation].new(@stream, kwargs)
-      prefix = "#{Ansi::RESET}#{Ansi::CLL}#{prefix}"
-
-      Text.each_line(args.map! { Ansi.blemish(_1) }, mw) do |line|
-        @stream << prefix
-        animation.print(line)
-        (@stream << "#{prefix}#{line}#{suffix}\n").flush
-        @lines_written += 1
-      end
-
+      animation = Animation[animation].new(wrapper, args, kwargs)
+      @stream << Ansi::CURSOR_HIDE
+      animation.perform(@stream)
+      @lines_written += animation.lines_written
       (@stream << Ansi::CURSOR_SHOW).flush
       self
     end
