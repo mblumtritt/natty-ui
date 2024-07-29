@@ -8,6 +8,8 @@ module NattyUI
     # Basic visual element.
     #
     class Element
+      include Features
+
       # @attribute [r] available_width
       # @return [Integer] available columns count within the element
       def available_width = @parent.available_width

@@ -27,8 +27,6 @@ module NattyUI
     #
     # @see Features#section
     class Section < Element
-      include Features
-
       # @return [Integer] available columns count within the section
       def available_width
         @available_width ||=
