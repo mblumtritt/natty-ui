@@ -1,12 +1,10 @@
-╭───────────────────────────────────────────────────────────────────────────────
-│ ⭐️ Natty UI
-│    This is the beautiful, nice, nifty, fancy, neat, pretty,  cool, lovely, n
-│    atty user interface you like to have for your command line applications. 
-│    It contains elegant, simple and beautiful tools that enhance your command
-│     line interfaces functionally and aesthetically. 
-│ ⭐️ Features
-│    T  text attributes    📏 horizontal rulers   ✅ tasks        
-│    🌈 text coloring      📝 messages            …  progress bars
-│    🔦 text animation     "" quote blocks        ┼┼ tables       
-│    🎩 heading elements   🄵  framed blocks       >_ user input   
-╰───────────────────────────────────────────────────────────────────────────────
+⭐️ Natty UI
+   This is the beautiful, nice, nifty, f │ It contains elegant, simple and beau
+   ancy, neat, pretty,  cool, lovely, na │ tiful tools that enhance your comman
+   tty user interface you like to have f │ d line interfaces functionally and a
+   or your command line applications.    │                        esthetically.
+⭐️ Features
+   T  text attributes    📏 horizontal rulers   ✅ tasks        
+   🌈 text coloring      📝 messages            …  progress bars
+   🔦 text animation     "" quote blocks        ┼┼ tables       
+   🎩 heading elements   🄵  framed blocks       >_ user input   

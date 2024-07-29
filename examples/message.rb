@@ -13,13 +13,17 @@ TEXT = <<~TEXT.tr("\n", ' ')
   aliquip ex ea commodo [[bold]]consequat[[/]].
 TEXT
 
-IMPORTANT =
-  '[[red]]>>>[[/]] [[italic]]Here some important information[[/]] [[red]]<<<'
-
 ui.framed do
   ui.info 'Informative Message', TEXT
   ui.warning 'Warning Message' do
-    ui.framed(type: :double) { ui.puts(IMPORTANT, align: :center) }
+    ui.framed(type: :double) do
+      ui.puts(
+        '[[red]]>>>[[/]] ' \
+          '[[italic]]Important information maybe here[[/]] ' \
+          '[[red]]<<<',
+        align: :center
+      )
+    end
     ui.puts('[[italic f4]]Ut enim ad minim veniam', align: :right)
   end
   ui.error 'Error Message', TEXT
