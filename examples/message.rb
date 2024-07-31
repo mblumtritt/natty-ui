@@ -7,10 +7,10 @@ ui.h1 'NattyUI: Message Types'
 ui.space
 
 TEXT = <<~TEXT.tr("\n", ' ')
-  Lorem [[yellow]]ipsum[[/]] dolor sit amet, consectetur adipisicing elit, sed
-  do eiusmod tempor incididunt ut labore et dolore [[red]]magna[[/]] aliqua.
+  Lorem [yellow]ipsum[/fg] dolor sit amet, consectetur adipisicing elit, sed
+  do eiusmod tempor incididunt ut labore et dolore [red]magna[/fg] aliqua.
   Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-  aliquip ex ea commodo [[bold]]consequat[[/]].
+  aliquip ex ea commodo [b]consequat[/b].
 TEXT
 
 ui.framed do
@@ -18,17 +18,15 @@ ui.framed do
   ui.warning 'Warning Message' do
     ui.framed(type: :double) do
       ui.puts(
-        '[[red]]>>>[[/]] ' \
-          '[[italic]]Important information maybe here[[/]] ' \
-          '[[red]]<<<',
+        '[red]>>>[/fg] [i]Important information maybe here[/i] [red]<<<',
         align: :center
       )
     end
-    ui.puts('[[italic f4]]Ut enim ad minim veniam', align: :right)
+    ui.puts('[italic f4]Ut enim ad minim veniam', align: :right)
   end
   ui.error 'Error Message', TEXT
   ui.failed 'Fail Message', TEXT
-  ui.message '[[italic #fad]]Custom Message', TEXT, glyph: '💡'
+  ui.message '[italic #fad]Custom Message', TEXT, glyph: '💡'
 end
 
 ui.space

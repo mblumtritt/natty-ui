@@ -373,7 +373,16 @@ module NattyUI
               'dashed_underline_off' => '4:0',
               'curly_underline' => '4:3',
               'dotted_underline' => '4:4',
-              'dashed_underline' => '4:5'
+              'dashed_underline' => '4:5',
+              # aliases
+              'b' => 1, # bold
+              '/b' => 22, # bold_off
+              'i' => 3, # italic
+              '/i' => 23, # italic_off
+              'u' => 4, # underline
+              '/u' => 24, # underline_off
+              'h' => 8, # hide
+              '/h' => 28 # reveal
             }
             add = ->(s, n) { n.each_with_index { |a, idx| map[a] = s + idx } }
             add[
@@ -427,7 +436,7 @@ module NattyUI
               map
                 .filter_map do |name, att|
                   if name.end_with?('_off')
-                    ["!#{name.delete_suffix('_off')}", att]
+                    ["/#{name.delete_suffix('_off')}", att]
                   end
                 end
                 .to_h
@@ -459,11 +468,11 @@ module NattyUI
             add[90, 'bright_']
             add[30, 'fg_']
             map['fg_default'] = 39
-            map['!fg'] = 39
+            map['/fg'] = 39
             add[90, 'fg_bright_']
             add[40, 'bg_']
             map['bg_default'] = 49
-            map['!bg'] = 49
+            map['/bg'] = 49
             add[100, 'bg_bright_']
             add[40, 'on_']
             map['on_default'] = 49
@@ -478,7 +487,7 @@ module NattyUI
               'ul_cyan' => ul[0, 128, 128],
               'ul_white' => ul[128, 128, 128],
               'ul_default' => '59',
-              '!ul' => '59',
+              '/ul' => '59',
               'ul_bright_black' => ul[64, 64, 64],
               'ul_bright_red' => ul[255, 0, 0],
               'ul_bright_green' => ul[0, 255, 0],

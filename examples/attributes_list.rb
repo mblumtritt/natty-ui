@@ -9,7 +9,6 @@ ui.space
 ui.ls(
   (NattyUI::Ansi.attribute_names + NattyUI::Ansi.color_names)
     .sort!
-    .map! { |name| "[[#{name}]]#{name}[[/]]" }
+    .map! { |name| "[#{name}]#{name}[/]" }
 )
-
 ui.space

@@ -1,10 +1,22 @@
-⭐️ Natty UI
-   This is the beautiful, nice, nifty, f │ It contains elegant, simple and beau
-   ancy, neat, pretty,  cool, lovely, na │ tiful tools that enhance your comman
-   tty user interface you like to have f │ d line interfaces functionally and a
-   or your command line applications.    │                        esthetically.
-⭐️ Features
-   T  text attributes    📏 horizontal rulers   ✅ tasks        
-   🌈 text coloring      📝 messages            …  progress bars
-   🔦 text animation     "" quote blocks        ┼┼ tables       
-   🎩 heading elements   🄵  framed blocks       >_ user input   
+
+ Styles    Support of all ANSI styles like bold, italic, underline, invert, str
+           ike, faint, double underline, curly underline, dotted underline, das
+           hed underline, blink, and even rarely supported like fraktur.       
+                                                                               
+ Colors    ✓ 3/4-bit color         ✓ Truecolor (16.7 million)                  
+           ✓ 8-bit color           ✓ Dumb terminals                            
+           ✓ NO_COLOR convention                                               
+                                                                               
+ Markup    You can style your text using a BBCode-like syntax.                 
+                                                                               
+ Layout    🎩 heading elements     📏 horizontal rulers                        
+           📝 messages             🄵  framed blocks                            
+           ┼┼ tables                                                           
+                                                                               
+  Tools    ✅ tasks                …  progress bars                            
+           >_ user input           🔦 text animation                           
+                                                                               
+  Asian    🇨🇳 该库支持中文，日文和韩文文本！                                    
+language   🇯🇵 ライブラリは中国語、日本語、韓国語のテキストをサポートしています  
+ support   🇰🇷 이 라이브러리는 중국어, 일본어 및 한국어 텍스트를 지원합니다      
+

@@ -10,22 +10,15 @@ This is the beautiful, nice, nifty, fancy, neat, pretty, cool, lovely, natty use
 
 Here you find elegant, simple and beautiful tools that enhance your command line application functionally and look.
 
-You can simply decorate your text with named ANSI attributes and colors
+You can style your text using a [BBCode](https://en.wikipedia.org/wiki/BBCode)-like syntax
 
 ```ruby
-ui.puts '[[bold underline]]Hello [[ff7bfd]]World[[/]]!'
+ ui.puts '[bold underline bright_white]Hello [ff7bfd]World!'
 ```
 
-or use different types of messages
+which supports all ANSI attributes, colors in 3/4-bit, 8-bit and Truecolor. There are headers, rulers, diverse message types, framed blocks and tables to layout your text. You can organize the output of tasks, use progress bars and request and handle user input. And there are text animations for fame and fun!
 
-```ruby
-ui.info 'NattyUI installed'
-ui.warning 'Nice gem found!'
-```
-
-and headings, framed sections, progress bars and tasks, queries, tables and much much more…
-
-🚀 Have a look at the [features](https://rubydoc.info/gems/natty-ui/NattyUI/Features)!
+🚀 Have a look at the [features](https://rubydoc.info/gems/natty-ui/NattyUI/Features) or check the code [examples](./examples/)!
 
 ![illustration](https://raw.githubusercontent.com/mblumtritt/natty-ui/main/examples/illustration.png)
 

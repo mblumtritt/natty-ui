@@ -7,10 +7,13 @@ module NattyUI
     class << self
       def plain_but_ansi(str)
         (str = str.to_s).empty? and return str
-        str.gsub(/(\[\[((?~\]\]))\]\])/) do
-          match = Regexp.last_match[2]
-          next match.size == 1 ? nil : "[[#{match[1..]}]]" if match[0] == '/'
-          Ansi.try_convert(match) ? nil : "[[#{match}]]"
+        str.gsub(BBCODE) do
+          match = Regexp.last_match[1]
+          if match[0] == '/'
+            next if match.size == 1
+            next "[#{match[1..]}]" if match[1] == '/'
+          end
+          Ansi.try_convert(match) ? nil : "[#{match}]"
         end
       end
 
@@ -20,15 +23,18 @@ module NattyUI
         (str = str.to_s).empty? and return str
         reset = false
         str =
-          str.gsub(/(\[\[((?~\]\]))\]\])/) do
-            match = Regexp.last_match[2]
+          str.gsub(BBCODE) do
+            match = Regexp.last_match[1]
             if match[0] == '/'
-              next "[[#{match[1..]}]]" if match.size > 1
-              reset = false
-              next Ansi::RESET
+              if match.size == 1
+                reset = false
+                next Ansi::RESET
+              end
+              next "[#{match[1..]}]" if match[1] == '/'
             end
+
             ansi = Ansi.try_convert(match)
-            ansi ? reset = ansi : "[[#{match}]]"
+            ansi ? reset = ansi : "[#{match}]"
           end
         reset ? "#{str}#{Ansi::RESET}" : str
       end
@@ -150,6 +156,7 @@ module NattyUI
     end
 
     UTF_8 = Encoding::UTF_8
+    BBCODE = /(?:\[((?~[\[\]]))\])/
     WIDTH_SCANNER = /\G(?:(\1)|(\2)|(#{Ansi::CSI})|(#{Ansi::OSC})|(\X))/
     SPECIAL_CHARS = {
       0x00 => 0,

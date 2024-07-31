@@ -23,7 +23,7 @@ choice =
   ui.query(
     'Which fruits do you prefer?',
     'Apples',
-    '[[yellow]]Bananas[[/]]',
+    '[yellow]Bananas[/]',
     'Cherries',
     x: 'No fruits'
   )

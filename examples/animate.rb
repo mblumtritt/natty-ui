@@ -7,10 +7,10 @@ ui.h1 'NattyUI: Text Line Animation'
 ui.space
 
 TEXT = <<~TEXT.tr("\n", ' ')
-  Lorem [[yellow]]ipsum[[/]] dolor sit amet, consectetur adipisicing elit, sed
-  do eiusmod tempor incididunt ut labore et dolore [[red]]magna[[/]] aliqua.
+  Lorem [yellow]ipsum[/] dolor sit amet, consectetur adipisicing elit, sed
+  do eiusmod tempor incididunt ut labore et dolore [red]magna[/] aliqua.
   Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-  aliquip ex ea commodo [[bold]]consequat[[/]].
+  aliquip ex ea commodo [bold]consequat[/].
 TEXT
 
 ui.message 'Default Animation', glyph: :point do

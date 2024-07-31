@@ -121,16 +121,14 @@ RSpec.describe NattyUI do
   describe '.embellish' do
     it 'translates embedded ANSI attributes' do
       expect(
-        NattyUI.embellish(
-          '[[bold]]Hello[[!bold]] [[blink ff00ff onfafafa]]World[[/]]!'
-        )
+        NattyUI.embellish('[b]Hello[/b] [blink ff00ff onfafafa]World[/]!')
       ).to eq "\e[1mHello\e[22m \e[5;38;2;255;0;255;48;2;250;250;250mWorld\e[m!"
     end
 
     it 'respects escaped and invalid attributes' do
-      expect(NattyUI.embellish('[[/some test]] [[another test]]')).to eq(
-        '[[some test]] [[another test]]'
-      )
+      expect(
+        NattyUI.embellish('[bold unknown] [//bold italic] [//b] [///b]')
+      ).to eq('[bold unknown] [/bold italic] [/b] [//b]')
     end
   end
 
@@ -140,26 +138,31 @@ RSpec.describe NattyUI do
     end
 
     it 'removes embedded ANSI attributes' do
-      expect(
-        NattyUI.plain('[[bold]]Hello [[blink ff00ff onfafafa]]World[[/]]!')
-      ).to eq('Hello World!')
+      expect(NattyUI.plain('[b]Hello [blink ff00ff onfafafa]World[/]!')).to eq(
+        'Hello World!'
+      )
     end
 
     it 'removes all supported attributes' do
-      str = all_attributes.map { "[[#{_1}]]C" }.join
+      str = all_attributes.map { "[#{_1}]C" }.join
       expect(NattyUI.plain(str)).to eq('C' * all_attributes.size)
     end
 
     it 'does not remove escaped and invalid attributes' do
-      expect(NattyUI.plain('[[/some test]] Hello [[another test]]')).to eq(
-        '[[some test]] Hello [[another test]]'
-      )
+      expect(
+        NattyUI.plain(
+          "\e[1K\e[0G[b][i][bold unknown] [//bold italic] [//b] [///b][/b][/i]"
+        )
+      ).to eq("\e[1K\e[0G[bold unknown] [/bold italic] [/b] [//b]")
     end
 
     it 'removes ANSI control codes too' do
       expect(
-        NattyUI.plain("\e[1K\e[0G[[bold]]Hello [[blink]]World!", ansi: :remove)
-      ).to eq('Hello World!')
+        NattyUI.plain(
+          "\e[1K\e[0G[b][i][bold unknown] [//bold italic] [//b] [///b][/b][/i]",
+          ansi: :remove
+        )
+      ).to eq('[bold unknown] [/bold italic] [/b] [//b]')
     end
 
     it 'removes all supported ANSI control codes' do
@@ -170,7 +173,7 @@ RSpec.describe NattyUI do
 
   describe '.display_width' do
     it 'returns the correct dislay width of a given string' do
-      sample = "\e[s123❌67[[bold]]8⛽[[curly_underline afa]]コンニチハ"
+      sample = "\e[s123❌67[bold]8⛽[curly_underline afa]コンニチハ"
       expect(NattyUI.display_width(sample)).to be 20
     end
 
