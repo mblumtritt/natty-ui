@@ -5,25 +5,33 @@ require_relative 'features'
 module NattyUI
   class Wrapper
     #
-    # Basic visual element implementing all {Features}.
+    # Basic visual element.
     #
     class Element
       include Features
 
-      # @return [Element] when embedded in a section
-      # @return [Wrapper] when not embedded in a section
-      attr_reader :parent
-
-      # @return [Symbol] close status when closed
-      # @return [nil] when not closed
-      attr_reader :status
+      # @attribute [r] available_width
+      # @return [Integer] available columns count within the element
+      def available_width = @parent.available_width
 
       # @attribute [r] closed?
       # @return [Boolean] whether its closed or not
       def closed? = (@status != nil)
 
-      # @return [Integer] available columns count within the element
-      def available_width = @parent.available_width
+      # @return [Section, Wrapper] parent element
+      attr_reader :parent
+
+      # @return [Symbol, nil] status when closed
+      attr_reader :status
+
+      # @attribute [r] wrapper
+      # @return [Wrapper] assigned output stream wrapper
+      def wrapper
+        return @wrapper if @wrapper
+        @wrapper = @parent
+        @wrapper = @wrapper.parent until @wrapper.is_a?(Wrapper)
+        @wrapper
+      end
 
       # Close the element.
       #

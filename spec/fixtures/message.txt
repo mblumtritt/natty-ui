@@ -8,13 +8,10 @@
 │   , quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo 
 │   consequat. 
 │ ! Warning Message
-│   Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod t
-│   empor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam
-│   , quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo 
-│   consequat. 
-│   ╭─────────────────────────────────────────────────────────────────────────
-│   │ >>> Here some important information <<<
-│   ╰─────────────────────────────────────────────────────────────────────────
+│   ╔═════════════════════════════════════════════════════════════════════════
+│   ║                >>> Important information maybe here <<<               
+│   ╚═════════════════════════════════════════════════════════════════════════
+│                                                      Ut enim ad minim veniam
 │ 𝙓 Error Message
 │   Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod t
 │   empor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam

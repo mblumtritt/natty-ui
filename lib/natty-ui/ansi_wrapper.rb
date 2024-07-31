@@ -8,39 +8,10 @@ module NattyUI
 
     def puts(*args, **kwargs)
       return super if args.empty? || (animation = kwargs[:animation]).nil?
-
-      prefix = kwargs[:prefix]
-      if prefix && !prefix.empty?
-        prefix = Text.embellish(prefix)
-        prefix_width = kwargs[:prefix_width] || Text.width(prefix)
-      else
-        prefix = nil
-        prefix_width = 0
-      end
-      kwargs[:prefix] = prefix
-      kwargs[:prefix_width] = prefix_width
-
-      suffix = kwargs[:suffix]
-      suffix = suffix.empty? ? nil : Texct.embellish(suffix) if suffix
-
-      mw = kwargs[:max_width]
-      unless mw
-        mw = screen_columns - prefix_width
-        mw -= kwargs[:suffix_width] || Text.width(suffix) if suffix
-      end
-      kwargs[:max_width] = mw
-
-      (@stream << Ansi::CURSOR_HIDE).flush
-      animation = LineAnimation[animation].new(@stream, kwargs)
-      prefix = "#{Ansi::RESET}#{Ansi::CLL}#{prefix}"
-
-      Text.each_embellished_line(args.map! { Ansi.blemish(_1) }, mw) do |line|
-        @stream << prefix
-        animation.print(line)
-        (@stream << "#{prefix}#{line}#{suffix}\n").flush
-        @lines_written += 1
-      end
-
+      animation = Animation[animation].new(wrapper, args, kwargs)
+      @stream << Ansi::CURSOR_HIDE
+      animation.perform(@stream)
+      @lines_written += animation.lines_written
       (@stream << Ansi::CURSOR_SHOW).flush
       self
     end
@@ -65,17 +36,32 @@ module NattyUI
 
     protected
 
-    def pprint(args, kwargs)
-      prefix = kwargs[:prefix] and prefix = Text.embellish(prefix)
-      suffix = kwargs[:suffix] and suffix = Text.embellish(suffix)
-      return yield("#{prefix}#{suffix}") if args.empty?
-      Text.each_embellished_line(
-        args,
-        kwargs.fetch(:max_width) do
-          screen_columns - kwargs.fetch(:prefix_width) { Text.width(prefix) } -
-            kwargs.fetch(:suffix_width) { Text.width(suffix) }
+    def pprint(strs, opts)
+      prefix = opts[:prefix] and prefix = Text.embellish(prefix)
+      suffix = opts[:suffix] and suffix = Text.embellish(suffix)
+      return yield("#{prefix}#{suffix}") if strs.empty?
+      max_width =
+        opts.fetch(:max_width) do
+          screen_columns - (opts[:prefix_width] || Text.width(prefix)) -
+            (opts[:suffix_width] || Text.width(suffix))
         end
-      ) { yield("#{prefix}#{_1}#{suffix}") }
+      case opts[:align]
+      when :right
+        Text.each_line(strs, max_width) do |line, width|
+          width = max_width - width
+          yield("#{prefix}#{' ' * width}#{line}#{suffix}")
+        end
+      when :center
+        Text.each_line(strs, max_width) do |line, width|
+          width = max_width - width
+          right = width / 2
+          yield(
+            "#{prefix}#{' ' * (width - right)}#{line}#{' ' * right}#{suffix}"
+          )
+        end
+      else
+        Text.each_line(strs, max_width) { yield("#{prefix}#{_1}#{suffix}") }
+      end
     end
 
     def temp_func
@@ -163,18 +149,18 @@ module NattyUI
       def color(str) = "#{Ansi[39]}#{str}#{Ansi::RESET}"
 
       def init(type)
-        @prefix = "#{color(type[0])} "
+        @prefix = "#{color(type[4])} "
         @suffix = "#{Ansi.cursor_column(parent.rcol)}#{color(type[4])}"
         aw = @parent.available_width - 2
-        parent.puts(color("#{type[1]}#{type[2] * aw}#{type[3]}"))
-        @finish = color("#{type[5]}#{type[6] * aw}#{type[7]}")
+        parent.puts(color("#{type[0]}#{type[5] * aw}#{type[1]}"))
+        @finish = color("#{type[2]}#{type[5] * aw}#{type[3]}")
       end
     end
 
     class Message < Section
       protected
 
-      def initialize(parent, title:, glyph:)
+      def initialize(parent, title:, glyph:, **opts)
         color = COLORS[glyph] || COLORS[:default]
         glyph = NattyUI.glyph(glyph) || glyph
         prefix_width = Text.width(glyph) + 1
@@ -185,18 +171,25 @@ module NattyUI
           suffix: Ansi::RESET,
           suffix_width: 0
         )
-        super(parent, prefix: ' ' * prefix_width, prefix_width: prefix_width)
+        super(
+          parent,
+          prefix: ' ' * prefix_width,
+          prefix_width: prefix_width,
+          **opts
+        )
       end
 
+      white = Ansi[255]
       COLORS = {
-        default: Ansi[255],
-        information: Ansi[255],
+        default: white,
+        point: white,
+        information: white,
         warning: Ansi[221],
         error: Ansi[208],
         completed: Ansi[82],
         failed: Ansi[196],
         task: Ansi[39],
-        query: Ansi[255]
+        query: white
       }.compare_by_identity.freeze
     end
 

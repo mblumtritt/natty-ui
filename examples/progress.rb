@@ -25,7 +25,7 @@ ui.info 'Tasks are sections to visualize step by step processing.' do
 
     ui.task 'Compile files...' do
       %w[readme.txt main.css main.html sub.html].each do |name|
-        ui.msg "Compile file [[bright_yellow]]./source/#{name}[[/]]..."
+        ui.msg "Compile file [bright_yellow]./source/#{name}[/]..."
         something
       end
       ui.done 'Files compiled.'
@@ -44,7 +44,7 @@ ui.info 'Tasks are sections to visualize step by step processing.' do
   end
 
   ui.puts(
-    'The details are removed ([[italic]]in ANSI version[[/]]) when the task',
+    'The details are removed ([i]in ANSI version[/i]) when the task',
     'ended sucessfully.'
   )
 end

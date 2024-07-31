@@ -157,8 +157,8 @@ module NattyUI
       if name.is_a?(Symbol)
         ret = FRAME[name] and return ret
       elsif name.is_a?(String)
-        return name if name.size == 8
-        return name * 8 if name.size == 1
+        return name if name.size == 11
+        return name * 11 if name.size == 1
       end
       raise(ArgumentError, "invalid frame type - #{name.inspect}")
     end
@@ -187,11 +187,12 @@ module NattyUI
   StdErr = stderr_is_stdout? ? StdOut : new(STDERR)
 
   dir = __dir__
-  autoload(:LineAnimation, File.join(dir, 'natty-ui', 'line_animation'))
+  autoload(:Animation, File.join(dir, 'natty-ui', 'animation'))
   autoload(:KEY_MAP, File.join(dir, 'natty-ui', 'key_map'))
 
   GLYPH = {
     default: "#{Ansi[:bold, 255]}•#{Ansi::RESET}",
+    point: "#{Ansi[0x27]}◉#{Ansi::RESET}",
     information: "#{Ansi[:bold, 119]}𝒊#{Ansi::RESET}",
     warning: "#{Ansi[:bold, 221]}!#{Ansi::RESET}",
     error: "#{Ansi[:bold, 208]}𝙓#{Ansi::RESET}",
@@ -213,15 +214,18 @@ module NattyUI
   # }.compare_by_identity.freeze
 
   FRAME = {
-    rounded: '│╭─╮│╰─╯',
-    simple: '│┌─┐│└─┘',
-    heavy: '┃┏━┓┃┗━┛',
-    double: '║╔═╗║╚═╝',
-    semi: '│╒═╕│╘═╛',
-    block: '▌▛▀▜▐▙▄▟'
+    rounded: '╭╮╰╯│─┼┬┴├┤',
+    simple: '┌┐└┘│─┼┬┴├┤',
+    heavy: '┏┓┗┛┃━╋┳┻┣┫',
+    double: '╔╗╚╝║═╬╦╩╠╣',
+    semi: '╒╕╘╛│═╪╤╧╞╡',
+    semi2: '╓╖╙╜│─╫╥╨╟╢',
+    rows: '     ──    ',
+    cols: '    │ │    ',
+    undecorated: '           '
   }.compare_by_identity.freeze
 
-  private_constant :LineAnimation, :KEY_MAP, :GLYPH, :FRAME
+  private_constant :Animation, :KEY_MAP, :GLYPH, :FRAME
 
   @element = StdOut
   self.in_stream = STDIN

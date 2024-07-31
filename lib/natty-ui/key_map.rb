@@ -4,21 +4,36 @@ module NattyUI
   KEY_MAP =
     Module # generator
       .new do
-        def self.add_mods(name, code)
-          @mods.each_pair do |mod, prefix|
-            @map["\e[1;#{mod}#{code}"] = "#{prefix}+#{name}"
+        def self.add_modifiers(**keys)
+          @mods.each_pair do |mod, pref|
+            @map.merge!(
+              keys.to_h do |name, code|
+                ["\e[1;#{mod}#{code}", "#{pref}+#{name}"]
+              end
+            )
           end
         end
 
-        def self.add_akey(name, code)
-          @map["\e[#{code}"] = name
-          add_mods(name, code)
+        def self.add_keys(**keys)
+          @map.merge!(keys.to_h { |name, code| ["\e[#{code}", name] })
+          add_modifiers(**keys)
         end
 
-        def self.add_fkey(name, code)
-          @map["\e[#{code}~"] = name
+        def self.add_fkeys(**keys)
+          @map.merge!(keys.to_h { |name, code| ["\e[#{code}~", name] })
           @mods.each_pair do |mod, prefix|
-            @map["\e[#{code};#{mod}~"] = "#{prefix}+#{name}"
+            @map.merge!(
+              keys.to_h do |name, code|
+                ["\e[#{code};#{mod}~", "#{prefix}+#{name}"]
+              end
+            )
+          end
+        end
+
+        def self.add_alt_keys(**keys)
+          keys.each_pair do |name, code|
+            @map[code] = name
+            @map["\e#{code}"] = "Alt+#{name}" # kitty
           end
         end
 
@@ -27,51 +42,59 @@ module NattyUI
           num = 0
           @map = ('A'..'Z').to_h { [(num += 1).chr, "Ctrl+#{_1}"] }
 
-          add_akey('Up', 'A')
-          add_akey('Down', 'B')
-          add_akey('Right', 'C')
-          add_akey('Left', 'D')
-          add_akey('End', 'F')
-          add_akey('Home', 'H')
+          add_modifiers('F1' => 'P', 'F2' => 'Q', 'F3' => 'R', 'F4' => 'S')
 
-          add_mods('F1', 'P')
-          add_mods('F2', 'Q')
-          add_mods('F3', 'R')
-          add_mods('F4', 'S')
+          add_keys(
+            'Up' => 'A',
+            'Down' => 'B',
+            'Right' => 'C',
+            'Left' => 'D',
+            'End' => 'F',
+            'Home' => 'H'
+          )
 
-          add_fkey('DEL', '3')
-          add_fkey('PgUp', '5')
-          add_fkey('PgDown', '6')
-          add_fkey('F1', 'F1')
-          add_fkey('F2', 'F2')
-          add_fkey('F3', 'F3')
-          add_fkey('F4', 'F4')
-          add_fkey('F5', '15')
-          add_fkey('F6', '17')
-          add_fkey('F7', '18')
-          add_fkey('F8', '19')
-          add_fkey('F9', '20')
-          add_fkey('F10', '21')
-          add_fkey('F11', '23')
-          add_fkey('F12', '24')
-          add_fkey('F13', '25')
-          add_fkey('F14', '26')
-          add_fkey('F15', '28')
-          add_fkey('F16', '29')
-          add_fkey('F17', '31')
-          add_fkey('F18', '32')
-          add_fkey('F19', '33')
-          add_fkey('F20', '34')
+          add_fkeys(
+            'DEL' => '3',
+            'PgUp' => '5',
+            'PgDown' => '6',
+            # -
+            'F1' => 'F1',
+            'F2' => 'F2',
+            'F3' => 'F3',
+            'F4' => 'F4',
+            # -
+            'F5' => '15',
+            'F6' => '17',
+            'F7' => '18',
+            'F8' => '19',
+            'F9' => '20',
+            'F10' => '21',
+            'F11' => '23',
+            'F12' => '24',
+            'F13' => '25',
+            'F14' => '26',
+            'F15' => '28',
+            'F16' => '29',
+            'F17' => '31',
+            'F18' => '32',
+            'F19' => '33',
+            'F20' => '34'
+          )
+
+          add_fkeys('F3' => '13') # kitty
+
+          add_alt_keys(
+            'ESC' => "\e",
+            'ENTER' => "\r",
+            'TAB' => "\t",
+            'BACK' => "\u007F",
+            'Ctrl+BACK' => "\b",
+            'Shift+TAB' => "\e[Z"
+          )
 
           # overrides and additionals
           @map.merge!(
-            "\e" => 'ESC',
-            "\4" => 'DEL', # = Ctrl+D
-            "\u007F" => 'BACK',
-            "\b" => 'Ctrl+BACK',
-            "\r" => 'ENTER', # = Ctrl+M
-            "\t" => 'TAB',
-            "\e[Z" => 'Shift+TAB',
+            "\4" => 'DEL',
             "\e[5" => 'PgUp',
             "\e[6" => 'PgDown',
             # SS3 control (VT 100 etc)

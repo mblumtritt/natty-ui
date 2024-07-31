@@ -31,7 +31,7 @@ module NattyUI::Ansi
   RESET = self[:reset].freeze
 
   BOLD = self[:bold].freeze
-  BOLD_OFF = self[:bold_off].freeze
+  BOLD_OFF = self[:bold].freeze
 
   FAINT = self[:faint].freeze
   FAINT_OFF = self[:faint_off].freeze

@@ -35,18 +35,18 @@ module NattyUI
 
       # Print given arguments line-wise into the section.
       #
-      # @overload puts(...)
-      #   @param [#to_s] ... objects to print
-      #   @return [Section] itself
-      def puts(*args, **kwargs)
+      # @param [#to_s] args objects to print
+      # @option options [:left, :right, :center] :align text alignment
+      # @return [Section] itself
+      def puts(*args, **options)
         return self if @status
         @parent.puts(
           *args,
-          **kwargs.merge!(
-            prefix: "#{@prefix}#{kwargs[:prefix]}",
-            prefix_width: @prefix_width + kwargs[:prefix_width].to_i,
-            suffix: "#{kwargs[:suffix]}#{@suffix}",
-            suffix_width: @suffix_width + kwargs[:suffix_width].to_i
+          **options.merge!(
+            prefix: "#{@prefix}#{options[:prefix]}",
+            prefix_width: @prefix_width + options[:prefix_width].to_i,
+            suffix: "#{options[:suffix]}#{@suffix}",
+            suffix_width: @suffix_width + options[:suffix_width].to_i
           )
         )
         self
@@ -54,18 +54,18 @@ module NattyUI
 
       # Print given arguments into the section.
       #
-      # @overload print(...)
-      #   @param [#to_s] ... objects to print
-      #   @return [Section] itself
-      def print(*args, **kwargs)
+      # @param [#to_s] args objects to print
+      # @option options [:left, :right, :center] :align text alignment
+      # @return [Section] itself
+      def print(*args, **options)
         return self if @status
         @parent.print(
           *args,
-          **kwargs.merge!(
-            prefix: "#{@prefix}#{kwargs[:prefix]}",
-            prefix_width: @prefix_width + kwargs[:prefix_width].to_i,
-            suffix: "#{kwargs[:suffix]}#{@suffix}",
-            suffix_width: @suffix_width + kwargs[:suffix_width].to_i
+          **options.merge!(
+            prefix: "#{@prefix}#{options[:prefix]}",
+            prefix_width: @prefix_width + options[:prefix_width].to_i,
+            suffix: "#{options[:suffix]}#{@suffix}",
+            suffix_width: @suffix_width + options[:suffix_width].to_i
           )
         )
         self

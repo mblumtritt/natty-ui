@@ -257,7 +257,7 @@ module NattyUI
       # @return [String] combined ANSI attributes
       # @return [nil] when string does not contain valid attributes
       def try_convert(attributes)
-        return if (attributes = attributes.to_s.split).empty?
+        return if !attributes || (attributes = attributes.to_s.split).empty?
         "\e[#{
           attributes
             .map! { ATTR[_1] || CLR[_1] || color(_1) || return }
@@ -349,36 +349,45 @@ module NattyUI
     PI2_THIRD = 2 * Math::PI / 3
     PI4_THIRD = 4 * Math::PI / 3
 
-    SATTR =
+    ATTR =
       Module
         .new do
           def self.to_hash
             map = {
               # alternative names
-              reset: '',
-              slow_blink: 5,
-              conceal: 8,
-              default_font: 10,
-              doubly: 21,
-              faint_off: 22,
-              fraktur_off: 23,
-              spacing: 26,
-              conceal_off: 28,
-              spacing_off: 50,
-              encircled_off: 54,
-              subscript_off: 75,
+              'reset' => '',
+              'slow_blink' => 5,
+              'conceal' => 8,
+              'default_font' => 10,
+              'doubly' => 21,
+              'faint_off' => 22,
+              'fraktur_off' => 23,
+              'spacing' => 26,
+              'conceal_off' => 28,
+              'spacing_off' => 50,
+              'encircled_off' => 54,
+              'subscript_off' => 75,
               # special
-              curly_underline_off: '4:0',
-              dotted_underline_off: '4:0',
-              dashed_underline_off: '4:0',
-              curly_underline: '4:3',
-              dotted_underline: '4:4',
-              dashed_underline: '4:5'
+              'curly_underline_off' => '4:0',
+              'dotted_underline_off' => '4:0',
+              'dashed_underline_off' => '4:0',
+              'curly_underline' => '4:3',
+              'dotted_underline' => '4:4',
+              'dashed_underline' => '4:5',
+              # aliases
+              'b' => 1, # bold
+              '/b' => 22, # bold_off
+              'i' => 3, # italic
+              '/i' => 23, # italic_off
+              'u' => 4, # underline
+              '/u' => 24, # underline_off
+              'h' => 8, # hide
+              '/h' => 28 # reveal
             }
             add = ->(s, n) { n.each_with_index { |a, idx| map[a] = s + idx } }
             add[
               1,
-              %i[
+              %w[
                 bold
                 faint
                 italic
@@ -412,7 +421,7 @@ module NattyUI
             ]
             add[
               50,
-              %i[
+              %w[
                 proportional_off
                 framed
                 encircled
@@ -421,12 +430,20 @@ module NattyUI
                 overlined_off
               ]
             ]
-            add[73, %i[superscript subscript superscript_off]]
-            map
+            add[73, %w[superscript subscript superscript_off]]
+
+            map.merge!(
+              map
+                .filter_map do |name, att|
+                  if name.end_with?('_off')
+                    ["/#{name.delete_suffix('_off')}", att]
+                  end
+                end
+                .to_h
+            )
           end
         end
         .to_hash
-        .compare_by_identity
         .freeze
 
     CLR =
@@ -451,9 +468,11 @@ module NattyUI
             add[90, 'bright_']
             add[30, 'fg_']
             map['fg_default'] = 39
+            map['/fg'] = 39
             add[90, 'fg_bright_']
             add[40, 'bg_']
             map['bg_default'] = 49
+            map['/bg'] = 49
             add[100, 'bg_bright_']
             add[40, 'on_']
             map['on_default'] = 49
@@ -468,6 +487,7 @@ module NattyUI
               'ul_cyan' => ul[0, 128, 128],
               'ul_white' => ul[128, 128, 128],
               'ul_default' => '59',
+              '/ul' => '59',
               'ul_bright_black' => ul[64, 64, 64],
               'ul_bright_red' => ul[255, 0, 0],
               'ul_bright_green' => ul[0, 255, 0],
@@ -482,7 +502,7 @@ module NattyUI
         .to_hash
         .freeze
 
-    ATTR = SATTR.transform_keys(&:to_s).freeze
+    SATTR = ATTR.transform_keys(&:to_sym).compare_by_identity.freeze
     SCLR = CLR.transform_keys(&:to_sym).compare_by_identity.freeze
 
     private_constant(

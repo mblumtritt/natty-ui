@@ -24,10 +24,10 @@ ui.page do
   examples = {}
   {
     '1' => ['attributes', 'ANSI Attributes'],
-    '2' => ['message', 'Message Types'],
-    '3' => ['3bit-colors', '3/4-bit Color Support'],
-    '4' => ['8bit-colors', '8-bit Color Support'],
-    '5' => ['24bit-colors', '24-bit Color Support'],
+    '2' => ['3bit-colors', '3/4-bit Color Support'],
+    '3' => ['8bit-colors', '8-bit Color Support'],
+    '4' => ['24bit-colors', '24-bit Color Support'],
+    '5' => ['message', 'Message Types'],
     '6' => ['ls', 'Print In Columns'],
     '7' => %w[table Tables],
     '8' => ['animate', 'Text Line Animation'],

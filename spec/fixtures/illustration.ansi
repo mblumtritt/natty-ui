@@ -1,12 +1,22 @@
-[38;5;39m╭──────────────────────────────────────────────────────────────────────────────╮[m
-[38;5;39m│[m ⭐️ [38;5;255mNatty UI[m[80G[38;5;39m│[m
-[38;5;39m│[m    This is the [38;5;196mbeautiful[m, [38;5;197mnice[m, [38;5;198mnifty[m, [38;5;199mfancy[m, [38;5;200mneat[m, [38;5;201mpretty[m,  [38;5;202mcool[m, [38;5;203mlovely[m, [38;5;204mn[80G[38;5;39m│[m
-[38;5;39m│[m    [38;5;204matty[m [1muser interface[m you like to have for your command line applications. [80G[38;5;39m│[m
-[38;5;39m│[m    It contains [3;4:3;58;5;196melegant[m, [3;4;58;5;199msimple[m and [3;4:4;58;5;202mbeautiful[m tools that enhance your command[80G[38;5;39m│[m
-[38;5;39m│[m     line interfaces functionally and aesthetically. [80G[38;5;39m│[m
-[38;5;39m│[m ⭐️ [38;5;255mFeatures[m[80G[38;5;39m│[m
-[38;5;39m│[m    [1;31mT[m  text attributes    📏 horizontal rulers   ✅ tasks        [80G[38;5;39m│[m
-[38;5;39m│[m    🌈 text coloring      📝 messages            [1;32m…[m  progress bars[80G[38;5;39m│[m
-[38;5;39m│[m    🔦 text animation     [1;34m""[m quote blocks        [34m┼┼[m tables       [80G[38;5;39m│[m
-[38;5;39m│[m    🎩 heading elements   [33m🄵[m  framed blocks       [1;97m>[91m_[m user input   [80G[38;5;39m│[m
-[38;5;39m╰──────────────────────────────────────────────────────────────────────────────╯[m
+
+[31m Styles [m [38;5;39m [m Support of all ANSI styles like [1mbold[m, [3mitalic[m, [4munderline[m, [7minvert[m, [9mstr[m
+        [m [38;5;39m [m [9mike[m, [2mfaint[m, [21mdouble underline[m, [4:3mcurly underline[m, [4:4mdotted underline[m, [4:5mdas[m
+        [m [38;5;39m [m [4:5mhed underline[m, [5mblink[m, and even rarely supported like [20mfraktur[23m.[m       [m
+[38;5;39m                                                                               [m
+[31m Colors [m [38;5;39m [m ✓ [32m3/4-bit color[m         ✓ [38;2;255;127;80mTruecolor (16.7 million)[m                  [m
+        [m [38;5;39m [m ✓ [38;5;27m8-bit color[m           ✓ [93mDumb terminals[m                            [m
+        [m [38;5;39m [m ✓ [94mNO_COLOR convention[m                                               [m
+[38;5;39m                                                                               [m
+[31m Markup [m [38;5;39m [m [38;5;12mYou can style your text using a [3mBBCode[23m-like syntax.[m                 [m
+[38;5;39m                                                                               [m
+[31m Layout [m [38;5;39m [m 🎩 heading elements     📏 horizontal rulers                        [m
+        [m [38;5;39m [m 📝 messages             [33m🄵[m  framed blocks                            [m
+        [m [38;5;39m [m [34m┼┼[m tables                                                           [m
+[38;5;39m                                                                               [m
+[31m  Tools [m [38;5;39m [m ✅ tasks                [1;32m…[m  progress bars                            [m
+        [m [38;5;39m [m [1;97m>[91m_[m user input           🔦 text animation                           [m
+[38;5;39m                                                                               [m
+[31m  Asian [m [38;5;39m [m [38;5;10m🇨🇳 该库支持中文，日文和韩文文本！[m                                    [m
+[31mlanguage[m [38;5;39m [m [38;5;10m🇯🇵 ライブラリは中国語、日本語、韓国語のテキストをサポートしています[m  [m
+[31m support[m [38;5;39m [m [38;5;10m🇰🇷 이 라이브러리는 중국어, 일본어 및 한국어 텍스트를 지원합니다[m      [m
+

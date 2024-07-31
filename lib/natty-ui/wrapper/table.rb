@@ -7,43 +7,15 @@ module NattyUI
     #
     # Table view of data.
     #
-    # @note Tables do not support text attributes yet and are still under
-    #   construction. This means table features are not complete defined and
-    #   may change in near future.
-    #
     # Defined values for `type` are
     # :double, :heavy, :semi, :simple
     #
-    # @overload table(type: simple)
-    #   Construct and display a table.
-    #
-    #   @param [Symbol] type frame type
-    #   @yieldparam [Table] table construction helper
-    #   @return [Wrapper::Section, Wrapper] it's parent object
-    #
-    #   @example
-    #    ui.table do |table|
-    #      table.add('name', 'price', 'origin')
-    #      table.add('apple', '1$', 'California')
-    #      table.add('banana', '2$', 'Brasil')
-    #      table.add('kiwi', '1.5$', 'Newzeeland')
-    #    end
-    #
-    #    # output:
-    #    # name   │ price │ origin
-    #    # ───────┼───────┼───────────
-    #    # apple  │ 1$    │ California
-    #    # ───────┼───────┼───────────
-    #    # banana │ 2$    │ Brasil
-    #    # ───────┼───────┼───────────
-    #    # kiwi   │ 1.5$  │ Newzeeland
-    #
-    # @overload table(*args, type: simple)
+    # @overload table(*args, type: simple, expand: false)
     #   Display the given arrays as rows of a table.
     #
-    #   @param [Array<#to_s>] args one or more arrays representing rows of the table
+    #   @param [#map<#map<#to_s>>] args one or more arrays representing rows of the table
     #   @param [Symbol] type frame type
-    #   @return [Wrapper::Section, Wrapper] it's parent object
+    #   @param [false, true. :equal] expand
     #
     #   @example
     #     ui.table(
@@ -52,10 +24,45 @@ module NattyUI
     #       %w[banana 2$ Brasil],
     #       %w[kiwi 1.5$ Newzeeland]
     #     )
-    def table(*table, type: :simple)
-      return _element(:Table, table, type) unless block_given?
-      yield(table = Table.new(table))
-      _element(:Table, table.rows, type)
+    #
+    #     # name   │ price │ origin
+    #     # ───────┼───────┼───────────
+    #     # apple  │ 1$    │ California
+    #     # ───────┼───────┼───────────
+    #     # banana │ 2$    │ Brasil
+    #     # ───────┼───────┼───────────
+    #     # kiwi   │ 1.5$  │ Newzeeland
+    #
+    # @overload table(type: simple, expand: false)
+    #   Construct and display a table.
+    #
+    #   @param [Symbol] type frame type
+    #   @param [false, true. :equal] expand
+    #
+    #   @example
+    #     ui.table(type: :heavy, expand: true) do |table|
+    #       table.add('name', 'price', 'origin', style: 'bold green')
+    #       table.add('apple', '1$', 'California')
+    #       table.add('banana', '2$', 'Brasil')
+    #       table.add('kiwi', '1.5$', 'Newzeeland')
+    #       table.align_column(0, :right).align_row(0, :center)
+    #     end
+    #
+    #     #       name       ┃      price     ┃            origin
+    #     # ━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    #     #            apple ┃ 1$             ┃ California
+    #     # ━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    #     #           banana ┃ 2$             ┃ Brasil
+    #     # ━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    #     #             kiwi ┃ 1.5$           ┃ Newzeeland
+    #
+    # @yield [Table] table construction helper
+    # @return [Wrapper::Section, Wrapper] it's parent object
+    def table(*table, type: :simple, expand: false)
+      type = NattyUI.frame(type)
+      table = Table.create(*table)
+      yield(table) if block_given?
+      _element(:Table, table, type, expand)
     end
 
     #
@@ -74,28 +81,280 @@ module NattyUI
     #   #   kiwi: 1.5$
     #
     def pairs(seperator = ': ', **kwargs)
-      _element(:Pairs, kwargs.to_a, seperator)
+      kwargs.empty? ? self : _element(:Pairs, kwargs, seperator)
     end
 
+    #
+    # Helper class to define a table layout.
+    # @see #table
+    #
     class Table
-      attr_reader :rows
+      # @!visibility private
+      def self.create(*table)
+        table = table[0] if table.size == 1 && table[0].respond_to?(:each)
+        return table if table.is_a?(self.class)
+        ret = new
+        table.each { ret.add_row(*_1) }
+        ret
+      end
 
-      def add_row(*columns)
-        @rows << columns
+      # @!visibility private
+      def initialize = @rows = []
+
+      # @return [Integer] count of rows
+      def row_count = @rows.size
+
+      # @return [Integer] count of columns
+      def col_count = @rows.max_by { _1&.size || 0 }&.size || 0
+
+      # Get the {Cell} at a table position.
+      #
+      # @param [Integer] row row index
+      # @param [Integer] col column index
+      # @return [Cell] at row/column
+      # @return [nil] if no cell defined at row/column
+      def [](row, col) = @rows.dig(row, col)
+
+      # Change {Cell} or (text) value at a table position.
+      #
+      # @example change {Cell} at row 2, column 3
+      #   table[2, 3] = table.cell('Hello World', align: right, style: 'bold')
+      # @example change text at row 2, column 3
+      #   table[2, 3] = 'Hello Ruby!'
+      # @example delete {Cell} at row 2, column 3
+      #   table[2, 3] = nil
+      #
+      # @param [Integer] row row index
+      # @param [Integer] col column index
+      # @param [Cell, #to_s, nil] value Cell or text to use at specified position
+      # @return [Cell, #to_s, nil] the value
+      def []=(row, col, value)
+        row = (@rows[row] ||= [])
+        if value.nil? || value.is_a?(Cell)
+          row[col] = value
+        else
+          cell = row[col]
+          cell ? cell.value = value : row[col] = Cell.new(value, nil, nil)
+        end
+      end
+
+      # Create a new cell.
+      #
+      # @example create a {Cell} with right aligned bold text "Hello World"
+      #   table[2, 3] = table.cell('Hello World', align: right, style: 'bold')
+      #
+      # @param [#to_s] value text value
+      # @param [:left, :right, :center] align text alignment
+      # @param [String] style text style; see {Ansi.try_convert}
+      # @return [Cell] a new cell
+      def cell(value, align: :left, style: nil) = Cell.new(value, align, style)
+
+      # Add a new row to the table.
+      #
+      # @example add a row with three right-aligned columns
+      #   table.add_row('One', 'Two', 'Three', align: :right)
+      #
+      # @param [#map] columns Enumerable-like object containing column texts
+      # @param [:left, :right, :center] align text alignment
+      # @param [String] style text style; see {Ansi.try_convert}
+      # @return [Table] itself
+      def add_row(*columns, align: nil, style: nil)
+        if columns.size == 1 && columns[0].respond_to?(:map)
+          columns = columns[0]
+        end
+        columns =
+          columns.map { |cell| as_cell(cell, align, style) if cell }.to_a
+        @rows << (columns.empty? ? nil : columns)
         self
       end
       alias add add_row
 
-      def add_col(*columns)
-        columns.each_with_index do |col, row_idx|
-          (@rows[row_idx] ||= []) << col
+      # Add a new column to the table.
+      #
+      # @example add a column of three rows with bold styled text
+      #   table.add_column('One', 'Two', 'Three', style: :bold)
+      #
+      # @param [#map] rows Enumerable-like object containing texts for each row
+      # @param [:left, :right, :center] align text alignment
+      # @param [String] style text style; see {Ansi.try_convert}
+      # @return [Table] itself
+      def add_column(*rows, align: nil, style: nil)
+        rows = rows[0] if rows.size == 1 && rows[0].respond_to?(:map)
+        row_idx = -1
+        rows.each do |cell|
+          (@rows[row_idx += 1] ||= []) << as_cell(cell, align, style)
         end
+      end
+
+      # Change style of one or more rows.
+      #
+      # @example define bold red text style for the first row
+      #   table.style_row(0, 'bold red')
+      # @example define yellow text style for the first three rows
+      #   table.style_row(0..2, 'yellow')
+      # @example define green text style for rows 3, 4 and 7
+      #   table.style_row([3, 4, 7], 'green')
+      #
+      # @param [Integer, Enumerable<Integer>] row index of row(s) to change
+      # @param [String, nil] style text style; see {Ansi.try_convert}
+      # @return [Table] itself
+      def style_row(row, style)
+        if row.is_a?(Integer)
+          row = [row]
+        elsif !row.is_a?(Enumerable)
+          raise(TypeError, "invalid row value - #{row}")
+        end
+        row.each { |r| @rows[r]&.each { _1&.style = style } }
         self
       end
 
-      def initialize(rows) = (@rows = rows)
+      # Change style of one or more columns.
+      #
+      # @example define bold red text style for the first column
+      #   table.style_column(0, 'bold red')
+      # @example define yellow text style for the first three columns
+      #   table.style_column(0..2, 'yellow')
+      # @example define green text style for columns with index 3, 4 and 7
+      #   table.style_column([3, 4, 7], 'green')
+      #
+      # @param [Integer, Enumerable<Integer>] column index of column(s) to change
+      # @param [String, nil] style text style; see {Ansi.try_convert}
+      # @return [Table] itself
+      def style_column(column, style)
+        if column.is_a?(Integer)
+          column = [column]
+        elsif !column.is_a?(Enumerable)
+          raise(TypeError, "invalid column value - #{column}")
+        end
+        @rows.each { |row| column.each { row[_1]&.style = style } }
+        self
+      end
+
+      # Change text alignment of one or more rows.
+      #
+      # @example align first row right
+      #   table.align_row(0, :right)
+      # @example center first three rows
+      #   table.align_row(0..2, :center)
+      # @example center the rows  with index 3, 4 and 7
+      #   table.align_row([3, 4, 7], :center)
+      #
+      # @param [Integer, Enumerable<Integer>] row index of row(s) to change
+      # @param [:left, :right, :center] alignment
+      # @return [Table] itself
+      def align_row(row, alignment)
+        if row.is_a?(Integer)
+          row = [row]
+        elsif !row.is_a?(Enumerable)
+          raise(TypeError, "invalid row value - #{row}")
+        end
+        row.each { |r| @rows[r]&.each { _1&.align = alignment } }
+        self
+      end
+
+      # Change text alignment of one or more column.
+      #
+      # @example align first column right
+      #   table.align_column(0, :right)
+      # @example center first three columns
+      #   table.align_column(0..2, :center)
+      # @example center the columns  with index 3, 4 and 7
+      #   table.align_column([3, 4, 7], :center)
+      #
+      # @param [Integer, Enumerable<Integer>] column index of column(s) to change
+      # @param [:left, :right, :center] alignment
+      # @return [Table] itself
+      def align_column(column, alignment)
+        if column.is_a?(Integer)
+          column = [column]
+        elsif !column.is_a?(Enumerable)
+          raise(TypeError, "invalid column value - #{column}")
+        end
+        @rows.each { |row| column.each { row[_1]&.align = alignment } }
+        self
+      end
+
+      # Convert the table to the compactest (two-dimensional) array
+      # representation.
+      #
+      # @return [Array<Array<Cell>>]
+      def to_a
+        ret = []
+        ridx = -1
+        @rows.each do |row|
+          ridx += 1
+          next unless row
+          count = 0
+          row =
+            row.map do |cell|
+              next unless cell
+              next if cell.value.empty?
+              count += 1
+              cell.dup
+            end
+          ret[ridx] = row if count.positive?
+        end
+        ret
+      end
+
+      private
+
+      def as_cell(value, align, style)
+        return Cell.new(value, align, style) unless value.is_a?(Cell)
+        cell = value.dup
+        cell.align = align if align
+        cell.style = style if style
+        cell
+      end
+
+      def initialize_copy(*)
+        super
+        @rows = to_a
+      end
+
+      class Cell
+        # @return [String, nil] text value of the cell
+        attr_reader :value
+
+        attr_writer :align, :style
+
+        # @!visibility private
+        attr_accessor :tag
+
+        # @!visibility private
+        def initialize(value, align, style)
+          @value = value.to_s
+          @align = align
+          @style = style
+        end
+
+        # @attribute [r] align
+        # @return [:left, :right, :center] text alignment
+        def align = ALIGNMENT[@align]
+
+        # @attribute [r] style
+        # @return [String, nil] text style; see {Ansi.try_convert}
+        def style
+          @style_ ||= Ansi.try_convert(@style)
+        end
+
+        def value=(value)
+          @value = value.to_s
+        end
+
+        private
+
+        def initialize_copy(*)
+          super
+          @value = @value.dup
+          @tag = nil
+        end
+
+        alignment = { left: :left, right: :right, center: :center }
+        alignment.default = :left
+        ALIGNMENT = alignment.compare_by_identity.freeze
+      end
     end
-    private_constant :Table
   end
 
   class Wrapper
@@ -105,27 +364,15 @@ module NattyUI
     class Table < Element
       protected
 
-      def call(rows, type)
-        TableGenerator.each_line(
-          rows,
+      def call(table, frame, enlarge)
+        TableGen.each_line(
+          table.to_a,
           @parent.available_width - 1,
-          ORNAMENTS[type] ||
-            raise(ArgumentError, "invalid table type - #{type.inspect}"),
-          Ansi[39],
-          Ansi::RESET
-        ) { @parent.puts(_1) }
+          frame,
+          enlarge
+        ) { |line| @parent.puts(line) }
         @parent
       end
-
-      def coloring = [nil, nil]
-
-      ORNAMENTS = {
-        rounded: '│─┼',
-        simple: '│─┼',
-        heavy: '┃━╋',
-        double: '║═╬',
-        semi: '║╴╫'
-      }.compare_by_identity.freeze
     end
 
     # An {Element} to print key/value pairs.
@@ -134,160 +381,174 @@ module NattyUI
     class Pairs < Element
       protected
 
-      def call(rows, seperator)
-        TableGenerator.each_simple_line(
-          rows,
+      def call(kwargs, seperator)
+        TableGen.each_line_simple(
+          kwargs.map do |k, v|
+            [
+              Features::Table::Cell.new(k, :right, nil),
+              Features::Table::Cell.new(v, :left, nil)
+            ]
+          end,
           @parent.available_width - 1,
-          seperator,
-          Text.plain(seperator)[-1] == ' '
+          seperator
         ) { @parent.puts(_1) }
         @parent
       end
     end
 
-    class TableGenerator
-      def self.each_line(rows, max_width, ornament, opref, osuff)
-        return if rows.empty?
-        gen = new(rows, max_width, 3)
+    class TableGen
+      COLOR = Ansi[39]
+
+      def self.each_line(table, max_width, frame, expand)
+        gen = new(table, max_width, 3, expand)
         return unless gen.ok?
-        last_row = 0
-        col_div = " #{opref}#{ornament[0]}#{osuff} "
-        row_div = "#{ornament[1]}#{ornament[2]}#{ornament[1]}"
+        col_div = "#{Ansi::RESET} #{COLOR}#{frame[4]}#{Ansi::RESET} "
+        row_div = "#{frame[5]}#{frame[6]}#{frame[5]}"
         row_div =
-          "#{opref}#{gen.widths.map { ornament[1] * _1 }.join(row_div)}#{osuff}"
-        gen.each do |line, number|
+          "#{COLOR}#{
+            gen.widths.map { frame[5] * _1 }.join(row_div)
+          }#{Ansi::RESET}"
+        last_row = 0
+        gen.each do |number, line|
           if last_row != number
             last_row = number
             yield(row_div)
           end
-          yield(line.join(col_div))
+          yield(line.join(col_div) + Ansi::RESET)
         end
       end
 
-      def self.each_simple_line(rows, max_width, col_div, first_right)
-        return if rows.empty?
-        gen = new(rows, max_width, Text.width(col_div))
+      def self.each_line_simple(table, max_width, seperator)
+        gen = new(table, max_width, Text.width(seperator), false)
         return unless gen.ok?
-        gen.aligns[0] = :right if first_right
-        gen.each { yield(_1.join(col_div)) }
+        col_div = "#{COLOR}#{seperator}#{Ansi::RESET}"
+        gen.each { yield(_2.join(col_div)) }
       end
 
-      attr_reader :widths, :aligns
+      attr_reader :widths
 
-      def initialize(rows, max_width, col_div_size)
-        @rows =
-          rows.map do |row|
-            row.map do |col|
-              col = Text.embellish(col).each_line(chomp: true).to_a
-              col.empty? ? col << '' : col
-            end
-          end
+      def initialize(table, max_width, coldiv_size, expand)
+        return if coldiv_size > max_width # wtf
+        @table = table
+        @col_count = table.max_by { _1&.size || 0 }&.size || 0
         @max_width = max_width
-        @col_div_size = col_div_size
-        @widths = create_widths.freeze
-        @aligns = Array.new(@widths.size, :left)
+        @widths = determine_widths
+        sum = @widths.sum
+        space = @max_width - ((@col_count - 1) * coldiv_size)
+        if space < sum
+          @widths = reduce_widths(sum, space, coldiv_size)
+          adjust!
+        elsif expand && sum < space
+          if expand == :equal
+            equal_widths(space)
+          else
+            enlarge_widths(sum, space)
+          end
+          adjust!
+        end
+        @empties = @widths.map { ' ' * _1 }
       end
 
-      def ok? = (@widths != nil)
+      def ok? = @empties != nil
 
       def each
-        return unless @widths
-        col_empty = @widths.map { ' ' * _1 }
-        @rows.each_with_index do |row, row_idx|
-          row
-            .max_by(&:size)
-            .size
-            .times do |line_nr|
-              col_idx = -1
-              yield(
-                @widths.map do |col_width|
-                  cell = row[col_idx += 1] or next col_empty[col_idx]
-                  next col_empty[col_idx] if (line = cell[line_nr]).nil?
-                  align(line.to_s, col_width, @aligns[col_idx])
-                end,
-                row_idx
-              )
-            end
+        ridx = -1
+        @table.each do |row|
+          ridx += 1
+          next yield(ridx, @empties) unless row
+          line_count = row.map { _1 ? _1.tag.lines.size : 0 }.max
+          line_count.times do |lidx|
+            cidx = -1
+            yield(
+              ridx,
+              @empties.map do |spacer|
+                cell = row[cidx += 1] or next spacer
+                str, str_size = cell.tag.lines[lidx]
+                next spacer unless str_size
+                str_fmt(cell.align, cell.style, str, str_size, spacer.size)
+              end
+            )
+          end
         end
+        nil
       end
 
       private
 
-      def align(str, width, alignment)
-        return str unless (width -= Text.width(str)).positive?
-        return str + (' ' * width) if alignment == :left
-        (' ' * width) << str
+      def str_fmt(align, style, str, str_size, size)
+        return "#{style}#{str}" unless (size -= str_size).positive?
+        return "#{style}#{' ' * size}#{str}" if align == :right
+        if align == :center
+          right = size / 2
+          return "#{style}#{' ' * (size - right)}#{str}#{' ' * right}"
+        end
+        "#{style}#{str}#{' ' * size}"
       end
 
-      def create_widths
-        matrix = create_matrix
-        col_widths = find_col_widths(matrix)
-        adjusted = adjusted_widths(col_widths)
-        return if adjusted.empty? # nothing to draw
-        return adjusted if col_widths == adjusted # all fine
-        if (size = adjusted.size) != col_widths.size
-          @rows.map! { _1.take(size) }
-          matrix.map! { _1.take(size) }
-          col_widths = col_widths.take(size)
-        end
-        diff = diff(col_widths, adjusted)
-        @rows.each_with_index do |row, row_idx|
-          diff.each do |col_idx|
-            adjust_to = adjusted[col_idx]
-            next if matrix[row_idx][col_idx] <= adjust_to
-            row[col_idx] = Text.as_embellished_lines_min(
-              row[col_idx],
-              adjust_to
-            )
+      def adjust!
+        @table.each do |row|
+          next unless row
+          cidx = -1
+          row.each do |cell|
+            cidx += 1
+            next unless cell
+            width = @widths[cidx]
+            next if cell.tag.value <= width
+            cell.tag.lines = Text.as_lines([cell.value], width)
           end
         end
-        adjusted
       end
 
-      def create_matrix
-        ret =
-          @rows.map { |row| row.map { |col| col.map { Text.width(_1) }.max } }
-        cc = ret.max_by(&:size).size
-        ret.each { (add = cc - _1.size).nonzero? and _1.fill(0, _1.size, add) }
+      def enlarge_widths(sum, space)
+        @widths.map! { ((((100.0 * _1) / sum) * space) / 100).round }
+        return if (diff = space - @widths.sum).zero?
+        @widths[
+          @widths.index(diff.negative? ? @widths.max : @widths.min)
+        ] += diff
       end
 
-      def find_col_widths(matrix)
-        ret = nil
-        matrix.each do |row|
-          next ret = row.dup unless ret
-          row.each_with_index do |size, idx|
-            hs = ret[idx]
-            ret[idx] = size if hs < size
+      def equal_widths(space)
+        @widths = Array.new(@widths.size, space / @widths.size)
+        @widths[-1] += space - @widths.sum
+      end
+
+      def reduce_widths(sum, space, coldiv_size)
+        ws = @widths.dup
+        until sum <= space
+          max = ws.max
+          if max == 1
+            ws = @widths.take(ws.size - 1)
+            sum = ws.sum
+            space += coldiv_size
+          else
+            while (idx = ws.rindex(max)) && (sum > space)
+              ws[idx] -= 1
+              sum -= 1
+            end
+          end
+        end
+        ws
+      end
+
+      def determine_widths
+        ret = Array.new(@col_count, 1)
+        @table.each do |row|
+          next unless row
+          cidx = -1
+          row.each do |cell|
+            cidx += 1
+            next unless cell
+            cell.tag = Tag.new(Text.as_lines([cell.value], @max_width))
+            width = cell.tag.value = cell.tag.lines.max_by(&:last).last
+            ret[cidx] = width if ret[cidx] < width
           end
         end
         ret
       end
 
-      def adjusted_widths(col_widths)
-        ret = col_widths.dup
-        left = @max_width - (@col_div_size * (col_widths.size - 1))
-        return ret if ret.sum <= left
-        indexed = ret.each_with_index.to_a
-        # TODO: optimize this!
-        until ret.sum <= left
-          indexed.sort! { |b, a| (a[0] <=> b[0]).nonzero? || (a[1] <=> b[1]) }
-          pair = indexed[0]
-          next ret[pair[1]] = pair[0] if (pair[0] -= 1).nonzero?
-          indexed.shift
-          return [] if indexed.empty?
-          ret.pop
-        end
-        ret
-      end
-
-      def diff(col_widths, adjusted)
-        ret = []
-        col_widths.each_with_index do |val, idx|
-          ret << idx if val != adjusted[idx]
-        end
-        ret
-      end
+      Tag = Struct.new(:lines, :value)
     end
-    private_constant :TableGenerator
+
+    private_constant :TableGen
   end
 end
