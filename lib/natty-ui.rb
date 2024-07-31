@@ -192,6 +192,7 @@ module NattyUI
 
   GLYPH = {
     default: "#{Ansi[:bold, 255]}•#{Ansi::RESET}",
+    point: "#{Ansi[0x27]}◉#{Ansi::RESET}",
     information: "#{Ansi[:bold, 119]}𝒊#{Ansi::RESET}",
     warning: "#{Ansi[:bold, 221]}!#{Ansi::RESET}",
     error: "#{Ansi[:bold, 208]}𝙓#{Ansi::RESET}",

@@ -179,15 +179,17 @@ module NattyUI
         )
       end
 
+      white = Ansi[255]
       COLORS = {
-        default: Ansi[255],
-        information: Ansi[255],
+        default: white,
+        point: white,
+        information: white,
         warning: Ansi[221],
         error: Ansi[208],
         completed: Ansi[82],
         failed: Ansi[196],
         task: Ansi[39],
-        query: Ansi[255]
+        query: white
       }.compare_by_identity.freeze
     end
 

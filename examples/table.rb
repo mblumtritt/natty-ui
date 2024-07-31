@@ -35,7 +35,6 @@ ui.message 'Styled Table' do
     users.each { |user| table.add(user) }
     table.style_column(0, 'bold green')
     table.align_column(0, :center)
-    table.style_row(1000, 'bold green')
   end
 end
 
