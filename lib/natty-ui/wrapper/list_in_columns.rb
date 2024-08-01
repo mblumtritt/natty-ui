@@ -16,7 +16,7 @@ module NattyUI
     #   # => apple   banana   blueberry   pineapple   strawberry
     #
     # @example (unordered) list with red dot
-    #   ui.ls('apple', 'banana', 'blueberry', 'pineapple', 'strawberry', glyph: '[[red]]•[[/]]')
+    #   ui.ls('apple', 'banana', 'blueberry', 'pineapple', 'strawberry', glyph: '[red]•[/]')
     #   # => • apple   • banana   • blueberry   • pineapple   • strawberry
     #
     # @example ordered list
