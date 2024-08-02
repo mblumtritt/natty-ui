@@ -42,8 +42,8 @@ module NattyUI
       # works for UTF-8 chars only!
       def char_width(char)
         ord = char.ord
-        return SPECIAL_CHARS[ord] || 2 if ord <= 0x1f
-        return 1 if ord <= 0x7e
+        return WIDTH_CONTROL_CHARS[ord] || 2 if ord < 0x20
+        return 1 if ord < 0xa1
         size = EastAsianWidth[ord]
         return @ambiguous_char_width if size == -1
         if size == 1 && char.size >= 2
@@ -158,7 +158,7 @@ module NattyUI
     UTF_8 = Encoding::UTF_8
     BBCODE = /(?:\[((?~[\[\]]))\])/
     WIDTH_SCANNER = /\G(?:(\1)|(\2)|(#{Ansi::CSI})|(#{Ansi::OSC})|(\X))/
-    SPECIAL_CHARS = {
+    WIDTH_CONTROL_CHARS = {
       0x00 => 0,
       0x01 => 1,
       0x02 => 1,

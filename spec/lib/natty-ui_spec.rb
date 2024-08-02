@@ -173,8 +173,8 @@ RSpec.describe NattyUI do
 
   describe '.display_width' do
     it 'returns the correct dislay width of a given string' do
-      sample = "\e[s123❌67[bold]8⛽[curly_underline afa]コンニチハ"
-      expect(NattyUI.display_width(sample)).to be 20
+      sample = "\e[s123❌67[bold]8⛽[curly_underline afa]コンニチハ⚾️"
+      expect(NattyUI.display_width(sample)).to be 22
     end
 
     context '[east asian width]' do
@@ -195,14 +195,12 @@ RSpec.describe NattyUI do
 
     context '[zero width]' do
       [
-        %w[Mn ֿ]
-        # %w[Me ҈],
-        # %w[Cf ​],
-        # ['HANGUL JUNGSEONG (1)', 'ᅠ'],
-        # ['HANGUL JUNGSEONG (2)', 'ힰ'],
-        # ['U+2060..U+206F', "\u{2061}"],
-        # ['U+FFF0..U+FFF8', "\u{FFF1}"],
-        # ['U+E0000..U+E0FFF', "\u{E0001}"]
+        %w[Mn ֿ],
+        ['buhid vowel sign', "\u{1752}"],
+        ['lepcha sign ran', "\u{1c36}"],
+        ['dives akuru sign anusvara', "\u{1193b}"],
+        ['adlam nukta', "\u{1e94a}"],
+        ['variation selector-256', "\u{e01ef}"]
       ].each do |(name, char)|
         it "returns 0 for #{name}" do
           expect(NattyUI.display_width(char)).to be_zero
