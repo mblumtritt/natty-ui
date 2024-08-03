@@ -21,7 +21,9 @@ RUBY = [
 ].freeze
 
 def ruby(*args, ansi:)
-  system((["#{ansi ? 'ANSI' : 'NO_COLOR'}=1"] + RUBY + args).join(' '))
+  system(
+    (["#{ansi ? 'ANSI' : 'NO_COLOR'}=1", 'NO_WAIT=1'] + RUBY + args).join(' ')
+  )
 end
 
 def run_example(name, ansi: true) = ruby("./examples/#{name}.rb", ansi: ansi)

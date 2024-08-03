@@ -13,32 +13,32 @@ TEXT = <<~TEXT.tr("\n", ' ')
   aliquip ex ea commodo [bold]consequat[/].
 TEXT
 
-ui.message 'Default Animation', glyph: :point do
+ui.message 'Default Animation' do
   ui.animate TEXT, animation: :default
 end
 ui.space
 
-ui.message 'Shiny Rainbow', glyph: :point do
+ui.message 'Shiny Rainbow' do
   ui.animate TEXT, animation: :rainbow
 end
 ui.space
 
-ui.message 'Binary Encoded', glyph: :point do
+ui.message 'Binary Encoded' do
   ui.animate TEXT, animation: :binary, style: 'green', alt_style: :bright_green
 end
 ui.space
 
-ui.message 'Matrix Style', glyph: :point do
+ui.message 'Matrix Style' do
   ui.animate TEXT, animation: :matrix
 end
 ui.space
 
-ui.message 'Typewriter Like', glyph: :point do
+ui.message 'Typewriter Like' do
   ui.animate TEXT, animation: :type_writer
 end
 ui.space
 
-ui.message 'Default Styled', glyph: :point do
+ui.message 'Default Styled' do
   ui.animate TEXT, style: 'bold bright_white on_red'
 end
 ui.space

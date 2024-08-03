@@ -2,18 +2,18 @@
 
 module NattyUI
   module Animation
-    def self.defined = @defined.keys
-    def self.defined?(name) = @defined.key?(name)
-    def self.define(**kwargs) = @defined.merge!(kwargs)
+    def self.names = @all.keys
 
     def self.[](name)
       return if name.nil?
-      klass = @defined[name] || @defined[:default]
+      klass = @all[name] || @all[:default]
       return klass unless klass.is_a?(String)
       require(klass)
-      klass = @defined[name] and return klass
+      klass = @all[name] and return klass
       raise(LoadError, "unknown animation - #{name}")
     end
+
+    def self.define(**kwargs) = @all.merge!(kwargs)
 
     class Base
       attr_reader :lines_written
@@ -58,7 +58,7 @@ module NattyUI
     private_constant :Base
 
     dir = __dir__
-    @defined = {
+    @all = {
       binary: "#{dir}/animation/binary",
       default: "#{dir}/animation/default",
       matrix: "#{dir}/animation/matrix",

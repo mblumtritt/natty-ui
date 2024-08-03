@@ -7,14 +7,11 @@ module NattyUI
     #
     # Table view of data.
     #
-    # Defined values for `type` are
-    # :double, :heavy, :semi, :simple
-    #
-    # @overload table(*args, type: simple, expand: false)
+    # @overload table(*args, type: :default, expand: false)
     #   Display the given arrays as rows of a table.
     #
     #   @param [#map<#map<#to_s>>] args one or more arrays representing rows of the table
-    #   @param [Symbol] type frame type
+    #   @param [Symbol, String] type frame type; see {NattyUI::Frame}
     #   @param [false, true. :equal] expand
     #
     #   @example
@@ -33,10 +30,10 @@ module NattyUI
     #     # ───────┼───────┼───────────
     #     # kiwi   │ 1.5$  │ Newzeeland
     #
-    # @overload table(type: simple, expand: false)
+    # @overload table(type: :default, expand: false)
     #   Construct and display a table.
     #
-    #   @param [Symbol] type frame type
+    #   @param [Symbol, String] type frame type; see {NattyUI::Frame}
     #   @param [false, true. :equal] expand
     #
     #   @example
@@ -58,8 +55,8 @@ module NattyUI
     #
     # @yield [Table] table construction helper
     # @return [Wrapper::Section, Wrapper] it's parent object
-    def table(*table, type: :simple, expand: false)
-      type = NattyUI.frame(type)
+    def table(*table, type: :default, expand: false)
+      type = NattyUI::Frame[type]
       table = Table.create(*table)
       yield(table) if block_given?
       _element(:Table, table, type, expand)

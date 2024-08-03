@@ -22,10 +22,6 @@ module NattyUI
               pos.pop(count).each { enc[_1] = line[_1] }
               pos.sample(pos.size / 3).each { enc[_1] = CHARS.sample }
             end
-
-            # next stream << Ansi::LINE_NEXT if pos.size < 4
-            # pos.shift(pos.size / 8).each { enc[_1] = line[_1] }
-            # pos.sample(pos.size / 2).each { enc[_1] = CHARS.sample }
             puts(stream, enc)
           end
           (stream << @top).flush

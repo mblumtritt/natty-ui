@@ -2,14 +2,15 @@
 
 RSpec.describe 'examples' do
   %w[
+    24bit-colors
     3bit-colors
     8bit-colors
-    24bit-colors
     attributes
     attributes_list
     illustration
     ls
     message
+    progress
     table
   ].each do |name|
     it "generates ANSI version of #{name}" do

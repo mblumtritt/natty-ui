@@ -85,11 +85,7 @@ module NattyUI
         (wrapper.stream << @msg << Ansi::CURSOR_HIDE).flush
         @msg = "#{Ansi::CLL}#{@msg}"
         return @msg << BAR_COLOR if @max_value
-        spinner_color = Ansi[:bold, 220]
-        @spinner =
-          Enumerator.new do |y|
-            spinner.each_char { y << "#{spinner_color}#{_1}" } while true
-          end
+        @spinner = NattyUI::Spinner[spinner]
       end
 
       def redraw
@@ -162,7 +158,7 @@ module NattyUI
 
       def initialize(parent, title:, glyph:, **opts)
         color = COLORS[glyph] || COLORS[:default]
-        glyph = NattyUI.glyph(glyph) || glyph
+        glyph = NattyUI::Glyph[glyph]
         prefix_width = Text.width(glyph) + 1
         parent.puts(
           title,

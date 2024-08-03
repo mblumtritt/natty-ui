@@ -12,9 +12,8 @@ module NattyUI
         35.times do |i|
           binary.each do |chars|
             rc = rand_char
-            rc = @style + rc if rc.size == 1
             chars.pop
-            chars.unshift(rc)
+            chars.unshift(rc.size == 1 ? @style + rc : rc)
             puts(stream, chars.join)
           end
           (stream << @top).flush

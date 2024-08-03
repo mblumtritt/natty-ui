@@ -36,7 +36,7 @@ module NattyUI
 
       def draw(question)
         wrapper = @parent.wrapper
-        glyph = NattyUI.glyph(:query)
+        glyph = NattyUI :Glyph[:query]
         @parent.print(
           question,
           prefix: "#{glyph} #{Ansi[255]}",

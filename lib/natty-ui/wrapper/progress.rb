@@ -18,11 +18,9 @@ module NattyUI
     #
     # @param [#to_s] title object to print as progress title
     # @param [#to_f] max_value maximum value of the progress
-    # @param [:bar, :blink, :blocks, :braile, :circle, :colors, :pulse,
-    #   :snake, :swap, :triangles, :vintage, #to_s] spinner type of spinner or
-    #   spinner elements
+    # @param [Symbol, #to_a, #to_s] spinner spinner type; see {NattyUI::Spinner}
     # @return [Wrapper::Progress] the created progress element
-    def progress(title, max_value: nil, spinner: :pulse)
+    def progress(title, max_value: nil, spinner: :default)
       _element(:Progress, title, max_value, spinner)
     end
   end
@@ -42,25 +40,9 @@ module NattyUI
         @final_text = [title]
         @max_value = [0, max_value.to_f].max if max_value
         @value = @progress = 0
-        draw(title, SPINNER[spinner] || spinner.to_s)
+        draw(title, spinner)
         self
       end
-
-      SPINNER = {
-        bar: '▁▂▃▄▅▆▇█▇▆▅▄▃▂',
-        blink: '■□▪▫',
-        blocks: '▖▘▝▗',
-        braile: '⣷⣯⣟⡿⢿⣻⣽⣾',
-        braile_reverse: '⡿⣟⣯⣷⣾⣽⣻⢿',
-        circle: '◐◓◑◒',
-        colors: '🟨🟧🟥🟦🟪🟩',
-        pulse: '•✺◉●◉✺',
-        snake: '⠁⠉⠙⠸⢰⣠⣄⡆⠇⠃',
-        swap: '㊂㊀㊁',
-        triangles: '◢◣◤◥',
-        vintage: '-\\|/'
-      }.compare_by_identity.freeze
-      private_constant :SPINNER
 
       def draw(title, _spinner)
         (wrapper.stream << @parent.prefix << "➔ #{title} ").flush
