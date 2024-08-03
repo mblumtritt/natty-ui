@@ -10,15 +10,15 @@ module NattyUI
         @style = attribute(:style, :default)
         @cursor_style = attribute(:cursor_style, 0x2e)
         @lines.each do |line, size|
+          line = Text.plain(line)
           if (num += 1).odd?
             stream << @pos1
-            Text.plain(line).each_char { cursor(stream, _1).flush }
+            line.each_char { cursor(stream, _1).flush }
           else
             stream << Ansi.cursor_column(@prefix_width + size - 1)
-            Text
-              .plain(line)
-              .reverse
-              .each_char { (cursor(stream, _1) << CURSOR_2LEFT).flush }
+            line.reverse.each_char do |char|
+              (cursor(stream, char) << CURSOR_2LEFT).flush
+            end
           end
           stream << Ansi::RESET << @pos1 << line << Ansi::LINE_NEXT
         end

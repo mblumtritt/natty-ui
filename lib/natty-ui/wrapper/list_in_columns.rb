@@ -89,7 +89,7 @@ module NattyUI
             } #{Text.embellish(s)}"
           end
         else
-          ->(s) { "#{glyph} #{Text.embellish(s)}" }
+          ->(s) { "#{Text.embellish(glyph)} #{Text.embellish(s)}" }
         end
       end
 

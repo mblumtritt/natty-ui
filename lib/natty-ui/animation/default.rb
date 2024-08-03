@@ -11,23 +11,19 @@ module NattyUI
         @lines.each do |line, size|
           time = 0.25 / size
           stream << style
+          line = Text.plain(line)
           if (num += 1).odd?
             stream << @pos1
-            Text
-              .plain(line)
-              .each_char do |char|
-                (stream << char).flush
-                sleep(time)
-              end
+            line.each_char do |char|
+              (stream << char).flush
+              sleep(time)
+            end
           else
             stream << Ansi.cursor_column(@prefix_width + size - 1)
-            Text
-              .plain(line)
-              .reverse
-              .each_char do |char|
-                (stream << char << CURSOR_LEFT).flush
-                sleep(time)
-              end
+            line.reverse.each_char do |char|
+              (stream << char << CURSOR_LEFT).flush
+              sleep(time)
+            end
           end
           stream << Ansi::RESET << @pos1 << line << Ansi::LINE_NEXT
         end

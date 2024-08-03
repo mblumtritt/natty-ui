@@ -59,17 +59,17 @@ module NattyUI::Ansi
   REVEAL = self[:reveal].freeze
 
   # @!visibility private
-  CLS = (CURSOR_HOME + SCREEN_ERASE).freeze
+  CLS = "#{CURSOR_HOME}#{SCREEN_ERASE}".freeze
 
   # @!visibility private
-  CLL = (CURSOR_FIRST_COLUMN + LINE_ERASE).freeze
+  CLL = "#{CURSOR_FIRST_COLUMN}#{LINE_ERASE}".freeze
 
   # @!visibility private
   SCREEN_BLANK =
-    (
-      CURSOR_SAFE_POS + SCREEN_ALTERNATE + CURSOR_HOME + SCREEN_ERASE + RESET
-    ).freeze
+    "#{CURSOR_SAFE_POS}#{
+      SCREEN_ALTERNATE
+    }#{CURSOR_HOME}#{SCREEN_ERASE}#{RESET}".freeze
 
   # @!visibility private
-  SCREEN_UNBLANK = (RESET + SCREEN_ALTERNATE_OFF + CURSOR_RESTORE_POS).freeze
+  SCREEN_UNBLANK = "#{RESET}#{SCREEN_ALTERNATE_OFF}#{CURSOR_RESTORE_POS}".freeze
 end

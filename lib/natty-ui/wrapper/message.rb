@@ -9,7 +9,7 @@ module NattyUI
     #
     # @param [#to_s] title object to print as section title
     # @param [Array<#to_s>] args more objects to print
-    # @param [#to_s] glyph glyph/prefix used for the title
+    # @param [Symbol, #to_s] glyph used for the title; see {NattyUI::Glyph}
     # @yieldparam [Wrapper::Message] message the created section
     # @return [Object] the result of the code block
     # @return [Wrapper::Message] itself, when no code block is given
@@ -94,7 +94,7 @@ module NattyUI
       protected
 
       def initialize(parent, title:, glyph:)
-        glyph = NattyUI.glyph(glyph) || glyph
+        glyph = NattyUI::Glyph[glyph]
         prefix_width = Text.width(glyph) + 1
         super(
           parent,
