@@ -7,8 +7,13 @@ ui.h1 'NattyUI: Progress Indication'
 ui.space
 
 # just simulate some work
-def something = sleep(0.5)
-def some = sleep(0.15)
+if ENV.key?('NO_WAIT')
+  def something = nil
+  def some = nil
+else
+  def something = sleep(0.5)
+  def some = sleep(0.15)
+end
 
 ui.info 'Tasks are sections to visualize step by step processing.' do
   ui.task 'Assemble assets' do
@@ -25,7 +30,7 @@ ui.info 'Tasks are sections to visualize step by step processing.' do
 
     ui.task 'Compile files...' do
       %w[readme.txt main.css main.html sub.html].each do |name|
-        ui.msg "Compile file [bright_yellow]./source/#{name}[/]..."
+        ui.msg "Compile file [bright_yellow]./source/#{name}[/]...", glyph: :dot
         something
       end
       ui.done 'Files compiled.'
