@@ -5,6 +5,15 @@ module NattyUI
   # @see Features#framed
   # @see Features#table
   module Frame
+    # Define frame type used by default.
+    #
+    # @attribute [w] self.default
+    # @param value [Symbol] type name
+    # @return [Symbol] type name
+    def self.default=(value)
+      @default = self[value.nil? || value == :default ? :rounded : value]
+    end
+
     # Defined frame type names.
     # @see []
     #
@@ -25,15 +34,6 @@ module NattyUI
         return name * 11 if name.size == 1
       end
       raise(ArgumentError, "invalid frame type - #{name}")
-    end
-
-    # Define frame type used by default.
-    #
-    # @attribute [w] self.default
-    # @param value [Symbol] type name
-    # @return [Symbol] type name
-    def self.default=(value)
-      @default = self[value.nil? || value == :default ? :rounded : value]
     end
 
     @all = {

@@ -4,6 +4,14 @@ module NattyUI
   # Helper class to select glyph types.
   # @see Features#message
   module Glyph
+    # Define glyph type used by default.
+    # @attribute [w] self.default
+    # @param value [Symbol] type name
+    # @return [Symbol] type name
+    def self.default=(value)
+      @default = self[value.nil? || value == :default ? :point : value]
+    end
+
     # Defined glyph type names.
     # @see []
     #
@@ -24,14 +32,6 @@ module NattyUI
           name.to_s
         end
       )
-    end
-
-    # Define glyph type used by default.
-    # @attribute [w] self.default
-    # @param value [Symbol] type name
-    # @return [Symbol] type name
-    def self.default=(value)
-      @default = self[value.nil? || value == :default ? :point : value]
     end
 
     @all = {
