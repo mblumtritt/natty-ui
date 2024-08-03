@@ -3,7 +3,10 @@
 require_relative '../natty-ui'
 
 module NattyUI
-  Animation.defined?(:matrix)
-  Text::EastAsianWidth[0]
+  Animation[nil]
+  Frame[:default]
+  Glyph[:default]
   KEY_MAP[0]
+  Spinner[:default]
+  Text.width("\u1100")
 end

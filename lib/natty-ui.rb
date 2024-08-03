@@ -135,34 +135,6 @@ module NattyUI
       nil
     end
 
-    # @return [Array<Symbol>] available glyph names
-    def glyph_names = GLYPH.keys
-
-    # Get a pre-defined glyph.
-    #
-    # @param [Symbol] name glyph name
-    # @return [String] the glyph
-    # @return [nil] when glyph is not defined
-    def glyph(name) = GLYPH[name]
-
-    # @return [Array<Symbol>] available frame names
-    def frame_names = FRAME.keys
-
-    # Get a frame definition.
-    #
-    # @param [Symbol] name frame type name
-    # @return [String] the frame definition
-    # @raise [ArgumentError] when an invalid name is specified
-    def frame(name)
-      if name.is_a?(Symbol)
-        ret = FRAME[name] and return ret
-      elsif name.is_a?(String)
-        return name if name.size == 11
-        return name * 11 if name.size == 1
-      end
-      raise(ArgumentError, "invalid frame type - #{name.inspect}")
-    end
-
     private
 
     def wrapper_class(stream, ansi)
@@ -188,44 +160,12 @@ module NattyUI
 
   dir = __dir__
   autoload(:Animation, File.join(dir, 'natty-ui', 'animation'))
+  autoload(:Frame, File.join(dir, 'natty-ui', 'frame'))
+  autoload(:Glyph, File.join(dir, 'natty-ui', 'glyph'))
   autoload(:KEY_MAP, File.join(dir, 'natty-ui', 'key_map'))
+  autoload(:Spinner, File.join(dir, 'natty-ui', 'spinner'))
 
-  GLYPH = {
-    default: "#{Ansi[:bold, 255]}•#{Ansi::RESET}",
-    point: "#{Ansi[0x27]}◉#{Ansi::RESET}",
-    information: "#{Ansi[:bold, 119]}𝒊#{Ansi::RESET}",
-    warning: "#{Ansi[:bold, 221]}!#{Ansi::RESET}",
-    error: "#{Ansi[:bold, 208]}𝙓#{Ansi::RESET}",
-    completed: "#{Ansi[:bold, 82]}✓#{Ansi::RESET}",
-    failed: "#{Ansi[:bold, 196]}𝑭#{Ansi::RESET}",
-    task: "#{Ansi[:bold, 39]}➔#{Ansi::RESET}",
-    query: "#{Ansi[:bold, 39]}▸#{Ansi::RESET}"
-  }.compare_by_identity.freeze
-
-  # GLYPH = {
-  #   default: '●',
-  #   information: '🅸 ',
-  #   warning: '🆆 ',
-  #   error: '🅴 ',
-  #   completed: '✓',
-  #   failed: '🅵 ',
-  #   task: '➔',
-  #   query: '🆀 '
-  # }.compare_by_identity.freeze
-
-  FRAME = {
-    rounded: '╭╮╰╯│─┼┬┴├┤',
-    simple: '┌┐└┘│─┼┬┴├┤',
-    heavy: '┏┓┗┛┃━╋┳┻┣┫',
-    double: '╔╗╚╝║═╬╦╩╠╣',
-    semi: '╒╕╘╛│═╪╤╧╞╡',
-    semi2: '╓╖╙╜│─╫╥╨╟╢',
-    rows: '     ──    ',
-    cols: '    │ │    ',
-    undecorated: '           '
-  }.compare_by_identity.freeze
-
-  private_constant :Animation, :KEY_MAP, :GLYPH, :FRAME
+  private_constant :Animation, :KEY_MAP
 
   @element = StdOut
   self.in_stream = STDIN
