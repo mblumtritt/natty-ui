@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative 'text'
+
 module NattyUI
   # Helper class to select glyph types.
   # @see Features#message
