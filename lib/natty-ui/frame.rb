@@ -37,14 +37,14 @@ module NattyUI
     end
 
     @all = {
-      rounded: '╭╮╰╯│─┼┬┴├┤',
-      simple: '┌┐└┘│─┼┬┴├┤',
-      heavy: '┏┓┗┛┃━╋┳┻┣┫',
+      cols: '    │ │    ',
       double: '╔╗╚╝║═╬╦╩╠╣',
+      heavy: '┏┓┗┛┃━╋┳┻┣┫',
+      rounded: '╭╮╰╯│─┼┬┴├┤',
+      rows: '     ──    ',
       semi: '╒╕╘╛│═╪╤╧╞╡',
       semi2: '╓╖╙╜│─╫╥╨╟╢',
-      rows: '     ──    ',
-      cols: '    │ │    ',
+      simple: '┌┐└┘│─┼┬┴├┤',
       undecorated: '           '
     }.compare_by_identity
 
