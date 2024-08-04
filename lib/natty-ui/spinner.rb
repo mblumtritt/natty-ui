@@ -36,7 +36,7 @@ module NattyUI
           end
         parts =
           (parts.respond_to?(:map) ? parts : parts.to_s.chars).map do |part|
-            "#{@style}#{part}"
+            "#{@style}#{part}#{Ansi::RESET}"
           end
         raise(ArgumentError, "invalid spinner type - #{name}") if parts.empty?
         parts = parts.zip(parts).flatten(1) while parts.size < 6

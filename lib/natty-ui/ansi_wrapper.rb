@@ -6,13 +6,23 @@ module NattyUI
   class AnsiWrapper < Wrapper
     def ansi? = true
 
+    def cursor=(value)
+      if value
+        (@stream << Ansi::CURSOR_SHOW).flush if @cursor == 1
+        @cursor -= 1 if @cursor.positive?
+        return
+      end
+      (@stream << Ansi::CURSOR_HIDE).flush if @cursor.zero?
+      @cursor += 1
+    end
+
     def puts(*args, **kwargs)
       return super if args.empty? || (animation = kwargs[:animation]).nil?
       animation = Animation[animation].new(wrapper, args, kwargs)
-      @stream << Ansi::CURSOR_HIDE
+      self.cursor = false
       animation.perform(@stream)
       @lines_written += animation.lines_written
-      (@stream << Ansi::CURSOR_SHOW).flush
+      self.cursor = true
       self
     end
 
@@ -77,35 +87,58 @@ module NattyUI
       end
     end
 
-    class Progress < Progress
-      def draw(title, spinner)
-        @msg =
-          "#{@parent.prefix}#{Ansi[:bold, 39]}➔#{Ansi[:reset, 39]} " \
-            "#{title}#{Ansi::RESET} "
-        (wrapper.stream << @msg << Ansi::CURSOR_HIDE).flush
-        @msg = "#{Ansi::CLL}#{@msg}"
-        return @msg << BAR_COLOR if @max_value
-        @spinner = NattyUI::Spinner[spinner]
+    class Progress < Element
+      include ProgressAttributes
+      include ValueAttributes
+
+      protected
+
+      def call(title, max_value, spinner)
+        @title = "[b 27]➔[/b] #{title}"
+        @info = nil
+        @final_text = [title]
+        if max_value
+          @max_value = [0, max_value.to_f].max
+        else
+          @spinner = NattyUI::Spinner[spinner]
+        end
+        @value = 0
+        @pos = wrapper.lines_written
+        wrapper.cursor = false
+        @parent.puts(@last_render = render)
+        @height = wrapper.lines_written - @pos
+        self
       end
 
       def redraw
-        (wrapper.stream << @msg << (@max_value ? fullbar : @spinner.next)).flush
+        return if @status
+        current = render
+        return if @last_render == current
+        wrapper.stream << Ansi.cursor_previous_line(@height) << Ansi::LINE_ERASE
+        cl = wrapper.lines_written
+        @parent.puts(@last_render = current)
+        @height = wrapper.lines_written - cl
       end
 
-      def end_draw = (wrapper.stream << Ansi::CLL << Ansi::CURSOR_SHOW).flush
-
-      def fullbar
-        percent = @value / @max_value
-        count = (30 * percent).to_i
-        mv = max_value.to_i.to_s
-        "#{'█' * count}#{BAR_BACK}#{'▁' * (30 - count)}" \
-          "#{BAR_INK} #{value.to_i.to_s.rjust(mv.size)}/#{mv} " \
-          "(#{(percent * 100).round(2).to_s.rjust(6)})"
+      def render
+        return "#{@title} #{@spinner.next}#{" #{@info}" if @info}" if @spinner
+        percent = @max_value.zero? ? 100.0 : @value / @max_value
+        count = [(30 * percent).round, 30].min
+        mv = @max_value.round.to_s
+        "#{@title} [27 on27]#{'█' * count}[ec onec]#{
+          '▁' * (30 - count)
+        }[/bg] [e2 b]#{(percent * 100).round.to_s.rjust(3)}%[/b] [f6](#{
+          @value.round.to_s.rjust(mv.size)
+        }/#{mv})[/]#{" #{@info}" if @info}"
       end
 
-      BAR_COLOR = Ansi[39, 295].freeze
-      BAR_BACK = Ansi[236, 492].freeze
-      BAR_INK = Ansi[:bold, 255, :on_default].freeze
+      def finish
+        wrapper.stream << Ansi.cursor_previous_line(@height) << Ansi::LINE_ERASE
+        wrapper.instance_variable_set(:@lines_written, @pos)
+        wrapper.cursor = true
+        return @parent.failed(*@final_text) if failed?
+        @parent.message(*@final_text, glyph: @status = :completed)
+      end
     end
 
     module Temporary
