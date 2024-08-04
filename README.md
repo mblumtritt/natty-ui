@@ -13,7 +13,10 @@ Here you find elegant, simple and beautiful tools that enhance your command line
 You can style your text using a [BBCode](https://en.wikipedia.org/wiki/BBCode)-like syntax
 
 ```ruby
- ui.puts '[bold underline bright_white]Hello [ff7bfd]World!'
+ ui.puts '[b]Hello World![/b]' # bold
+ ui.puts '[i]Hello World![/i]' # italic
+ ui.puts '[u]Hello World![/u]' # underline
+ ui.puts '[yellow on_blue]Hello World![/]'
 ```
 
 which supports all ANSI attributes, colors in 3/4-bit, 8-bit and Truecolor. There are headers, rulers, diverse message types, framed blocks and tables to layout your text. You can organize the output of tasks, use progress bars and request and handle user input. And there are text animations for fame and fun!
