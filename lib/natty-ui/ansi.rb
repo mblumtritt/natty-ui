@@ -433,6 +433,7 @@ module NattyUI
             add_alias['b', 'bold']
             add_alias['i', 'italic']
             add_alias['u', 'underline']
+            add_alias['bl', 'blink']
             add_alias['inv', 'invert']
             add_alias['s', 'strike']
             add_alias['sup', 'superscript']
