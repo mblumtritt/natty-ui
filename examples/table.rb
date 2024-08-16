@@ -2,9 +2,7 @@
 
 require_relative '../lib/natty-ui'
 
-ui.space
-ui.h1 'NattyUI: Tables'
-ui.space
+ui.h1 'NattyUI: Tables', space: 2
 
 User = Struct.new(:id, :name, :mail, :notes)
 users = [

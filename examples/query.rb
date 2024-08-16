@@ -2,9 +2,7 @@
 
 require_relative '../lib/natty-ui'
 
-ui.space
-ui.h1 'NattyUI: User Queries'
-ui.space
+ui.h1 'NattyUI: User Queries', space: 2
 
 # little helper
 def abort!

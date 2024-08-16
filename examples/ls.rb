@@ -2,9 +2,7 @@
 
 require_relative '../lib/natty-ui'
 
-ui.space
-ui.h1 'NattyUI: Print In Columns'
-ui.space
+ui.h1 'NattyUI: Print In Columns', space: 2
 
 LOREM = <<~IPSUM.lines(chomp: true)
   Lorem ipsum dolor sit

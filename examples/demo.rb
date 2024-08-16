@@ -3,9 +3,7 @@
 require_relative '../lib/natty-ui'
 
 ui.page do
-  ui.space
-  ui.h1 'NattyUI: Examples'
-  ui.space
+  ui.h1 'NattyUI: Examples', space: 2
 
   ruby =
     ENV.fetch('RUBY') do

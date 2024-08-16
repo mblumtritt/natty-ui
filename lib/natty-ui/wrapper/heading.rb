@@ -7,32 +7,33 @@ module NattyUI
     # Prints a H1 title.
     #
     # @param [#to_s] title text
+    # @param [#to_i] space space around the heading
     # @return [Wrapper::Section, Wrapper] it's parent object
-    def h1(title) = _element(:Heading, title, '═══════')
+    def h1(title, space: 0) = _element(:Heading, title, space, '═══════')
 
     # Prints a H2 title.
     #
     # @param (see #h1)
     # @return (see #h1)
-    def h2(title) = _element(:Heading, title, '━━━━━')
+    def h2(title, space: 0) = _element(:Heading, title, space, '━━━━━')
 
     # Prints a H3 title.
     #
     # @param (see #h1)
     # @return (see #h1)
-    def h3(title) = _element(:Heading, title, '━━━')
+    def h3(title, space: 0) = _element(:Heading, title, space, '━━━')
 
     # Prints a H4 title.
     #
     # @param (see #h1)
     # @return (see #h1)
-    def h4(title) = _element(:Heading, title, '───')
+    def h4(title, space: 0) = _element(:Heading, title, space, '───')
 
     # Prints a H5 title.
     #
     # @param (see #h1)
     # @return (see #h1)
-    def h5(title) = _element(:Heading, title, '──')
+    def h5(title, space: 0) = _element(:Heading, title, space, '──')
   end
 
   class Wrapper
@@ -47,13 +48,16 @@ module NattyUI
     class Heading < Element
       protected
 
-      def call(title, enclose)
+      def call(title, space, enclose)
+        (space = space.to_i).positive? and (before = space / 2).positive? and
+          @parent.space(before)
         @parent.puts(
           title,
           prefix: "#{Ansi[39]}#{enclose} #{Ansi[:bold, 255]}",
           suffix: " #{Ansi[:bold_off, 39]}#{enclose}#{Ansi::RESET}",
           max_width: available_width - 2 - (enclose.size * 2)
         )
+        @parent.space(space - before) if before
       end
     end
   end

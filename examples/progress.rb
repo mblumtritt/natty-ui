@@ -2,9 +2,7 @@
 
 require_relative '../lib/natty-ui'
 
-ui.space
-ui.h1 'NattyUI: Progress Indication'
-ui.space
+ui.h1 'NattyUI: Progress Indication', space: 2
 
 # just simulate some work
 if ENV.key?('NO_WAIT')

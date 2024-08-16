@@ -2,9 +2,7 @@
 
 require_relative '../lib/natty-ui'
 
-ui.space
-ui.h2 'NattyUI: ANSI Attributes'
-ui.space
+ui.h2 'NattyUI: ANSI Attributes', space: 2
 
 ui.puts <<~PARA1.tr("\n", ' ')
   Some attributes are widely supported, such as [b]bold[/b],

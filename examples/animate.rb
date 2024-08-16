@@ -2,9 +2,7 @@
 
 require_relative '../lib/natty-ui'
 
-ui.space
-ui.h1 'NattyUI: Text Line Animation'
-ui.space
+ui.h1 'NattyUI: Text Line Animation', space: 2
 
 TEXT = <<~TEXT.tr("\n", ' ')
   Lorem [yellow]ipsum[/] dolor sit amet, consectetur adipisicing elit, sed
