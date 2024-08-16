@@ -159,8 +159,7 @@ module NattyUI
         if columns.size == 1 && columns[0].respond_to?(:map)
           columns = columns[0]
         end
-        columns =
-          columns.map { |cell| as_cell(cell, align, style) if cell }.to_a
+        columns = columns.map { as_cell(_1, align, style) if _1 }.to_a
         @rows << (columns.empty? ? nil : columns)
         self
       end
@@ -367,7 +366,7 @@ module NattyUI
           @parent.available_width - 1,
           frame,
           enlarge
-        ) { |line| @parent.puts(line) }
+        ) { @parent.puts(_1) }
         @parent
       end
     end
