@@ -1168,7 +1168,7 @@ module NattyUI
         0x1f190,
         0x1f19a,
         0x1f1ac,
-        0x1f1ff,
+        0x1f1e5,
         0x1f202,
         0x1f20f,
         0x1f23b,

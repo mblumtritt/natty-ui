@@ -251,8 +251,8 @@ RSpec.describe NattyUI do
         expect(NattyUI.display_width('🤾🏽‍♀️')).to eq 2
       end
 
-      xit 'works with flags' do
-        expect(NattyUI.display_width('🇵🇹')).to eq 2
+      it 'works with flags' do
+        expect(NattyUI.display_width('🇦🇨🇵🇹🇧🇷')).to eq 6
       end
     end
   end
