@@ -31,10 +31,6 @@ file(
   end
 end
 
-task :eaw do
-  puts EastAsianWidth.from_file('tmp/EastAsianWidth.txt')
-end
-
 module EastAsianWidth
   def self.from_file(fname)
     map = read_map(fname)
@@ -65,10 +61,8 @@ module EastAsianWidth
       match = RE_DEFINITION.match(line) or next
       width = match[:cat] == 'Mn' ? 0 : TYPE[match[:type]]
       raise("unknown width type identifier - #{line.inspect}") unless width
-      widths.fill(
-        width,
-        match[:first].to_i(16)..(match[:last] || match[:first]).to_i(16)
-      )
+      first = match[:first].to_i(16)
+      widths.fill(width, first..(match[:last]&.to_i(16) || first))
     end
     widths.fill(2, 0x1f1e6..0x1f1ff) # regional indicator symbols
     map =
