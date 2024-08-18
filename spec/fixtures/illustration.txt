@@ -16,7 +16,7 @@
   Tools    ✅ tasks                …  progress bars                            
            >_ user input           🔦 text animation                           
                                                                                
-  Asian    🇨🇳 该库支持中文，日文和韩文文本！                                    
-language   🇯🇵 ライブラリは中国語、日本語、韓国語のテキストをサポートしています  
- support   🇰🇷 이 라이브러리는 중국어, 일본어 및 한국어 텍스트를 지원합니다      
+  Asian    🇨🇳 该库支持中文，日文和韩文文本！                                   
+language   🇯🇵 ライブラリは中国語、日本語、韓国語のテキストをサポートしています 
+ support   🇰🇷 이 라이브러리는 중국어, 일본어 및 한국어 텍스트를 지원합니다     
 
