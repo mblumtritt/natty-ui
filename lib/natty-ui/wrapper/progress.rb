@@ -36,21 +36,16 @@ module NattyUI
 
       protected
 
-      def call(title, max_value, spinner)
+      def call(title, max_value, _spinner)
         @final_text = [title]
         @max_value = [0, max_value.to_f].max if max_value
         @value = @progress = 0
-        draw(title, spinner)
+        (wrapper.stream << @parent.prefix << "➔ #{title} ").flush
         self
       end
 
-      def draw(title, _spinner)
-        (wrapper.stream << @parent.prefix << "➔ #{title} ").flush
-      end
-
-      def end_draw = (wrapper.stream << "\n")
-
       def redraw
+        return if @status
         return (wrapper.stream << '.').flush unless @max_value
         cn = (20 * @value / @max_value).to_i
         return if @progress == cn
@@ -59,15 +54,9 @@ module NattyUI
       end
 
       def finish
-        end_draw
+        wrapper.stream << "\n"
         return @parent.failed(*@final_text) if failed?
-        _section(
-          :Message,
-          @final_text,
-          owner: @parent,
-          title: @final_text.shift,
-          glyph: @status = :completed
-        )
+        @parent.message(*@final_text, glyph: @status = :completed)
       end
     end
   end

@@ -70,6 +70,7 @@ module EastAsianWidth
         match[:first].to_i(16)..(match[:last] || match[:first]).to_i(16)
       )
     end
+    widths.fill(2, 0x1f1e6..0x1f1ff) # regional indicator symbols
     map =
       widths
         .each_with_index

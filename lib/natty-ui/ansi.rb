@@ -373,16 +373,7 @@ module NattyUI
               'dashed_underline_off' => '4:0',
               'curly_underline' => '4:3',
               'dotted_underline' => '4:4',
-              'dashed_underline' => '4:5',
-              # aliases
-              'b' => 1, # bold
-              '/b' => 22, # bold_off
-              'i' => 3, # italic
-              '/i' => 23, # italic_off
-              'u' => 4, # underline
-              '/u' => 24, # underline_off
-              'h' => 8, # hide
-              '/h' => 28 # reveal
+              'dashed_underline' => '4:5'
             }
             add = ->(s, n) { n.each_with_index { |a, idx| map[a] = s + idx } }
             add[
@@ -431,6 +422,24 @@ module NattyUI
               ]
             ]
             add[73, %w[superscript subscript superscript_off]]
+
+            add_alias =
+              proc do |name, org_name|
+                map[name] = map[org_name] or
+                  raise("undefined value - #{org_name}")
+                map["/#{name}"] = map["#{org_name}_off"] or
+                  raise("undefined value - #{org_name}_off")
+              end
+            add_alias['b', 'bold']
+            add_alias['i', 'italic']
+            add_alias['u', 'underline']
+            add_alias['bl', 'blink']
+            add_alias['inv', 'invert']
+            add_alias['s', 'strike']
+            add_alias['sup', 'superscript']
+            add_alias['sub', 'subscript']
+            add_alias['prop', 'proportional']
+            add_alias['sp', 'spacing']
 
             map.merge!(
               map

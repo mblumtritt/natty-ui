@@ -43,9 +43,17 @@ module NattyUI
     # @return [Float] current value
     attr_reader :value
 
-    def value=(val)
-      @value = [0, val.to_f].max
-      @max_value = @value if @max_value&.< 0
+    def value=(value)
+      @value = [0, value.to_f].max
+      @max_value = @value if @max_value&.< @value
+      redraw
+    end
+
+    # @return [String, nil] current information
+    attr_reader :info
+
+    def info=(value)
+      @info = value
       redraw
     end
 

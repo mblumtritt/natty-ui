@@ -2,9 +2,7 @@
 
 require_relative '../lib/natty-ui'
 
-ui.space
-ui.h1 'NattyUI: 24-bit Color Support'
-ui.space
+ui.h1 'NattyUI: 24-bit Color Support', space: 2
 
 ui.section do
   bar = '█' * ui.available_width

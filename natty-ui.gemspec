@@ -6,10 +6,10 @@ Gem::Specification.new do |spec|
   spec.name = 'natty-ui'
   spec.version = NattyUI::VERSION
   spec.summary =
-    'This is the beautiful, nice, nifty, fancy, neat, pretty, cool, lovely, ' \
-      'natty user interface you like to have for your CLI.'
+    'This is the beautiful, nice, nifty, fancy, neat, pretty, cool, rich, ' \
+      'lovely, natty user interface you like to have for your CLI.'
   spec.description = <<~DESCRIPTION
-    This is the beautiful, nice, nifty, fancy, neat, pretty, cool, lovely,
+    This is the beautiful, nice, nifty, fancy, neat, pretty, cool, rich, lovely,
     natty user interface tool you like to have for your command line applications.
     It contains elegant, simple and beautiful features that enhance your
     command line interfaces functionally and aesthetically.

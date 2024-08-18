@@ -31,6 +31,15 @@ module NattyUI
     # @return [Boolean] whether ANSI is supported
     def ansi? = false
 
+    # Cursor visibility
+    # @attribute [r] cursor
+    def cursor = @cursor.zero?
+
+    # @attribute [w] cursor
+    def cursor=(value)
+      # nop
+    end
+
     # @attribute [r] screen_size
     # @return [[Integer, Integer]] screen size as rows and columns
     def screen_size = (@screen_size ||= determine_screen_size)
@@ -42,6 +51,10 @@ module NattyUI
     # @attribute [r] screen_columns
     # @return [Integer] number of screen columns
     def screen_columns = screen_size[1]
+
+    # @attribute [r] wrapper
+    # @return [Wrapper] self
+    alias wrapper itself
 
     # @!group Tool functions
 
@@ -144,10 +157,6 @@ module NattyUI
     # @!visibility private
     alias inspect to_s
 
-    # @attribute [r] wrapper
-    # @return [Wrapper] self
-    alias wrapper itself
-
     # @!visibility private
     alias available_width screen_columns
 
@@ -198,7 +207,7 @@ module NattyUI
 
     def initialize(stream)
       @stream = stream
-      @lines_written = 0
+      @lines_written = @cursor = 0
     end
 
     private_class_method :new

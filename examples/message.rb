@@ -2,9 +2,7 @@
 
 require_relative '../lib/natty-ui'
 
-ui.space
-ui.h1 'NattyUI: Message Types'
-ui.space
+ui.h1 'NattyUI: Message Types', space: 2
 
 TEXT = <<~TEXT.tr("\n", ' ')
   Lorem [yellow]ipsum[/fg] dolor sit amet, consectetur adipisicing elit, sed
