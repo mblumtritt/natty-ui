@@ -10,15 +10,25 @@ module NattyUI
       # @see []
       #
       # @attribute [r] attribute_names
-      # @return [Array<Symbol>] supported attribute names
-      def attribute_names = SATTR.keys.sort!
+      # @return [Array<Symbol>] all attribute names
+      def attribute_names = SATTR.keys
 
-      # Supported color names.
+      # Supported basic color names.
       # @see []
       #
       # @attribute [r] color_names
-      # @return [Array<Symbol>] supported color names
+      # @return [Array<Symbol>] all basic color names
       def color_names = SCLR.keys
+
+      # Defined named colors (24bit colors).
+      #
+      # *Remark*: Named colors follow the same name schema and color palette
+      # as supported by Kitty.
+      # @see []
+      #
+      # @attribute [r] named_colors
+      # @return [Array<String>] all named colors
+      def named_colors = NAMED_COLORS.keys
 
       # @!group Control functions
 
@@ -162,33 +172,37 @@ module NattyUI
       #
       # @example Valid Foreground Color Attributes
       #   Ansi[:yellow]
-      #   Ansi['#fab']
-      #   Ansi['#00aa00']
       #   Ansi[:fg_fab]
       #   Ansi[:fg_00aa00]
       #   Ansi[:af]
       #   Ansi[:fg_af]
+      #   Ansi['#fab']
+      #   Ansi['#00aa00']
+      #   Ansi['lightblue']
       #
       # @example Valid Background Color Attributes
       #   Ansi[:bg_yellow]
       #   Ansi[:bg_fab]
+      #   Ansi[:bg_af]
       #   Ansi[:bg_00aa00]
       #   Ansi['bg#00aa00']
-      #   Ansi[:bg_af]
+      #   Ansi['bg_lightblue']
       #
       #   Ansi[:on_yellow]
       #   Ansi[:on_fab]
       #   Ansi[:on_00aa00]
-      #   Ansi['on#00aa00']
       #   Ansi[:on_af]
+      #   Ansi['on#00aa00']
+      #   Ansi['on_lightblue']
       #
       # @example Valid Underline Color Attributes
       #   Ansi[:underline, :ul_yellow]
       #   Ansi[:underline, :ul_fab]
       #   Ansi[:underline, :ul_00aa00]
-      #   Ansi[:underline, 'ul#00aa00']
       #   Ansi[:underline, :ul_fa]
       #   Ansi[:underline, :ul_bright_yellow]
+      #   Ansi[:underline, 'ul#00aa00']
+      #   Ansi['underline', 'ul_lightblue']
       #
       # @example Combined attributes:
       #   Ansi[:bold, :italic, :bright_white, :on_0000cc]
@@ -326,8 +340,14 @@ module NattyUI
         if /\A[[:xdigit:]]{6}\z/.match?(val)
           return "#{base};2;#{val[0, 2].hex};#{val[2, 2].hex};#{val[4, 2].hex}"
         end
-        return unless /\A[[:xdigit:]]{3}\z/.match?(val)
-        "#{base};2;#{(val[0] * 2).hex};#{(val[1] * 2).hex};#{(val[2] * 2).hex}"
+        if /\A[[:xdigit:]]{3}\z/.match?(val)
+          return(
+            "#{base};2;#{(val[0] * 2).hex};#{
+              (val[1] * 2).hex
+            };#{(val[2] * 2).hex}"
+          )
+        end
+        code = NAMED_COLORS[val] and return "#{base};#{code}"
       end
     end
 
@@ -511,8 +531,12 @@ module NattyUI
         .to_hash
         .freeze
 
-    SATTR = ATTR.transform_keys(&:to_sym).compare_by_identity.freeze
-    SCLR = CLR.transform_keys(&:to_sym).compare_by_identity.freeze
+    SATTR =
+      ATTR.to_a.sort!.to_h.transform_keys!(&:to_sym).compare_by_identity.freeze
+    SCLR =
+      CLR.to_a.sort!.to_h.transform_keys!(&:to_sym).compare_by_identity.freeze
+
+    autoload(:NAMED_COLORS, File.join(__dir__, 'ansi', 'named_colors'))
 
     private_constant(
       :ESC,
@@ -522,7 +546,8 @@ module NattyUI
       :SATTR,
       :CLR,
       :ATTR,
-      :SCLR
+      :SCLR,
+      :NAMED_COLORS
     )
   end
 end

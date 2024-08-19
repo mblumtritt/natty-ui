@@ -10,6 +10,7 @@ directory 'spec/fixtures'
   8bit-colors
   attributes
   attributes_list
+  colors_list
   illustration
   ls
   message

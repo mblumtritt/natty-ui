@@ -1,5 +1,5 @@
 
-━━━━━ NattyUI: All Attribute and Defined Color Names ━━━━━
+━━━━━ NattyUI: All Attributes and Basic Colors ━━━━━
 
 /b                  bright_magenta         on_blue          
 /bg                 bright_red             on_bright_black  
