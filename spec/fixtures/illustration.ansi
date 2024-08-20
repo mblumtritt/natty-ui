@@ -1,22 +1,22 @@
 
-[31m Styles [m [38;5;39m [m Support of all ANSI styles like [1mbold[m, [3mitalic[m, [4munderline[m, [7minvert[m, [9mstr[m
-        [m [38;5;39m [m [9mike[m, [2mfaint[m, [21mdouble underline[m, [4:3mcurly underline[m, [4:4mdotted underline[m, [4:5mdas[m
-        [m [38;5;39m [m [4:5mhed underline[m, [5mblink[m, and even rarely supported like [20mfraktur[23m.[m       [m
+[38;2;255;106;106m Styles [m [38;5;39m [m Support of all ANSI styles like [1mbold[22m, [3mitalic[23m, [4munderline[24m, [7minvert[27m, [9mstr[m
+        [m [38;5;39m [m [1m[22m[3m[23m[4m[24m[7m[27m[9mike[29m, [2mfaint[22m, [21mdouble underline[24m, [4:3mcurly underline[4:0m, [4:4mdotted underline[4:0m, [4:5mdas[m
+        [m [38;5;39m [m [1m[22m[3m[23m[4m[24m[7m[27m[9m[29m[2m[22m[21m[24m[4:3m[4:0m[4:4m[4:0m[4:5mhed underline[4:0m, [5mblink[25m, and even rarely supported like [20mfraktur[23m.[m       [m
 [38;5;39m                                                                               [m
-[31m Colors [m [38;5;39m [m ✓ [32m3/4-bit color[m         ✓ [38;2;255;127;80mTruecolor (16.7 million)[m                  [m
-        [m [38;5;39m [m ✓ [38;5;27m8-bit color[m           ✓ [93mDumb terminals[m                            [m
-        [m [38;5;39m [m ✓ [94mNO_COLOR convention[m                                               [m
+[38;2;255;106;106m Colors [m [38;5;39m [m ✓ [38;2;152;251;152m3/4-bit color[39m         ✓ [38;2;255;127;80mTruecolor (16.7 million)[m                  [m
+        [m [38;5;39m [m ✓ [38;2;135;206;235m8-bit color[39m           ✓ [38;2;255;215;0mDumb terminals[m                            [m
+        [m [38;5;39m [m ✓ [38;2;255;165;79mNO_COLOR convention[m                                               [m
 [38;5;39m                                                                               [m
-[31m Markup [m [38;5;39m [m [38;5;12mYou can style your text using a [3mBBCode[23m-like syntax.[m                 [m
+[38;2;255;106;106m Markup [m [38;5;39m [m [38;2;0;191;255mYou can style your text using a [3mBBCode[23m-like syntax.[m                 [m
 [38;5;39m                                                                               [m
-[31m Layout [m [38;5;39m [m 🎩 heading elements     📏 horizontal rulers                        [m
-        [m [38;5;39m [m 📝 messages             [33m🄵[m  framed blocks                            [m
-        [m [38;5;39m [m [34m┼┼[m tables                                                           [m
+[38;2;255;106;106m Layout [m [38;5;39m [m 🎩 heading elements     📏 horizontal rulers                        [m
+        [m [38;5;39m [m 📝 messages             [33m🄵[39m  framed blocks[m                            [m
+        [m [38;5;39m [m [34m┼┼[39m tables[m                                                           [m
 [38;5;39m                                                                               [m
-[31m  Tools [m [38;5;39m [m ✅ tasks                [1;32m…[m  progress bars                            [m
+[38;2;255;106;106m  Tools [m [38;5;39m [m ✅ tasks                [1;32m…[m  progress bars                            [m
         [m [38;5;39m [m [1;97m>[91m_[m user input           🔦 text animation                           [m
 [38;5;39m                                                                               [m
-[31m  Asian [m [38;5;39m [m [38;5;10m🇨🇳 该库支持中文，日文和韩文文本！[m                                   [m
-[31mlanguage[m [38;5;39m [m [38;5;10m🇯🇵 ライブラリは中国語、日本語、韓国語のテキストをサポートしています[m [m
-[31m support[m [38;5;39m [m [38;5;10m🇰🇷 이 라이브러리는 중국어, 일본어 및 한국어 텍스트를 지원합니다[m     [m
+[38;2;255;106;106m  Asian [m [38;5;39m [m [38;5;10m🇨🇳 该库支持中文，日文和韩文文本！[m                                   [m
+[38;2;255;106;106mlanguage[m [38;5;39m [m [38;5;10m🇯🇵 ライブラリは中国語、日本語、韓国語のテキストをサポートしています[m [m
+[38;2;255;106;106m support[m [38;5;39m [m [38;5;10m🇰🇷 이 라이브러리는 중국어, 일본어 및 한국어 텍스트를 지원합니다[m     [m
 

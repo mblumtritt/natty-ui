@@ -387,7 +387,7 @@ module NattyUI
           end,
           @parent.available_width - 1,
           seperator
-        ) { @parent.puts(_1) }
+        ) { @parent.puts(_1, embellish: :skip) }
         @parent
       end
     end
@@ -536,8 +536,9 @@ module NattyUI
           row.each do |cell|
             cidx += 1
             next unless cell
-            cell.tag = Tag.new(Text.as_lines([cell.value], @max_width))
-            width = cell.tag.value = cell.tag.lines.max_by(&:last).last
+            lines = Text.as_lines([cell.value], @max_width)
+            width = lines.max_by(&:last).last
+            cell.tag = Tag.new(lines, width)
             ret[cidx] = width if ret[cidx] < width
           end
         end
