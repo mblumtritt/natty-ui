@@ -7,6 +7,7 @@ RSpec.describe 'examples' do
     8bit-colors
     attributes
     attributes_list
+    bbcode
     colors_list
     illustration
     ls

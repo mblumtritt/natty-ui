@@ -50,6 +50,7 @@ module NattyUI
       prefix = opts[:prefix] and prefix = Text.embellish(prefix)
       suffix = opts[:suffix] and suffix = Text.embellish(suffix)
       return yield("#{prefix}#{suffix}") if strs.empty?
+      embellish = opts[:embellish] != :skip
       max_width =
         opts.fetch(:max_width) do
           screen_columns - (opts[:prefix_width] || Text.width(prefix)) -
@@ -57,12 +58,12 @@ module NattyUI
         end
       case opts[:align]
       when :right
-        Text.each_line(strs, max_width) do |line, width|
+        Text.each_line(strs, max_width, embellish) do |line, width|
           width = max_width - width
           yield("#{prefix}#{' ' * width}#{line}#{suffix}")
         end
       when :center
-        Text.each_line(strs, max_width) do |line, width|
+        Text.each_line(strs, max_width, embellish) do |line, width|
           width = max_width - width
           right = width / 2
           yield(
@@ -70,7 +71,9 @@ module NattyUI
           )
         end
       else
-        Text.each_line(strs, max_width) { yield("#{prefix}#{_1}#{suffix}") }
+        Text.each_line(strs, max_width, embellish) do |line|
+          yield("#{prefix}#{line}#{suffix}")
+        end
       end
     end
 

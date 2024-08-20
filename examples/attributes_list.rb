@@ -4,9 +4,10 @@ require_relative '../lib/natty-ui'
 
 ui.h2 'NattyUI: All Attributes and Basic Colors', space: 2
 
-ui.ls(
+list =
   (NattyUI::Ansi.attribute_names + NattyUI::Ansi.color_names)
     .sort!
-    .map! { |name| "[#{name}]#{name}" }
-)
+    .map! { |name| "[#{name}]#{name}[/]" }
+
+ui.ls list
 ui.space

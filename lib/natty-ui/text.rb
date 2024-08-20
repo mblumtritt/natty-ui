@@ -9,15 +9,10 @@ module NattyUI
         (str = str.to_s).empty? and return str
         str.gsub(BBCODE) do
           match = Regexp.last_match[1]
-          if match[0] == '/'
-            next if match.size == 1
-            next "[#{match[1..]}]" if match[1] == '/'
-          end
-          Ansi.try_convert(match) ? nil : "[#{match}]"
+          next "[#{match[1..]}]" if match[0] == '\\'
+          match == '/' || Ansi.try_convert(match) ? nil : "[#{match}]"
         end
       end
-
-      def plain(str) = Ansi.blemish(plain_but_ansi(str))
 
       def embellish(str)
         (str = str.to_s).empty? and return str
@@ -25,19 +20,18 @@ module NattyUI
         str =
           str.gsub(BBCODE) do
             match = Regexp.last_match[1]
-            if match[0] == '/'
-              if match.size == 1
-                reset = false
-                next Ansi::RESET
-              end
-              next "[#{match[1..]}]" if match[1] == '/'
+            next "[#{match[1..]}]" if match[0] == '\\'
+            if match == '/'
+              reset = false
+              next Ansi::RESET
             end
-
             ansi = Ansi.try_convert(match)
             ansi ? reset = ansi : "[#{match}]"
           end
         reset ? "#{str}#{Ansi::RESET}" : str
       end
+
+      def plain(str) = Ansi.blemish(plain_but_ansi(str))
 
       # works for UTF-8 chars only!
       def char_width(char)
@@ -70,10 +64,12 @@ module NattyUI
         width
       end
 
-      def each_line_plain(strs, max_width)
+      def each_line_plain(strs, max_width, embellish = true)
         return if (max_width = max_width.to_i) < 1
         strs.each do |str|
-          plain_but_ansi(str).each_line(chomp: true) do |line|
+          (embellish ? plain_but_ansi(str) : str.to_s).each_line(
+            chomp: true
+          ) do |line|
             next yield(line, 0) if line.empty?
             empty = String.new(encoding: line.encoding)
             current = empty.dup
@@ -108,13 +104,13 @@ module NattyUI
         ret
       end
 
-      def each_line(strs, max_width)
+      def each_line(strs, max_width, embellish = true)
         return if (max_width = max_width.to_i) < 1
         strs.each do |str|
           str
             .to_s
             .each_line(chomp: true) do |line|
-              line = embellish(line)
+              line = embellish(line) if embellish
               next yield(line, 0) if line.empty?
               current = String.new(encoding: line.encoding)
               seq = current.dup

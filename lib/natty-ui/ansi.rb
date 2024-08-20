@@ -137,18 +137,22 @@ module NattyUI
       # @comment ??? def cursor_row_rel(row = 1) = "\e[#{row}e"
 
       # Change window title.
-      # This is not widely supported but by XTerm and iTerm.
+      # This is not widely supported.
       #
       # @param [String] title text
       # @return (see cursor_up)
       def window_title(title) = "\e]2;#{title}\e\\"
 
       # Change tab title.
-      # This is not widely supported but by iTerm.
+      # This is not widely supported.
       #
       # @param [String] title text
       # @return (see cursor_up)
       def tab_title(title) = "\e]0;#{title}\a"
+
+      # Create a hyperlink.
+      # This is not widely supported.
+      def link(url, text) = "\e]8;;#{url}\e\\#{text}\e]8;;\e\\"
 
       # @!endgroup
 
@@ -374,23 +378,11 @@ module NattyUI
         .new do
           def self.to_hash
             map = {
-              # alternative names
               'reset' => '',
-              'slow_blink' => 5,
-              'conceal' => 8,
-              'default_font' => 10,
-              'doubly' => 21,
-              'faint_off' => 22,
-              'fraktur_off' => 23,
-              'spacing' => 26,
-              'conceal_off' => 28,
-              'spacing_off' => 50,
-              'encircled_off' => 54,
-              'subscript_off' => 75,
-              # special
+              # "new underline"
               'curly_underline_off' => '4:0',
-              'dotted_underline_off' => '4:0',
-              'dashed_underline_off' => '4:0',
+              # 'underline' => '4:1',
+              # 'double_underline' => '4:2',
               'curly_underline' => '4:3',
               'dotted_underline' => '4:4',
               'dashed_underline' => '4:5'
@@ -426,7 +418,7 @@ module NattyUI
                 blink_off
                 proportional
                 invert_off
-                reveal
+                hide_off
                 strike_off
               ]
             ]
@@ -443,23 +435,37 @@ module NattyUI
             ]
             add[73, %w[superscript subscript superscript_off]]
 
+            map['dashed_underline_off'] = map['curly_underline_off']
+            map['default_font'] = map['primary_font']
+            map['dotted_underline_off'] = map['curly_underline_off']
+            map['double_underline_off'] = map['underline_off']
+            map['encircled_off'] = map['framed_off']
+            map['faint_off'] = map['bold_off']
+            map['fraktur_off'] = map['italic_off']
+            map['reveal'] = map['hide_off']
+            map['subscript_off'] = map['superscript_off']
+
             add_alias =
               proc do |name, org_name|
-                map[name] = map[org_name] or
-                  raise("undefined value - #{org_name}")
-                map["/#{name}"] = map["#{org_name}_off"] or
-                  raise("undefined value - #{org_name}_off")
+                map[name] = map[org_name]
+                map["/#{name}"] = map["#{org_name}_off"]
               end
             add_alias['b', 'bold']
+            add_alias['conceal', 'hide']
+            add_alias['cu', 'curly_underline']
+            add_alias['dau', 'dashed_underline']
+            add_alias['dim', 'faint']
+            add_alias['dou', 'dotted_underline']
+            add_alias['h', 'hide']
             add_alias['i', 'italic']
-            add_alias['u', 'underline']
-            add_alias['bl', 'blink']
             add_alias['inv', 'invert']
-            add_alias['s', 'strike']
-            add_alias['sup', 'superscript']
+            add_alias['ovr', 'overlined']
+            add_alias['slow_blink', 'blink']
+            add_alias['spacing', 'proportional']
             add_alias['sub', 'subscript']
-            add_alias['prop', 'proportional']
-            add_alias['sp', 'spacing']
+            add_alias['sup', 'superscript']
+            add_alias['u', 'underline']
+            add_alias['uu', 'double_underline']
 
             map.merge!(
               map

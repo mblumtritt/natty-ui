@@ -331,7 +331,7 @@ module NattyUI
         # @attribute [r] style
         # @return [String, nil] text style; see {Ansi.try_convert}
         def style
-          @style_ ||= Ansi.try_convert(@style)
+          defined?(@style_) ? @style_ : @style_ = Ansi.try_convert(@style)
         end
 
         def value=(value)
@@ -366,7 +366,7 @@ module NattyUI
           @parent.available_width - 1,
           frame,
           enlarge
-        ) { @parent.puts(_1) }
+        ) { @parent.puts(_1, embellish: :skip) }
         @parent
       end
     end
@@ -399,16 +399,18 @@ module NattyUI
         gen = new(table, max_width, 3, expand)
         return unless gen.ok?
         col_div = "#{Ansi::RESET} #{COLOR}#{frame[4]}#{Ansi::RESET} "
-        row_div = "#{frame[5]}#{frame[6]}#{frame[5]}"
-        row_div =
-          "#{COLOR}#{
-            gen.widths.map { frame[5] * _1 }.join(row_div)
-          }#{Ansi::RESET}"
+        if frame[5]
+          row_div = "#{frame[5]}#{frame[6]}#{frame[5]}"
+          row_div =
+            "#{COLOR}#{
+              gen.widths.map { frame[5] * _1 }.join(row_div)
+            }#{Ansi::RESET}"
+        end
         last_row = 0
         gen.each do |number, line|
           if last_row != number
             last_row = number
-            yield(row_div)
+            yield(row_div) if row_div
           end
           yield(line.join(col_div) + Ansi::RESET)
         end

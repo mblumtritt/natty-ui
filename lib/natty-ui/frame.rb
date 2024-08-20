@@ -30,7 +30,7 @@ module NattyUI
       if name.is_a?(Symbol)
         ret = @all[name] and return ret
       elsif name.is_a?(String)
-        return name if name.size == 11
+        return name if name.empty? || name.size == 11
         return name * 11 if name.size == 1
       end
       raise(ArgumentError, "invalid frame type - #{name}")

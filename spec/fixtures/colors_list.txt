@@ -1,5 +1,5 @@
 
-━━━━━ NattyUI: All Names Colors ━━━━━
+━━━━━ NattyUI: All Named Colors ━━━━━
 
   aliceblue           grey70              
   antiquewhite        grey71              

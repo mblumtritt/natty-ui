@@ -127,8 +127,8 @@ RSpec.describe NattyUI do
 
     it 'respects escaped and invalid attributes' do
       expect(
-        NattyUI.embellish('[bold unknown] [//bold italic] [//b] [///b]')
-      ).to eq('[bold unknown] [/bold italic] [/b] [//b]')
+        NattyUI.embellish('[bold unknown] [\\/bold italic] [\\/b] [\\\\/b]')
+      ).to eq('[bold unknown] [/bold italic] [/b] [\\/b]')
     end
   end
 
@@ -151,18 +151,20 @@ RSpec.describe NattyUI do
     it 'does not remove escaped and invalid attributes' do
       expect(
         NattyUI.plain(
-          "\e[1K\e[0G[b][i][bold unknown] [//bold italic] [//b] [///b][/b][/i]"
+          "\e[1K\e[0G[b][i][bold unknown] [\\/bold italic] [\\/b] " \
+            "[\\\\/b][/b][/i]"
         )
-      ).to eq("\e[1K\e[0G[bold unknown] [/bold italic] [/b] [//b]")
+      ).to eq("\e[1K\e[0G[bold unknown] [/bold italic] [/b] [\\/b]")
     end
 
     it 'removes ANSI control codes too' do
       expect(
         NattyUI.plain(
-          "\e[1K\e[0G[b][i][bold unknown] [//bold italic] [//b] [///b][/b][/i]",
+          "\e[1K\e[0G[b][i][bold unknown] [\\/bold italic] [\\/b] " \
+            "[\\\\/b][/b][/i]",
           ansi: :remove
         )
-      ).to eq('[bold unknown] [/bold italic] [/b] [//b]')
+      ).to eq('[bold unknown] [/bold italic] [/b] [\\/b]')
     end
 
     it 'removes all supported ANSI control codes' do
