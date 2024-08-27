@@ -393,7 +393,7 @@ module NattyUI
     end
 
     class TableGen
-      COLOR = Ansi[39]
+      COLOR = Ansi::FRAME_COLOR
 
       def self.each_line(table, max_width, frame, expand)
         gen = new(table, max_width, 3, expand)

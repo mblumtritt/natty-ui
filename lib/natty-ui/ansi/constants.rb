@@ -65,6 +65,9 @@ module NattyUI::Ansi
   CLL = "#{CURSOR_FIRST_COLUMN}#{LINE_ERASE}".freeze
 
   # @!visibility private
+  FRAME_COLOR = self[39].freeze
+
+  # @!visibility private
   SCREEN_BLANK =
     "#{CURSOR_SAFE_POS}#{
       SCREEN_ALTERNATE

@@ -173,12 +173,12 @@ module NattyUI
 
       def initialize(...)
         super
-        @prefix = "#{Ansi[39]}#{@prefix}#{Ansi::RESET}"
+        @prefix = "#{Ansi::FRAME_COLOR}#{@prefix}#{Ansi::RESET}"
       end
     end
 
     class Framed < Framed
-      def color(str) = "#{Ansi[39]}#{str}#{Ansi::RESET}"
+      def color(str) = "#{Ansi::FRAME_COLOR}#{str}#{Ansi::RESET}"
 
       def init(type)
         @prefix = "#{color(type[4])} "

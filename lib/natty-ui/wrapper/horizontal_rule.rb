@@ -26,7 +26,7 @@ module NattyUI
         @parent.print(
           symbol * ((max_width / size)),
           max_width: max_width,
-          prefix: Ansi[39],
+          prefix: Ansi::FRAME_COLOR,
           prefix_width: 0,
           suffix: Ansi::RESET,
           suffix_width: 0
