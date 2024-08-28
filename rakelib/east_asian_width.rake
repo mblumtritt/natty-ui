@@ -61,8 +61,8 @@ module EastAsianWidth
       match = RE_DEFINITION.match(line) or next
       width = match[:cat] == 'Mn' ? 0 : TYPE[match[:type]]
       raise("unknown width type identifier - #{line.inspect}") unless width
-      first = match[:first].to_i(16)
-      widths.fill(width, first..(match[:last]&.to_i(16) || first))
+      first = match[:first].hex
+      widths.fill(width, first..(match[:last]&.hex || first))
     end
     widths.fill(2, 0x1f1e6..0x1f1ff) # regional indicator symbols
     map =
