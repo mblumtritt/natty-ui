@@ -7,6 +7,7 @@ module NattyUI
   module Ansi
     class << self
       # Supported attribute names.
+      #
       # @see []
       #
       # @attribute [r] attribute_names
@@ -14,6 +15,7 @@ module NattyUI
       def attribute_names = SATTR.keys
 
       # Supported basic color names.
+      #
       # @see []
       #
       # @attribute [r] color_names
@@ -24,6 +26,7 @@ module NattyUI
       #
       # *Remark*: Named colors follow the same name schema and color palette
       # as supported by Kitty.
+      #
       # @see []
       #
       # @attribute [r] named_colors

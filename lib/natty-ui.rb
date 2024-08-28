@@ -15,6 +15,7 @@ require_relative 'natty-ui/ansi_wrapper'
 module NattyUI
   class << self
     # @see .valid_in?
+    #
     # @return [IO] IO stream used to read input
     # @raise [TypeError] when a non-readable stream will be assigned
     attr_reader :in_stream
@@ -174,6 +175,7 @@ end
 # @!visibility private
 module Kernel
   # @see NattyUI.element
+  #
   # @return [NattyUI::Wrapper, NattyUI::Wrapper::Element] active UI element
   def ui = NattyUI.element unless defined?(ui)
 end

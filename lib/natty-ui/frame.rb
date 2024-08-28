@@ -2,8 +2,12 @@
 
 module NattyUI
   # Helper class to select frame types.
+  #
+  # @see Features#columns
   # @see Features#framed
   # @see Features#table
+  # @see Features::Cell#frame
+  # @see Features::Columns#frame
   module Frame
     # Define frame type used by default.
     #
@@ -15,6 +19,9 @@ module NattyUI
     end
 
     # Defined frame type names.
+    # Default values: `:double`, `:heavy`, `:rounded`, `:semi`, `:semi2`,
+    # `:simple`
+    #
     # @see []
     #
     # @attribute [r] self.names

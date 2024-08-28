@@ -4,6 +4,7 @@ require_relative 'ansi'
 
 module NattyUI
   # Helper class to select spinner types.
+  #
   # @see Features#progress
   module Spinner
     class << self
@@ -16,6 +17,7 @@ module NattyUI
       end
 
       # Defined spinner type names.
+      #
       # @see []
       #
       # @attribute [r] self.names

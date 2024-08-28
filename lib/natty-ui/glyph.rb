@@ -4,6 +4,7 @@ require_relative 'text'
 
 module NattyUI
   # Helper class to select glyph types.
+  #
   # @see Features#message
   module Glyph
     # Define glyph type used by default.
@@ -15,6 +16,7 @@ module NattyUI
     end
 
     # Defined glyph type names.
+    #
     # @see []
     #
     # @attribute [r] self.names

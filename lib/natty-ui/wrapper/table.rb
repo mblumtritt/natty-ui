@@ -5,69 +5,53 @@ require_relative 'element'
 module NattyUI
   module Features
     #
-    # Table view of data.
+    # Generate a table view.
     #
-    # @overload table(*args, type: :default, expand: false)
-    #   Display the given arrays as rows of a table.
+    # @example Generate a simple table
+    #   ui.table(
+    #     %w[name price origin],
+    #     %w[apple 1$ California],
+    #     %w[banana 2$ Brasil],
+    #     %w[kiwi 1.5$ Newzeeland]
+    #   )
+    #   # name   │ price │ origin
+    #   # ───────┼───────┼───────────
+    #   # apple  │ 1$    │ California
+    #   # ───────┼───────┼───────────
+    #   # banana │ 2$    │ Brasil
+    #   # ───────┼───────┼───────────
+    #   # kiwi   │ 1.5$  │ Newzeeland
     #
-    #   @param [#map<#map<#to_s>>] args one or more arrays representing rows of the table
-    #   @param [Symbol, String] type frame type; see {NattyUI::Frame}
-    #   @param [false, true. :equal] expand
+    # @example Generate a formatted table
+    #   ui.table(type: :heavy, expand: true) do |table|
+    #     table.add('name', 'price', 'origin', style: 'bold green')
+    #     table.add('apple', '1$', 'California')
+    #     table.add('banana', '2$', 'Brasil')
+    #     table.add('kiwi', '1.5$', 'Newzeeland')
+    #     table.align_column(0, :right).align_row(0, :center)
+    #   end
+    #   #       name       ┃      price     ┃            origin
+    #   # ━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    #   #            apple ┃ 1$             ┃ California
+    #   # ━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    #   #           banana ┃ 2$             ┃ Brasil
+    #   # ━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    #   #             kiwi ┃ 1.5$           ┃ Newzeeland
     #
-    #   @example
-    #     ui.table(
-    #       %w[name price origin],
-    #       %w[apple 1$ California],
-    #       %w[banana 2$ Brasil],
-    #       %w[kiwi 1.5$ Newzeeland]
-    #     )
-    #
-    #     # name   │ price │ origin
-    #     # ───────┼───────┼───────────
-    #     # apple  │ 1$    │ California
-    #     # ───────┼───────┼───────────
-    #     # banana │ 2$    │ Brasil
-    #     # ───────┼───────┼───────────
-    #     # kiwi   │ 1.5$  │ Newzeeland
-    #
-    # @overload table(type: :default, expand: false)
-    #   Construct and display a table.
-    #
-    #   @param [Symbol, String] type frame type; see {NattyUI::Frame}
-    #   @param [false, true. :equal] expand
-    #
-    #   @example
-    #     ui.table(type: :heavy, expand: true) do |table|
-    #       table.add('name', 'price', 'origin', style: 'bold green')
-    #       table.add('apple', '1$', 'California')
-    #       table.add('banana', '2$', 'Brasil')
-    #       table.add('kiwi', '1.5$', 'Newzeeland')
-    #       table.align_column(0, :right).align_row(0, :center)
-    #     end
-    #
-    #     #       name       ┃      price     ┃            origin
-    #     # ━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    #     #            apple ┃ 1$             ┃ California
-    #     # ━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    #     #           banana ┃ 2$             ┃ Brasil
-    #     # ━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    #     #             kiwi ┃ 1.5$           ┃ Newzeeland
-    #
-    # @yield [Table] table construction helper
+    # @param [#map<#map<#to_s>>] args one or more arrays representing rows of the table
+    # @param [Symbol, String] type frame type; see {NattyUI::Frame}
+    # @param [false, true. :equal] expand
+    # @yieldparam table [Table] construction helper
     # @return [Wrapper::Section, Wrapper] it's parent object
     def table(*table, type: :default, expand: false)
       type = NattyUI::Frame[type]
       table = Table.create(*table)
       yield(table) if block_given?
-      _element(:Table, table, type, expand)
+      (table = table.to_a).empty? ? self : _element(:Table, table, type, expand)
     end
 
     #
     # Table-like display of key/value pairs.
-    #
-    # @param [#to_s] seperator
-    # @param [Hash<#to_s,#to_s>] kwargs
-    # @return [Wrapper::Section, Wrapper] it's parent object
     #
     # @example
     #   ui.pairs(apple: '1$', banana: '2$', kiwi: '1.5$')
@@ -77,12 +61,16 @@ module NattyUI
     #   # banana: 2$
     #   #   kiwi: 1.5$
     #
+    # @param [#to_s] seperator
+    # @param [Hash<#to_s,#to_s>] kwargs
+    # @return [Wrapper::Section, Wrapper] it's parent object
     def pairs(seperator = ': ', **kwargs)
       kwargs.empty? ? self : _element(:Pairs, kwargs, seperator)
     end
 
     #
     # Helper class to define a table layout.
+    #
     # @see #table
     #
     class Table
@@ -116,8 +104,10 @@ module NattyUI
       #
       # @example change {Cell} at row 2, column 3
       #   table[2, 3] = table.cell('Hello World', align: right, style: 'bold')
+      #
       # @example change text at row 2, column 3
       #   table[2, 3] = 'Hello Ruby!'
+      #
       # @example delete {Cell} at row 2, column 3
       #   table[2, 3] = nil
       #
@@ -186,8 +176,10 @@ module NattyUI
       #
       # @example define bold red text style for the first row
       #   table.style_row(0, 'bold red')
+      #
       # @example define yellow text style for the first three rows
       #   table.style_row(0..2, 'yellow')
+      #
       # @example define green text style for rows 3, 4 and 7
       #   table.style_row([3, 4, 7], 'green')
       #
@@ -208,8 +200,10 @@ module NattyUI
       #
       # @example define bold red text style for the first column
       #   table.style_column(0, 'bold red')
+      #
       # @example define yellow text style for the first three columns
       #   table.style_column(0..2, 'yellow')
+      #
       # @example define green text style for columns with index 3, 4 and 7
       #   table.style_column([3, 4, 7], 'green')
       #
@@ -230,8 +224,10 @@ module NattyUI
       #
       # @example align first row right
       #   table.align_row(0, :right)
+      #
       # @example center first three rows
       #   table.align_row(0..2, :center)
+      #
       # @example center the rows  with index 3, 4 and 7
       #   table.align_row([3, 4, 7], :center)
       #
@@ -252,8 +248,10 @@ module NattyUI
       #
       # @example align first column right
       #   table.align_column(0, :right)
+      #
       # @example center first three columns
       #   table.align_column(0..2, :center)
+      #
       # @example center the columns  with index 3, 4 and 7
       #   table.align_column([3, 4, 7], :center)
       #
@@ -362,7 +360,7 @@ module NattyUI
 
       def call(table, frame, enlarge)
         TableGen.each_line(
-          table.to_a,
+          table,
           @parent.available_width - 1,
           frame,
           enlarge
