@@ -38,7 +38,7 @@ module NattyUI
     #   # ━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     #   #             kiwi ┃ 1.5$           ┃ Newzeeland
     #
-    # @param [#map<#map<#to_s>>] args one or more arrays representing rows of the table
+    # @param [#map<#map<#to_s>>] table one or more arrays representing rows of the table
     # @param [Symbol, String] type frame type; see {NattyUI::Frame}
     # @param [false, true. :equal] expand
     # @yieldparam table [Table] construction helper

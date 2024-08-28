@@ -17,6 +17,11 @@ module NattyUI
       end
 
       # Defined spinner type names.
+      # Default values: `:bar`, `:blink`, `:blocks`, `:bounce`, `:bounce2`,
+      # `:bounce3`, `:bounce4`, `:circle`, `:colors`, `:dots`, `:dots2`,
+      # `:dots3`, `:dots4`, `:dots5`, `:move`, `:move2`, `:move3`, `:move4`,
+      # `:pulse`, `:slide`, `:slide2`, `:slide3`, `:slide4`, `:slide5`,
+      # `:snake`, `:stod`, `:swap`, `:vintage`
       #
       # @see []
       #
