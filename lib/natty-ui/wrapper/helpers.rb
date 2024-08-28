@@ -153,12 +153,45 @@ module NattyUI
     attr_reader :width
 
     def width=(value)
-      @width = as_uint(value)
-      @width = nil if @width.zero?
+      @width = value == :content ? :content : as_uint(value)
+      @width = nil if @width == 0
     end
 
     # @!visibility private
     attr_accessor :tag
+
+    # Assign attributes.
+    #
+    # @param options [Hash] attributes to assign
+    # @option options [Symbol] :align {align}
+    # @option options [Symbol] :frame {frame}
+    # @option options [String] :frame_style {frame_style}
+    # @option options [Integer] :min_width {min_width}
+    # @option options [Integer, Array<Integer>] :padding {padding}
+    # @option options [Integer] :padding_bottom {padding_bottom}
+    # @option options [Integer] :padding_left {padding_left}
+    # @option options [Integer] :padding_right {padding_right}
+    # @option options [Integer] :padding_top {padding_top}
+    # @option options [String] :style {style}
+    # @option options [Symbol] :valign {valign}
+    # @option options [Integer] :width {width}
+    # @return [Cell] itself
+    def set(**options)
+      return self if options.empty?
+      options.key?(:align) and @align = options[:align]
+      options.key?(:frame) and @frame = options[:frame]
+      options.key?(:frame_style) and @frame_style = options[:frame_style]
+      options.key?(:min_width) and self.min_width = options[:min_width]
+      options.key?(:padding) and self.padding = options[:padding]
+      value = try_uint(options, :padding_bottom) and @padding_bottom = value
+      value = try_uint(options, :padding_left) and @padding_left = value
+      value = try_uint(options, :padding_right) and @padding_right = value
+      value = try_uint(options, :padding_top) and @padding_top = value
+      options.key?(:style) and @style = options[:style]
+      options.key?(:valign) and @valign = options[:valign]
+      options.key?(:width) and self.width = options[:width]
+      self
+    end
 
     # @param lines [#to_s] one or more text lines
     # @param options [Hash] attributes to assign
@@ -176,6 +209,10 @@ module NattyUI
     # @option options [Integer] :width {width}
     def initialize(*lines, **options)
       @lines = lines.flatten
+      if options.empty?
+        self.padding = 0
+        return
+      end
       @align = options[:align]
       @frame = options[:frame]
       @frame_style = options[:frame_style]
@@ -189,6 +226,9 @@ module NattyUI
       @valign = options[:valign]
       self.width = options[:width]
     end
+
+    # @!visibility private
+    def to_s = @lines.join("\n")
 
     private
 
@@ -208,13 +248,19 @@ module NattyUI
   #
   # @see Features#columns
   class Columns
-    def initialize = (@all = [])
+    def self.create(*texts, **options)
+      ret = new
+      texts.each { ret.add(_1, **options) }
+      ret
+    end
+
+    def initialize = (@ll = [])
 
     # Number of cells.
     #
     # @attribute [r] count
     # @return [Integer]
-    def count = @all.size
+    def count = @ll.size
 
     # Set horizontal text alignment of all cells.
     #
@@ -340,7 +386,19 @@ module NattyUI
     #
     # @param index [Integer] cell index
     # @return [Cell]
-    def [](index) = @all[index]
+    def at(index) = (@ll[index] ||= Cell.new)
+    alias [] at
+
+    # Assign attributes to all cells.
+    #
+    # @see Cell#set
+    #
+    # @param options [Hash] attributes to assign
+    # @return [Columns] itself
+    def set(**options)
+      each { _1.set(**options) } unless options.empty?
+      self
+    end
 
     # Add a new cell.
     #
@@ -350,7 +408,7 @@ module NattyUI
     # @param options (see Cell#initialize)
     # @return [Cell]
     def add(*lines, **options)
-      @all << (block = Cell.new(*lines, **options))
+      @ll << (block = Cell.new(*lines, **options))
       block
     end
     alias append add
@@ -371,7 +429,7 @@ module NattyUI
     #
     # @param index [Integer] delete position
     # @return [Cell, nil]
-    def delete(index) = @all.delete_at(index)
+    def delete(index) = @ll.delete_at(index)
 
     # Insert a new cell at a position.
     #
@@ -382,11 +440,11 @@ module NattyUI
     # @param options (see Cell#initialize)
     # @return [Cell]
     def insert(index, *lines, **options)
-      @all.insert(index, block = Cell.new(*lines, **options))
+      @ll.insert(index, block = Cell.new(*lines, **options))
       block
     end
 
-    # Add a new cell first cell.
+    # Prepend a new cell first cell.
     #
     # @see Cell#initialize
     #
@@ -395,15 +453,13 @@ module NattyUI
     # @return [Cell]
     def prepend(*lines, **options) = insert(0, *lines, **options)
 
-    # Convert the collection into a compact Array.
+    # Convert the collection into an Array.
     #
     # @return [Array<Cell>]
-    def to_a = @all.filter_map(&:dup)
+    def to_a = @ll.map { _1.dup || Cell.new }
 
     private
 
-    def each = @all.each { yield(_1) if _1 }
+    def each = @ll.each { yield(_1) if _1 }
   end
-
-  Rows = Columns
 end

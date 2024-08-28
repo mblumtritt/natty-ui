@@ -27,7 +27,7 @@ module NattyUI
       #
       # @attribute [r] self.names
       # @return [Array<Symbol>] supported attribute names
-      def names = @all.keys
+      def names = @ll.keys
 
       # @param name [Symbol, #to_a, #to_s]
       #   defined type name (see {.names})
@@ -37,7 +37,7 @@ module NattyUI
         return @default if name == :default
         parts =
           if name.is_a?(Symbol)
-            @all[name] or raise(ArgumentError, "invalid spinner type - #{name}")
+            @ll[name] or raise(ArgumentError, "invalid spinner type - #{name}")
           else
             name
           end
@@ -91,7 +91,7 @@ module NattyUI
     end
 
     @style = Ansi[:bold, 220]
-    @all = {
+    @ll = {
       bar: '▁▂▃▄▅▆▇█▇▆▅▄▃▂',
       blink: '■□▪▫',
       blocks: '▖▘▝▗',

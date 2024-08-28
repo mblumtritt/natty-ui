@@ -148,7 +148,8 @@ module NattyUI
       def initialize(block, size)
         super
         frame = Frame[block.frame || :default]
-        frame_style = block.frame_style || Ansi::FRAME_COLOR
+        frame_style = Ansi.try_convert(block.frame_style) if block.frame_style
+        frame_style ||= Ansi::FRAME_COLOR
         w = @lines[0].size
         line = Line.new(frame[4], 1)
         line.style = frame_style
@@ -162,10 +163,51 @@ module NattyUI
       end
     end
 
+    class HyperCell
+      attr_reader :overhead, :min_width
+      attr_accessor :size
+
+      def variable? = @size > @min_width
+
+      def initialize(cell, max_width)
+        cell.min_width ||= 1
+        @cell = cell
+        @overhead = cell.padding_left + cell.padding_right
+        @overhead += 2 if cell.frame
+        @min_width = obtain_min_width
+        return if @min_width > max_width
+        @space = max_width - @overhead
+        reset_size!
+        return if cell.width != :content
+        @min_width = @size > max_width ? cell.min_width : @size
+      end
+
+      def reset_size!
+        return @size = @cell.width + @overhead if @cell.width.is_a?(Integer)
+        lines = Line.create(*@cell.lines, max_width: @space)
+        @size = lines.max_by(&:size).size + @overhead
+      end
+
+      def to_column
+        w = @size - @overhead
+        @cell.lines.replace(Line.create(*@cell.lines, max_width: w))
+        ret = (@cell.frame ? FramedColumn : Column).new(@cell, w)
+        ret.valign = @cell.valign
+        ret
+      end
+
+      private
+
+      def obtain_min_width
+        return @overhead + @cell.min_width if @cell.width == :content
+        @overhead + (@cell.width || @cell.min_width)
+      end
+    end
+
     class Columns
-      def initialize(max_width, blocks)
+      def initialize(max_width, cells)
         @max_width = max_width
-        @blocks = blocks
+        @cells = cells
       end
 
       def to_s
@@ -182,8 +224,8 @@ module NattyUI
 
       def as_rows
         items =
-          @blocks.filter_map do |block|
-            item = Item.new(block, @max_width)
+          @cells.filter_map do |cell|
+            item = HyperCell.new(cell, @max_width)
             item if item.min_width <= @max_width
           end
         rows = [current = []]
@@ -206,37 +248,6 @@ module NattyUI
           rm = var[0]
           var.each { |item| rm = item if item.size >= rm.size }
           rm.size -= 1
-        end
-      end
-
-      class Item
-        attr_reader :block, :overhead, :min_width
-        attr_accessor :size
-
-        def variable? = @size > @min_width
-
-        def initialize(block, max_width)
-          @block = block
-          @overhead = block.padding_left + block.padding_right
-          @overhead += 2 if block.frame
-          @min_width = @overhead + (block.width || block.min_width || 1)
-          return if @min_width > max_width
-          @space = max_width - @overhead
-          reset_size!
-        end
-
-        def reset_size!
-          return @size = block.width + @overhead if block.width
-          lines = Line.create(*@block.lines, max_width: @space)
-          @size = lines.max_by(&:size).size + @overhead
-        end
-
-        def to_column
-          w = @size - @overhead
-          @block.lines.replace(Line.create(*@block.lines, max_width: w))
-          ret = (@block.frame ? FramedColumn : Column).new(@block, w)
-          ret.valign = @block.valign
-          ret
         end
       end
     end

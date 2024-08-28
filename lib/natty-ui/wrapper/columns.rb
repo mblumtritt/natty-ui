@@ -15,8 +15,7 @@ module NattyUI
     # @yieldparam columns [Columns] construction helper
     # @return [Wrapper::Section, Wrapper] it's parent object
     def columns(*texts, **options)
-      columns = Columns.new
-      texts.each { columns.add(_1, **options) }
+      columns = Columns.create(*texts, **options)
       yield(columns) if block_given?
       (columns = columns.to_a).empty? ? self : _element(:Columns, columns)
     end

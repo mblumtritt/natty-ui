@@ -21,7 +21,7 @@ module NattyUI
     #
     # @attribute [r] self.names
     # @return [Array<Symbol>] supported attribute names
-    def self.names = @all.keys
+    def self.names = @ll.keys
 
     # @param name [Symbol, #to_s]
     #   defined type name (see {.names})
@@ -31,14 +31,14 @@ module NattyUI
       return @default if name == :default
       Text.embellish(
         if name.is_a?(Symbol)
-          @all[name] or raise(ArgumentError, "invalid glyph type - #{name}")
+          @ll[name] or raise(ArgumentError, "invalid glyph type - #{name}")
         else
           name.to_s
         end
       )
     end
 
-    @all = {
+    @ll = {
       completed: '[b 52]✓',
       dot: '[27]•',
       error: '[b d0]𝙓',

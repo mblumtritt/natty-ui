@@ -26,7 +26,7 @@ module NattyUI
     #
     # @attribute [r] self.names
     # @return [Array<Symbol>] supported attribute names
-    def self.names = @all.keys
+    def self.names = @ll.keys
 
     # @param name [Symbol, String]
     #   defined type name (see {.names})
@@ -35,7 +35,7 @@ module NattyUI
     def self.[](name)
       return @default if name == :default
       if name.is_a?(Symbol)
-        ret = @all[name] and return ret
+        ret = @ll[name] and return ret
       elsif name.is_a?(String)
         return name if name.empty? || name.size == 11
         return name * 11 if name.size == 1
@@ -43,7 +43,7 @@ module NattyUI
       raise(ArgumentError, "invalid frame type - #{name}")
     end
 
-    @all = {
+    @ll = {
       cols: '    │ │    ',
       double: '╔╗╚╝║═╬╦╩╠╣',
       heavy: '┏┓┗┛┃━╋┳┻┣┫',
