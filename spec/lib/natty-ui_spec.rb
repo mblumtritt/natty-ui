@@ -152,7 +152,7 @@ RSpec.describe NattyUI do
       expect(
         NattyUI.plain(
           "\e[1K\e[0G[b][i][bold unknown] [\\/bold italic] [\\/b] " \
-            "[\\\\/b][/b][/i]"
+            '[\\\\/b][/b][/i]'
         )
       ).to eq("\e[1K\e[0G[bold unknown] [/bold italic] [/b] [\\/b]")
     end
@@ -161,7 +161,7 @@ RSpec.describe NattyUI do
       expect(
         NattyUI.plain(
           "\e[1K\e[0G[b][i][bold unknown] [\\/bold italic] [\\/b] " \
-            "[\\\\/b][/b][/i]",
+            '[\\\\/b][/b][/i]',
           ansi: :remove
         )
       ).to eq('[bold unknown] [/bold italic] [/b] [\\/b]')
