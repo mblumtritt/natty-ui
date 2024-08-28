@@ -7,6 +7,7 @@ module NattyUI
   Frame[:default]
   Glyph[:default]
   KEY_MAP[0]
+  Render::Line.new(nil, nil)
   Spinner[:default]
   Text.width("\u1100")
 end

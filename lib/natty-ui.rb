@@ -164,9 +164,10 @@ module NattyUI
   autoload(:Frame, File.join(dir, 'natty-ui', 'frame'))
   autoload(:Glyph, File.join(dir, 'natty-ui', 'glyph'))
   autoload(:KEY_MAP, File.join(dir, 'natty-ui', 'key_map'))
+  autoload(:Render, File.join(dir, 'natty-ui', 'render'))
   autoload(:Spinner, File.join(dir, 'natty-ui', 'spinner'))
 
-  private_constant :Animation, :KEY_MAP
+  private_constant :Animation, :KEY_MAP, :Render
 
   @element = StdOut
   self.in_stream = STDIN

@@ -5,29 +5,33 @@ require_relative '../lib/natty-ui'
 ui.h1 'NattyUI: 8-bit Color Support', space: 2
 
 color = ->(i) { "[bg#{i = i.to_s(16).rjust(2, '0')}] #{i} " }
-ui.msg 'System Colors' do
-  ui.puts <<~COLORS
-    [#ff]#{0.upto(7).map(&color).join}
-    [#00]#{8.upto(15).map(&color).join}
-
-  COLORS
-end
-
-ui.msg '6x6x6 Color Cube' do
-  [16, 22, 28].each do |b|
-    b.step(b + 185, by: 36) do |i|
-      left = i.upto(i + 5).map(&color).join
-      right = (i + 18).upto(i + 23).map(&color).join
-      ui.puts "[#ff]#{left}[bg_default]  #{right}"
-    end
-    ui.space
+cube =
+  proc do |start|
+    start
+      .step(start + 185, by: 36)
+      .map { |i| i.upto(i + 5).map(&color).join }
+      .unshift('6x6 Color Cube')
+      .join("\n")
   end
+
+ui.columns do |cc|
+  cc.add(<<~COLORS, width: 32, padding: [0, 2, 1, 1])
+    System Colors
+    [#ff]#{0.upto(7).map(&color).join}
+    [#00]#{8.upto(0xf).map(&color).join}
+  COLORS
+
+  cc.add(<<~GRAYSCALE, width: 48, padding: [0, 2, 1, 1])
+    Grayscale
+    [#ff]#{0xe8.upto(0xf3).map(&color).join}
+    [#ff]#{0xf4.upto(0xff).map(&color).join}
+  GRAYSCALE
 end
 
-ui.msg 'Grayscale' do
-  ui.puts <<~GRAYSCALE
-    [#ff]#{232.upto(243).map(&color).join}
-    [#ff]#{244.upto(255).map(&color).join}
-
-  GRAYSCALE
+ui.columns do |cc|
+  cc.add_many(
+    *0x10.step(0x2e, by: 6).map(&cube),
+    width: 24,
+    padding: [0, 2, 1, 1]
+  )
 end
