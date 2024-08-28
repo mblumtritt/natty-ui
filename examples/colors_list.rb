@@ -6,7 +6,7 @@ ui.h2 'NattyUI: All Named Colors', space: 2
 
 list =
   NattyUI::Ansi.named_colors.map! do |name|
-    "[on_#{name}] [/bg] [#{name}]#{name}[/fg]"
+    "[on_#{name}]  [/bg] [#{name}]#{name}[/fg]"
   end
 
 ui.ls list

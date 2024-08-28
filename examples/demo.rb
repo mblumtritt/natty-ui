@@ -26,7 +26,7 @@ ui.page do
     '3' => ['8bit-colors', '8-bit Color Support'],
     '4' => ['24bit-colors', '24-bit Color Support'],
     '5' => ['message', 'Message Types'],
-    '6' => ['ls', 'Print In Columns'],
+    '6' => ['ls', 'Print List'],
     '7' => %w[table Tables],
     '8' => ['animate', 'Text Line Animation'],
     '9' => ['progress', 'Progress Indication'],

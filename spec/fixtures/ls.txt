@@ -1,5 +1,5 @@
 
-═══════ NattyUI: Print In Columns ═══════
+═══════ NattyUI: Print List ═══════
 
 ━━━━━ Compact Display ━━━━━
  1 Lorem ipsum dolor sit           10 aute irure dolor in        
