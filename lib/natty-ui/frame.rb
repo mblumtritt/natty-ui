@@ -50,7 +50,7 @@ module NattyUI
       rounded: '╭╮╰╯│─┼┬┴├┤',
       rows: '     ──    ',
       semi: '╒╕╘╛│═╪╤╧╞╡',
-      semi2: '╓╖╙╜│─╫╥╨╟╢',
+      semi2: '╓╖╙╜║─╫╥╨╟╢',
       simple: '┌┐└┘│─┼┬┴├┤',
       undecorated: '           '
     }.compare_by_identity

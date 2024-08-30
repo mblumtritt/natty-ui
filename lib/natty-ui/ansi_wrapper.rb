@@ -178,14 +178,24 @@ module NattyUI
     end
 
     class Framed < Framed
-      def color(str) = "#{Ansi::FRAME_COLOR}#{str}#{Ansi::RESET}"
+      protected
 
-      def init(type)
-        @prefix = "#{color(type[4])} "
-        @suffix = "#{Ansi.cursor_column(parent.rcol)}#{color(type[4])}"
-        aw = @parent.available_width - 2
-        parent.puts(color("#{type[0]}#{type[5] * aw}#{type[1]}"))
-        @finish = color("#{type[2]}#{type[5] * aw}#{type[3]}")
+      def init(title, type)
+        @prefix = "#{col = "[27]#{type[4]}[/]"}#{' ' * @pl}"
+        @suffix = "#{Ansi.cursor_column(@parent.rcol)}#{col}"
+
+        width = parent.available_width - 2
+        @finish = "[27]#{type[2]}#{type[5] * width}#{type[3]}"
+
+        parent.puts(
+          if title
+            "[27]#{type[0]}#{type[5]}#{type[10]}[/]#{title}[27]#{type[9]}#{
+              type[5] * (width - 3 - Text.width(title))
+            }#{type[1]}"
+          else
+            "[27]#{type[0]}#{type[5] * width}#{type[1]}"
+          end
+        )
       end
     end
 
