@@ -25,12 +25,13 @@ ui.page do
     '2' => ['3bit-colors', '3/4-bit Color Support'],
     '3' => ['8bit-colors', '8-bit Color Support'],
     '4' => ['24bit-colors', '24-bit Color Support'],
-    '5' => ['message', 'Message Types'],
-    '6' => ['ls', 'Print List'],
-    '7' => %w[table Tables],
-    '8' => ['animate', 'Text Line Animation'],
-    '9' => ['progress', 'Progress Indication'],
-    '0' => ['query', 'User Queries'],
+    'a' => ['animate', 'Text Line Animation'],
+    'c' => ['columns', 'Print Columns'],
+    'l' => ['ls', 'Print List'],
+    'm' => ['message', 'Message Types'],
+    'p' => ['progress', 'Progress Indication'],
+    'q' => ['query', 'User Queries'],
+    't' => %w[table Tables],
     'ESC' => [nil, 'Exit Demo']
   }.each_pair do |key, (name, descr)|
     examples[key] = name

@@ -71,23 +71,8 @@ module NattyUI
 
     # @attribute [w] padding
     def padding=(value)
-      if value.is_a?(Enumerable)
-        case value.size
-        when 1, 2
-          @padding_top = @padding_bottom = as_uint(value[0])
-          @padding_right = @padding_left = as_uint(value[1])
-        when 3
-          @padding_top = as_uint(value[0])
-          @padding_right = @padding_left = as_uint(value[1])
-          @padding_bottom = as_uint(value[2])
-        else
-          @padding_top, @padding_right, @padding_bottom, @padding_left =
-            *value.map { as_uint(_1) }
-        end
-      else
-        @padding_top =
-          @padding_right = @padding_bottom = @padding_left = as_uint(value)
-      end
+      @padding_top, @padding_right, @padding_bottom, @padding_left =
+        as_padding(value)
     end
 
     # Padding at bottom of the cell.
@@ -183,10 +168,7 @@ module NattyUI
       options.key?(:frame_style) and @frame_style = options[:frame_style]
       options.key?(:min_width) and self.min_width = options[:min_width]
       options.key?(:padding) and self.padding = options[:padding]
-      value = try_uint(options, :padding_bottom) and @padding_bottom = value
-      value = try_uint(options, :padding_left) and @padding_left = value
-      value = try_uint(options, :padding_right) and @padding_right = value
-      value = try_uint(options, :padding_top) and @padding_top = value
+      assign_padding(options)
       options.key?(:style) and @style = options[:style]
       options.key?(:valign) and @valign = options[:valign]
       options.key?(:width) and self.width = options[:width]
@@ -218,10 +200,7 @@ module NattyUI
       @frame_style = options[:frame_style]
       self.min_width = options[:min_width]
       self.padding = options[:padding]
-      value = try_uint(options, :padding_bottom) and @padding_bottom = value
-      value = try_uint(options, :padding_left) and @padding_left = value
-      value = try_uint(options, :padding_right) and @padding_right = value
-      value = try_uint(options, :padding_top) and @padding_top = value
+      assign_padding(options)
       @style = options[:style]
       @valign = options[:valign]
       self.width = options[:width]
@@ -232,8 +211,27 @@ module NattyUI
 
     private
 
-    def try_uint(options, name)
-      [options[name].to_i, 0].max if options.key?(name)
+    def as_padding(value)
+      return Array.new(4, as_uint(value)) unless value.is_a?(Enumerable)
+      case value.size
+      when 1, 2
+        tb = as_uint(value[0])
+        rl = as_uint(value[1])
+        [tb, rl, tb, rl]
+      when 3
+        rl = as_uint(value[1])
+        [as_uint(value[0]), rl, as_uint(value[2]), rl]
+      else
+        value.map { as_uint(_1) }
+      end
+    end
+
+    def assign_padding(options)
+      opt = ->(n) { [options[n].to_i, 0].max if options.key?(n) }
+      value = opt[:padding_bottom] and @padding_bottom = value
+      value = opt[:padding_left] and @padding_left = value
+      value = opt[:padding_right] and @padding_right = value
+      value = opt[:padding_top] and @padding_top = value
     end
 
     def as_uint(value) = [value.to_i, 0].max
