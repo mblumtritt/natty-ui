@@ -12,6 +12,7 @@ directory 'spec/fixtures'
   attributes_list
   bbcode
   colors_list
+  columns
   illustration
   ls
   message
