@@ -5,12 +5,12 @@ require_relative '../lib/natty-ui'
 ui.h1 'NattyUI: Print Columns', space: 2
 
 LOREM = <<~IPSUM.lines(chomp: true)
-  Lorem ipsum dolor sit
-  amet, consectetur adipisicing
-  elit, sed do eiusmod tempor
+  Lorem ipsum dolor sit amet,
+  consectetur adipisicing elit,
+  sed do eiusmod tempor
   incididunt ut labore et
-  dolore [red]magna[/] aliqua. Ut
-  enim ad minim veniam, quis
+  dolore [red]magna[/] aliqua.
+  Ut enim ad minim veniam, quis
   nostrud exercitation ullamco
   laboris nisi ut aliquip ex
   ea commodo [b]consequat[/b].

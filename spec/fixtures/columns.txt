@@ -1,27 +1,24 @@
 
 ═══════ NattyUI: Print Columns ═══════
 
-╭───────────────────────╮╭───────────────────────────────╮
-│ Lorem ipsum dolor sit ││ amet, consectetur adipisicing │
-╰───────────────────────╯╰───────────────────────────────╯
-╭─────────────────────────────╮╭─────────────────────────╮
-│ elit, sed do eiusmod tempor ││ incididunt ut labore et │
-╰─────────────────────────────╯╰─────────────────────────╯
-╭─────────────────────────╮╭────────────────────────────╮
-│ dolore magna aliqua. Ut ││ enim ad minim veniam, quis │
-╰─────────────────────────╯╰────────────────────────────╯
-╭──────────────────────────────╮╭────────────────────────────╮
-│ nostrud exercitation ullamco ││ laboris nisi ut aliquip ex │
-╰──────────────────────────────╯╰────────────────────────────╯
-╭───────────────────────╮
-│ ea commodo consequat. │
-╰───────────────────────╯
+╭─────────────────────────────╮╭───────────────────────────────╮
+│ Lorem ipsum dolor sit amet, ││ consectetur adipisicing elit, │
+╰─────────────────────────────╯╰───────────────────────────────╯
+╭───────────────────────╮╭─────────────────────────╮╭──────────────────────╮
+│ sed do eiusmod tempor ││ incididunt ut labore et ││ dolore magna aliqua. │
+╰───────────────────────╯╰─────────────────────────╯╰──────────────────────╯
+╭───────────────────────────────╮╭──────────────────────────────╮
+│ Ut enim ad minim veniam, quis ││ nostrud exercitation ullamco │
+╰───────────────────────────────╯╰──────────────────────────────╯
+╭────────────────────────────╮╭───────────────────────╮
+│ laboris nisi ut aliquip ex ││ ea commodo consequat. │
+╰────────────────────────────╯╰───────────────────────╯
 ╒═════════════════════════╕╒════════════════════════╕╒═════════════════════════╕
 │                         ││                        ││                         │
-│  Lorem ipsum dolor sit  ││  elit, sed do eiusmod  ││  dolore magna aliqua.   │
-│  amet, consectetur adi  ││         tempor         ││                     Ut  │
-│  pisicing               ││  incididunt ut labore  ││  enim ad minim veniam,  │
-│                         ││           et           ││                   quis  │
-╘═════════════════════════╛│                        ││                         │
-                           ╘════════════════════════╛╘═════════════════════════╛
+│  Lorem ipsum dolor sit  ││  sed do eiusmod tempo  ││   dolore magna aliqua.  │
+│   amet,                 ││           r            ││  Ut enim ad minim veni  │
+│  consectetur adipisici  ││  incididunt ut labore  ││               am, quis  │
+│  ng elit,               ││           et           ││                         │
+│                         ││                        │╘═════════════════════════╛
+╘═════════════════════════╛╘════════════════════════╛                           
 
