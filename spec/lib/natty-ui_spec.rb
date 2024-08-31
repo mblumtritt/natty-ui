@@ -258,8 +258,4 @@ RSpec.describe NattyUI do
       end
     end
   end
-
-  xdescribe '.each_line' do
-    # TODO
-  end
 end
