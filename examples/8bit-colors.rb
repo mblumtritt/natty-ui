@@ -15,23 +15,37 @@ cube =
   end
 
 ui.columns do |cc|
-  cc.add(<<~COLORS, width: 32, padding: [0, 2, 1, 1])
-    System Colors
-    [#ff]#{0.upto(7).map(&color).join}
-    [#00]#{8.upto(0xf).map(&color).join}
-  COLORS
+  cc.add(
+    <<~COLORS,
+      System Colors
+      [#ff]#{0.upto(7).map(&color).join}
+      [#00]#{8.upto(0xf).map(&color).join}
+    COLORS
+    min_width: 32,
+    width: :max,
+    align: :center,
+    padding: [0, 2, 1, 1]
+  )
 
-  cc.add(<<~GRAYSCALE, width: 48, padding: [0, 2, 1, 1])
-    Grayscale
-    [#ff]#{0xe8.upto(0xf3).map(&color).join}
-    [#ff]#{0xf4.upto(0xff).map(&color).join}
-  GRAYSCALE
+  cc.add(
+    <<~GRAYSCALE,
+      Grayscale
+      [#ff]#{0xe8.upto(0xf3).map(&color).join}
+      [#ff]#{0xf4.upto(0xff).map(&color).join}
+    GRAYSCALE
+    min_width: 48,
+    width: :max,
+    align: :center,
+    padding: [0, 2, 1, 1]
+  )
 end
 
 ui.columns do |cc|
   cc.add_many(
     *0x10.step(0x2e, by: 6).map(&cube),
-    width: 24,
+    min_width: 24,
+    width: :max,
+    align: :center,
     padding: [0, 2, 1, 1]
   )
 end

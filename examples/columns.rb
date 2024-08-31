@@ -13,17 +13,18 @@ LOREM = <<~IPSUM.lines(chomp: true)
   enim ad minim veniam, quis
   nostrud exercitation ullamco
   laboris nisi ut aliquip ex
-  ea commodo [b]consequat[/b]. Duis
-  aute irure [bold green]dolor[/fg] in[/]
-  reprehenderit in voluptate
-  velit [underline]esse cillum[/] dolore eu
-  fugiat nulla pariatur.
-  Excepteur sint occaecat
-  cupidatat non proident,
-  sunt in culpa qui officia
-  deserunt mollit anim id
-  est laborum.
+  ea commodo [b]consequat[/b].
 IPSUM
 
-ui.columns *LOREM, padding: [0, 1], width: :content, frame: :default
+ui.columns(*LOREM, padding: [0, 1], width: :content, frame: :default)
+
+ui.columns do |cc|
+  cc.add LOREM[0, 2], align: :left
+  cc.add LOREM[2, 2], align: :center
+  cc.add LOREM[4, 2], align: :right
+  cc.padding = [1, 2]
+  cc.width = :max
+  cc.frame = :semi
+end
+
 ui.space
