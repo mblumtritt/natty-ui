@@ -26,8 +26,10 @@ module NattyUI
           Text.as_lines(
             args.map! { Ansi.blemish(_1) },
             kwargs[:max_width] ||
-              wrapper.screen_columns - @prefix_width -
-                (kwargs[:suffix_width] || Text.width(@suffix))
+              (
+                wrapper.screen_columns - @prefix_width -
+                  (kwargs[:suffix_width] || Text.width(@suffix))
+              )
           )
         diff = @lines.size - wrapper.screen_rows + 1
         @lines = @lines[diff, wrapper.screen_rows] if diff.positive?

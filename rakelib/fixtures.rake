@@ -26,6 +26,7 @@ directory 'spec/fixtures'
       file << `ANSI=1 NO_WAIT=1 #{FileUtils::RUBY} examples/#{name}.rb`
     end
   end
+
   FIXTURES << fname = "spec/fixtures/#{name}.txt"
   file fname => 'spec/fixtures' do |f|
     puts "generate: #{f.name.inspect}"

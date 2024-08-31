@@ -37,7 +37,7 @@ module NattyUI
 
     def min_width=(value)
       @min_width = as_uint(value)
-      @min_width = nil if @min_width.zero?
+      @min_width = nil if @min_width == 0
     end
 
     # Cell padding.

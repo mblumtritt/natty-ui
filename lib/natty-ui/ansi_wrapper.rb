@@ -12,7 +12,7 @@ module NattyUI
         @cursor -= 1 if @cursor.positive?
         return
       end
-      (@stream << Ansi::CURSOR_HIDE).flush if @cursor.zero?
+      (@stream << Ansi::CURSOR_HIDE).flush if @cursor == 0
       @cursor += 1
     end
 
@@ -125,7 +125,7 @@ module NattyUI
 
       def render
         return "#{@title} #{@spinner.next}#{" #{@info}" if @info}" if @spinner
-        percent = @max_value.zero? ? 100.0 : @value / @max_value
+        percent = @max_value == 0 ? 100.0 : @value / @max_value
         count = [(30 * percent).round, 30].min
         mv = @max_value.round.to_s
         "#{@title} [27 on27]#{'█' * count}[ec onec]#{

@@ -29,12 +29,9 @@ module NattyUI
     # @return [String] glyph definition
     def self.[](name)
       return @default if name == :default
+      return Text.embellish(name.to_s) unless name.is_a?(Symbol)
       Text.embellish(
-        if name.is_a?(Symbol)
-          @ll[name] or raise(ArgumentError, "invalid glyph type - #{name}")
-        else
-          name.to_s
-        end
+        @ll[name] || raise(ArgumentError, "invalid glyph type - #{name}")
       )
     end
 
