@@ -168,6 +168,7 @@ module NattyUI
       attr_accessor :size
 
       def variable? = @size > @min_width
+      def expandable? = @cell.width == :max
 
       def initialize(cell, max_width)
         cell.min_width ||= 1
@@ -199,7 +200,7 @@ module NattyUI
       private
 
       def obtain_min_width
-        return @overhead + @cell.min_width if @cell.width == :content
+        return @overhead + @cell.min_width if @cell.width.is_a?(Symbol)
         @overhead + (@cell.width || @cell.min_width)
       end
     end
@@ -213,7 +214,8 @@ module NattyUI
       def to_s
         as_rows
           .map! do |row|
-            optimize_row(row)
+            shrink(row)
+            expand(row)
             first = row.map!(&:to_column).shift
             row.empty? ? first : first.join(*row)
           end
@@ -241,13 +243,23 @@ module NattyUI
         rows
       end
 
-      def optimize_row(row)
+      def shrink(row)
         until row.sum(&:size) < @max_width
           var = row.find_all(&:variable?)
           break if var.empty?
           rm = var[0]
           var.each { |item| rm = item if item.size >= rm.size }
           rm.size -= 1
+        end
+      end
+
+      def expand(row)
+        until row.sum(&:size) == @max_width
+          var = row.find_all(&:expandable?)
+          break if var.empty?
+          rm = var[0]
+          var.each { |item| rm = item if item.size < rm.size }
+          rm.size += 1
         end
       end
     end

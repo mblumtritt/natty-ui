@@ -132,14 +132,20 @@ module NattyUI
     # @return [Symbol, nil]
     attr_accessor :valign
 
-    # Fixed width of the cell.
+    # Width of the cell.
+    # Can be unset, a fixed value or evaluated.
     #
-    # @return [Integer, nil]
+    # @return [Integer, :content, :max, nil]
     attr_reader :width
 
     def width=(value)
-      @width = value == :content ? :content : as_uint(value)
-      @width = nil if @width == 0
+      @width =
+        case value
+        when :content, :max, nil
+          value
+        else
+          (value = value.to_i).positive? ? value : nil
+        end
     end
 
     # @!visibility private
@@ -159,7 +165,7 @@ module NattyUI
     # @option options [Integer] :padding_top {padding_top}
     # @option options [String] :style {style}
     # @option options [Symbol] :valign {valign}
-    # @option options [Integer] :width {width}
+    # @option options [Integer, :content, :max] :width {width}
     # @return [Cell] itself
     def set(**options)
       return self if options.empty?
@@ -188,7 +194,7 @@ module NattyUI
     # @option options [Integer] :padding_top {padding_top}
     # @option options [String] :style {style}
     # @option options [Symbol] :valign {valign}
-    # @option options [Integer] :width {width}
+    # @option options [Integer, :content, :max] :width {width}
     def initialize(*lines, **options)
       @lines = lines.flatten
       if options.empty?
@@ -459,5 +465,94 @@ module NattyUI
     private
 
     def each = @ll.each { yield(_1) if _1 }
+  end
+
+  # Helper class to define a table.
+  #
+  # @see Features#table
+  class TableEx
+    def initialize = @ll = []
+
+    # Number of rows.
+    #
+    # @attribute [r] count
+    # @return [Integer]
+    def count = @ll.size
+
+    # Access a row.
+    #
+    # @param index [Integer] row index
+    # @return [Cell]
+    def at(index) = (@ll[index] ||= Columns.new)
+    alias [] at
+
+    # Add a new row.
+    #
+    # @see Cell#initialize
+    #
+    # @param texts [Array<#to_s>] texts to create cells
+    # @param options (see Cell#initialize)
+    # @return [Columns]
+    def add(*texts, **options)
+      @ll << (row = Columns.create(*texts, **options))
+      row
+    end
+    alias append add
+
+    # Delete the row at given position.
+    #
+    # @param index [Integer] delete position
+    # @return [Columns, nil]
+    def delete(index) = @ll.delete_at(index)
+
+    # Insert a new row at a position.
+    #
+    # @see Cell#initialize
+    #
+    # @param index [Integer] insert position
+    # @param texts [Array<#to_s>] texts to create cells
+    # @param options (see Cell#initialize)
+    # @return [Columns]
+    def insert(index, *texts, **options)
+      @ll.insert(index, (row = Columns.create(*texts, **options)))
+      row
+    end
+
+    # Prepend a new row.
+    #
+    # @see Cell#initialize
+    #
+    # @param texts [Array<#to_s>] texts to create cells
+    # @param options (see Cell#initialize)
+    # @return [Columns]
+    def prepend(*texts, **options) = insert(0, *texts, **options)
+
+    # Assign attributes to all rows.
+    #
+    # @see Cell#set
+    #
+    # @param options [Hash] attributes to assign
+    # @return [TableEx] itself
+    def set(**options)
+      @ll.each { _1&.set(**options) } unless options.empty?
+      self
+    end
+
+    # Assign attributes to a column.
+    #
+    # @see Cell#set
+    #
+    # @param index [Integer] column index
+    # @param options [Hash] attributes to assign
+    # @return [TableEx] itself
+    def set_column(index, **options)
+      @ll.each { _1&.at(index)&.set(**options) } unless options.empty?
+      self
+    end
+
+    # Convert the collection into an Array.
+    #
+    # @return [Array<Array<Cell>>]
+    def to_a = @ll.map(&:to_a)
   end
 end
