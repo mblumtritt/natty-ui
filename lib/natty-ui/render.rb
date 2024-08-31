@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative 'frame'
-
 module NattyUI
   module Render
     class Line
@@ -212,7 +210,7 @@ module NattyUI
       end
 
       def to_s
-        as_rows
+        as_rows(hyper_cells)
           .map! do |row|
             shrink(row)
             expand(row)
@@ -222,21 +220,20 @@ module NattyUI
           .join("\n")
       end
 
+      def hyper_cells
+        @cells.filter_map do |cell|
+          item = HyperCell.new(cell, @max_width)
+          item if item.min_width <= @max_width
+        end
+      end
+
       private
 
-      def as_rows
-        items =
-          @cells.filter_map do |cell|
-            item = HyperCell.new(cell, @max_width)
-            item if item.min_width <= @max_width
-          end
+      def as_rows(cells)
         rows = [current = []]
         cmw = 0
-        until items.empty?
-          item = items.shift
-          if (cmw += item.min_width) <= @max_width
-            next current << item
-          end
+        cells.each do |item|
+          next current << item if (cmw += item.min_width) <= @max_width
           rows << (current = [item])
           cmw = item.min_width
         end
@@ -245,22 +242,14 @@ module NattyUI
 
       def shrink(row)
         until row.sum(&:size) < @max_width
-          var = row.find_all(&:variable?)
-          break if var.empty?
-          rm = var[0]
-          var.each { |item| rm = item if item.size >= rm.size }
-          rm.size -= 1
+          break if (shrinkables = row.find_all(&:variable?)).empty?
+          shrinkables.max_by(&:size).size -= 1
         end
       end
 
       def expand(row)
-        until row.sum(&:size) == @max_width
-          var = row.find_all(&:expandable?)
-          break if var.empty?
-          rm = var[0]
-          var.each { |item| rm = item if item.size < rm.size }
-          rm.size += 1
-        end
+        return if (expandables = row.find_all(&:expandable?)).empty?
+        expandables.min_by(&:size).size += 1 until row.sum(&:size) == @max_width
       end
     end
   end
