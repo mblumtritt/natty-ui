@@ -2,6 +2,9 @@
 
 module NattyUI
   module Text
+    #
+    # based on Unicode v15.1.0
+    #
     module EastAsianWidth
       def self.[](ord) = WIDTH[LAST.bsearch_index { ord <= _1 }]
 

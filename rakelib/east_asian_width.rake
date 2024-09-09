@@ -33,12 +33,15 @@ end
 
 module EastAsianWidth
   def self.from_file(fname)
-    map = read_map(fname)
+    map, version = read_map(fname)
     <<~RUBY
       # frozen_string_literal: true
 
       module NattyUI
         module Text
+          #
+          # based on Unicode v#{version}
+          #
           module EastAsianWidth
             def self.[](ord) = WIDTH[LAST.bsearch_index { ord <= _1 }]
 
@@ -57,7 +60,11 @@ module EastAsianWidth
 
   def self.read_map(fname)
     widths = []
+    version = nil
     File.foreach(fname, chomp: true) do |line|
+      if version.nil? && (match = RE_VERSION.match(line))
+        next version = match[:ver]
+      end
       match = RE_DEFINITION.match(line) or next
       width = match[:cat] == 'Mn' ? 0 : TYPE[match[:type]]
       raise("unknown width type identifier - #{line.inspect}") unless width
@@ -74,10 +81,11 @@ module EastAsianWidth
     map[0xfffff] ||= 1
     map[0x10fffd] ||= -1
     map[0x7fffffff] ||= 1
-    map
+    [map, version || '<unknown>']
   end
 
   RE_DEFINITION =
     /^(?<first>\h+)(?:\.\.(?<last>\h+))?\s*;\s*(?<type>\w+)\s+#\s+(?<cat>[^ ]+)/
+  RE_VERSION = /^# EastAsianWidth-(?<ver>\d+\.\d+\.\d+)\.txt/
   TYPE = { 'N' => 1, 'H' => 1, 'Na' => 1, 'F' => 2, 'W' => 2, 'A' => -1 }.freeze
 end
