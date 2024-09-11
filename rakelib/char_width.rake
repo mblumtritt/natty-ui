@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-desc 'Build east asian width file'
-task 'build:eaw' => 'lib/natty-ui/text/east_asian_width.rb'
+desc 'Build char width file'
+task 'build:cw' => 'lib/natty-ui/text/char_width.rb'
 
-desc 'Remove east asian width file'
-task 'clobber:eaw' do
-  Rake::Cleaner.cleanup_files(['lib/natty-ui/text/east_asian_width.rb'])
+desc 'Remove char width file'
+task 'clobber:cw' do
+  Rake::Cleaner.cleanup_files(['lib/natty-ui/text/char_width.rb'])
 end
 
 directory 'tmp'
@@ -13,26 +13,28 @@ CLEAN << 'tmp'
 
 directory 'lib/natty-ui/text'
 
-file 'tmp/EastAsianWidth.txt' => 'tmp' do
-  Dir.chdir('./tmp') do
-    sh 'curl -O https://www.unicode.org/Public/UNIDATA/EastAsianWidth.txt'
-  end
+file 'tmp/EastAsianWidth.txt' => 'tmp' do |f|
+  sh "curl -o #{f.name} " \
+       'https://www.unicode.org/Public/UNIDATA/EastAsianWidth.txt'
 end
 
 file(
-  'lib/natty-ui/text/east_asian_width.rb' => %w[
+  'lib/natty-ui/text/char_width.rb' => %w[
     lib/natty-ui/text
     tmp/EastAsianWidth.txt
   ]
 ) do |f|
   puts "generate: #{f.name.inspect}"
-  File.open(f.name, mode: 'wx', textmode: true) do |file|
-    file.puts EastAsianWidth.from_file('tmp/EastAsianWidth.txt')
-  end
+  File.write(
+    f.name,
+    CharWidth.generate_from('tmp/EastAsianWidth.txt'),
+    mode: 'wx',
+    textmode: true
+  )
 end
 
-module EastAsianWidth
-  def self.from_file(fname)
+module CharWidth
+  def self.generate_from(fname)
     map, version = read_map(fname)
     <<~RUBY
       # frozen_string_literal: true
@@ -42,7 +44,7 @@ module EastAsianWidth
           #
           # based on Unicode v#{version}
           #
-          module EastAsianWidth
+          module CharWidth
             def self.[](ord) = WIDTH[LAST.bsearch_index { ord <= _1 }]
 
             LAST = [

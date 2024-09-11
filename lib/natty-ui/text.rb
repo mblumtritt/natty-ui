@@ -38,7 +38,7 @@ module NattyUI
         ord = char.ord
         return WIDTH_CONTROL_CHARS[ord] || 2 if ord < 0x20
         return 1 if ord < 0xa1
-        size = EastAsianWidth[ord]
+        size = CharWidth[ord]
         return @ambiguous_char_width if size == -1
         if size == 1 && char.size >= 2
           sco = char[1].ord
@@ -189,8 +189,8 @@ module NattyUI
       0x1f => 1
     }.compare_by_identity.freeze
 
-    autoload(:EastAsianWidth, File.join(__dir__, 'text', 'east_asian_width'))
-    private_constant :EastAsianWidth
+    autoload(:CharWidth, File.join(__dir__, 'text', 'char_width'))
+    private_constant :CharWidth
 
     @ambiguous_char_width = 1
   end
