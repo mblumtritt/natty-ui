@@ -12,7 +12,7 @@ module NattyUI
     #
     # @param [Array<#to_s>] args more objects to print
     # @param [Symbol, String] type frame type; see {NattyUI::Frame}
-    # @param [Integer, Array<Integer>] text padding
+    # @param [Integer, Array<Integer>] padding text padding
     # @yieldparam [Wrapper::Framed] framed the created section
     # @return [Object] the result of the code block
     # @return [Wrapper::Framed] itself, when no code block is given

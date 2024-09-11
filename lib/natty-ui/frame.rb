@@ -6,8 +6,8 @@ module NattyUI
   # @see Features#columns
   # @see Features#framed
   # @see Features#table
-  # @see Features::Cell#frame
-  # @see Features::Columns#frame
+  # @see Cell#frame
+  # @see Columns#frame
   module Frame
     # Define frame type used by default.
     #
