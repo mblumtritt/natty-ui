@@ -23,15 +23,7 @@ file(
     lib/natty-ui/text
     tmp/EastAsianWidth.txt
   ]
-) do |f|
-  puts "generate: #{f.name.inspect}"
-  File.write(
-    f.name,
-    CharWidth.generate_from('tmp/EastAsianWidth.txt'),
-    mode: 'wx',
-    textmode: true
-  )
-end
+) { |f| generate(f.name) { CharWidth.generate_from('tmp/EastAsianWidth.txt') } }
 
 module CharWidth
   def self.generate_from(fname)

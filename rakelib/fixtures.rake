@@ -21,17 +21,15 @@ directory 'spec/fixtures'
 ].each do |name|
   FIXTURES << fname = "spec/fixtures/#{name}.ansi"
   file fname => 'spec/fixtures' do |f|
-    puts "generate: #{f.name.inspect}"
-    File.open(f.name, mode: 'wx', textmode: true) do |file|
-      file << `ANSI=1 NO_WAIT=1 #{FileUtils::RUBY} examples/#{name}.rb`
+    generate(f.name) do
+      `ANSI=1 NO_WAIT=1 #{FileUtils::RUBY} examples/#{name}.rb`
     end
   end
 
   FIXTURES << fname = "spec/fixtures/#{name}.txt"
   file fname => 'spec/fixtures' do |f|
-    puts "generate: #{f.name.inspect}"
-    File.open(f.name, mode: 'wx', textmode: true) do |file|
-      file << `NO_COLOR=1 NO_WAIT=1 #{FileUtils::RUBY} examples/#{name}.rb`
+    generate(f.name) do
+      `NO_COLOR=1 NO_WAIT=1 #{FileUtils::RUBY} examples/#{name}.rb`
     end
   end
 end

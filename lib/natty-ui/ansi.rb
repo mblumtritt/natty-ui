@@ -12,7 +12,7 @@ module NattyUI
       #
       # @attribute [r] attribute_names
       # @return [Array<Symbol>] all attribute names
-      def attribute_names = SATTR.keys
+      def attribute_names = ATTRIBUTES_S.keys
 
       # Supported basic color names.
       #
@@ -20,7 +20,7 @@ module NattyUI
       #
       # @attribute [r] color_names
       # @return [Array<Symbol>] all basic color names
-      def color_names = SCLR.keys
+      def color_names = COLORS_S.keys
 
       # Defined named colors (24bit colors).
       #
@@ -223,10 +223,11 @@ module NattyUI
             .map do |arg|
               case arg
               when Symbol
-                SATTR[arg] || SCLR[arg] || color(arg.to_s) ||
+                ATTRIBUTES_S[arg] || COLORS_S[arg] || color(arg) ||
                   invalid_argument(arg)
               when String
-                ATTR[arg] || CLR[arg] || color(arg) || invalid_argument(arg)
+                ATTRIBUTES[arg] || COLORS[arg] || color(arg) ||
+                  invalid_argument(arg)
               when (0..255)
                 "38;5;#{arg}"
               when (256..511)
@@ -251,7 +252,7 @@ module NattyUI
       # @return [String] `str` converted and decorated with the ANSI `attributes`
       def embellish(str, *attributes, reset: true)
         attributes = self[*attributes]
-        attributes.empty? ? str.to_s : "#{attributes}#{str}#{"\e[0m" if reset}"
+        attributes.empty? ? str.to_s : "#{attributes}#{str}#{"\e[m" if reset}"
       end
 
       # Remove ANSI functions, attributes and colors from given string.
@@ -281,7 +282,7 @@ module NattyUI
         return if !attributes || (attributes = attributes.to_s.split).empty?
         "\e[#{
           attributes
-            .map! { ATTR[_1] || CLR[_1] || color(_1) || return }
+            .map! { ATTRIBUTES[_1] || COLORS[_1] || color(_1) || return }
             .join(';')
         }m"
       end
@@ -325,6 +326,33 @@ module NattyUI
         )
       end
 
+      def color(str)
+        if /\A(?<base>fg|bg|on|ul)?[_:]?#?(?<val>[[:xdigit:]]{1,6})\z/ =~ str
+          return(
+            case val.size
+            when 1, 2
+              "#{color_base(base)};5;#{val.hex}"
+            when 3
+              "#{color_base(base)};2;#{(val[0] * 2).hex};#{
+                (val[1] * 2).hex
+              };#{(val[2] * 2).hex}"
+            when 6
+              "#{color_base(base)};2;#{val[0, 2].hex};#{val[2, 2].hex};#{
+                val[4, 2].hex
+              }"
+            end
+          )
+        end
+        if /\A(?<base>fg|bg|on|ul)?[_:]?(?<val>[a-z]{3,}[0-9]{0,3})\z/ =~ str
+          val = NAMED_COLORS[val] and return "#{color_base(base)};#{val}"
+        end
+      end
+
+      def color_base(base)
+        return '48' if base == 'bg' || base == 'on'
+        base == 'ul' ? '58' : '38'
+      end
+
       def color_type(type)
         case type
         when :background, :bg, 'background', 'bg'
@@ -334,27 +362,6 @@ module NattyUI
         else
           38
         end
-      end
-
-      def color(val)
-        base = CLR_PREFIX[val[0, 2]]
-        idx = base ? 2 : 0
-        base ||= '38'
-        idx += 1 if val[idx] == '_' || val[idx] == ':'
-        idx += 1 if val[idx] == '#'
-        val = val[idx..]
-        return "#{base};5;#{val.hex}" if /\A[[:xdigit:]]{1,2}\z/.match?(val)
-        if /\A[[:xdigit:]]{6}\z/.match?(val)
-          return "#{base};2;#{val[0, 2].hex};#{val[2, 2].hex};#{val[4, 2].hex}"
-        end
-        if /\A[[:xdigit:]]{3}\z/.match?(val)
-          return(
-            "#{base};2;#{(val[0] * 2).hex};#{
-              (val[1] * 2).hex
-            };#{(val[2] * 2).hex}"
-          )
-        end
-        code = NAMED_COLORS[val] and return "#{base};#{code}"
       end
     end
 
@@ -366,199 +373,13 @@ module NattyUI
 
     ESC = /(#{CSI})|(#{OSC})/
 
-    CLR_PREFIX = {
-      'fg' => '38',
-      'bg' => '48',
-      'ul' => '58',
-      'on' => '48'
-    }.freeze
-
     PI2_THIRD = 2 * Math::PI / 3
     PI4_THIRD = 4 * Math::PI / 3
 
-    ATTR =
-      Module
-        .new do
-          def self.to_hash
-            map = {
-              'reset' => '',
-              # "new underline"
-              'curly_underline_off' => '4:0',
-              # 'underline' => '4:1',
-              # 'double_underline' => '4:2',
-              'curly_underline' => '4:3',
-              'dotted_underline' => '4:4',
-              'dashed_underline' => '4:5'
-            }
-            add = ->(s, n) { n.each_with_index { |a, idx| map[a] = s + idx } }
-            add[
-              1,
-              %w[
-                bold
-                faint
-                italic
-                underline
-                blink
-                rapid_blink
-                invert
-                hide
-                strike
-                primary_font
-                font1
-                font2
-                font3
-                font4
-                font5
-                font6
-                font7
-                font8
-                font9
-                fraktur
-                double_underline
-                bold_off
-                italic_off
-                underline_off
-                blink_off
-                proportional
-                invert_off
-                hide_off
-                strike_off
-              ]
-            ]
-            add[
-              50,
-              %w[
-                proportional_off
-                framed
-                encircled
-                overlined
-                framed_off
-                overlined_off
-              ]
-            ]
-            add[73, %w[superscript subscript superscript_off]]
-
-            map['dashed_underline_off'] = map['curly_underline_off']
-            map['default_font'] = map['primary_font']
-            map['dotted_underline_off'] = map['curly_underline_off']
-            map['double_underline_off'] = map['underline_off']
-            map['encircled_off'] = map['framed_off']
-            map['faint_off'] = map['bold_off']
-            map['fraktur_off'] = map['italic_off']
-            map['reveal'] = map['hide_off']
-            map['subscript_off'] = map['superscript_off']
-
-            add_alias =
-              proc do |name, org_name|
-                map[name] = map[org_name]
-                map["/#{name}"] = map["#{org_name}_off"]
-              end
-            add_alias['b', 'bold']
-            add_alias['conceal', 'hide']
-            add_alias['cu', 'curly_underline']
-            add_alias['dau', 'dashed_underline']
-            add_alias['dim', 'faint']
-            add_alias['dou', 'dotted_underline']
-            add_alias['h', 'hide']
-            add_alias['i', 'italic']
-            add_alias['inv', 'invert']
-            add_alias['ovr', 'overlined']
-            add_alias['slow_blink', 'blink']
-            add_alias['spacing', 'proportional']
-            add_alias['sub', 'subscript']
-            add_alias['sup', 'superscript']
-            add_alias['u', 'underline']
-            add_alias['uu', 'double_underline']
-
-            map.merge!(
-              map
-                .filter_map do |name, att|
-                  if name.end_with?('_off')
-                    ["/#{name.delete_suffix('_off')}", att]
-                  end
-                end
-                .to_h
-            )
-          end
-        end
-        .to_hash
-        .freeze
-
-    CLR =
-      Module
-        .new do
-          def self.to_hash
-            clr = {
-              0 => 'black',
-              1 => 'red',
-              2 => 'green',
-              3 => 'yellow',
-              4 => 'blue',
-              5 => 'magenta',
-              6 => 'cyan',
-              7 => 'white'
-            }
-            map = {}
-            add = ->(s, p) { clr.each_pair { |i, n| map["#{p}#{n}"] = s + i } }
-            ul = ->(r, g, b) { "58;2;#{r};#{g};#{b}" }
-            add[30, nil]
-            map['default'] = 39
-            add[90, 'bright_']
-            add[30, 'fg_']
-            map['fg_default'] = 39
-            map['/fg'] = 39
-            add[90, 'fg_bright_']
-            add[40, 'bg_']
-            map['bg_default'] = 49
-            map['/bg'] = 49
-            add[100, 'bg_bright_']
-            add[40, 'on_']
-            map['on_default'] = 49
-            add[100, 'on_bright_']
-            map.merge!(
-              'ul_black' => ul[0, 0, 0],
-              'ul_red' => ul[128, 0, 0],
-              'ul_green' => ul[0, 128, 0],
-              'ul_yellow' => ul[128, 128, 0],
-              'ul_blue' => ul[0, 0, 128],
-              'ul_magenta' => ul[128, 0, 128],
-              'ul_cyan' => ul[0, 128, 128],
-              'ul_white' => ul[128, 128, 128],
-              'ul_default' => '59',
-              '/ul' => '59',
-              'ul_bright_black' => ul[64, 64, 64],
-              'ul_bright_red' => ul[255, 0, 0],
-              'ul_bright_green' => ul[0, 255, 0],
-              'ul_bright_yellow' => ul[255, 255, 0],
-              'ul_bright_blue' => ul[0, 0, 255],
-              'ul_bright_magenta' => ul[255, 0, 255],
-              'ul_bright_cyan' => ul[0, 255, 255],
-              'ul_bright_white' => ul[255, 255, 255]
-            )
-          end
-        end
-        .to_hash
-        .freeze
-
-    SATTR =
-      ATTR.to_a.sort!.to_h.transform_keys!(&:to_sym).compare_by_identity.freeze
-    SCLR =
-      CLR.to_a.sort!.to_h.transform_keys!(&:to_sym).compare_by_identity.freeze
-
     autoload(:NAMED_COLORS, File.join(__dir__, 'ansi', 'named_colors'))
-
-    private_constant(
-      :ESC,
-      :CLR_PREFIX,
-      :PI2_THIRD,
-      :PI4_THIRD,
-      :SATTR,
-      :CLR,
-      :ATTR,
-      :SCLR,
-      :NAMED_COLORS
-    )
+    private_constant(:ESC, :PI2_THIRD, :PI4_THIRD, :NAMED_COLORS)
   end
 end
 
+require_relative 'ansi/attributes'
 require_relative 'ansi/constants'
