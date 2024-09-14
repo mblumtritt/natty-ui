@@ -160,12 +160,12 @@ module NattyUI
   StdErr = stderr_is_stdout? ? StdOut : new(STDERR)
 
   dir = __dir__
-  autoload(:Animation, File.join(dir, 'natty-ui', 'animation'))
-  autoload(:Frame, File.join(dir, 'natty-ui', 'frame'))
-  autoload(:Glyph, File.join(dir, 'natty-ui', 'glyph'))
-  autoload(:KEY_MAP, File.join(dir, 'natty-ui', 'key_map'))
-  autoload(:Render, File.join(dir, 'natty-ui', 'render'))
-  autoload(:Spinner, File.join(dir, 'natty-ui', 'spinner'))
+  autoload :Animation, File.join(dir, 'natty-ui', 'animation')
+  autoload :Frame, File.join(dir, 'natty-ui', 'frame')
+  autoload :Glyph, File.join(dir, 'natty-ui', 'glyph')
+  autoload :KEY_MAP, File.join(dir, 'natty-ui', 'key_map')
+  autoload :Render, File.join(dir, 'natty-ui', 'render')
+  autoload :Spinner, File.join(dir, 'natty-ui', 'spinner')
 
   private_constant :Animation, :KEY_MAP, :Render
 

@@ -81,7 +81,7 @@ module NattyUI
       count = @lines_written
       lambda do
         if (c = @lines_written - count).nonzero?
-          @stream << Ansi.cursor_prev_line(c) << Ansi.screen_erase(:below) <<
+          @stream << Ansi.cursor_prev_line(c) << Ansi.screen_erase_below <<
             Ansi::CURSOR_FIRST_COLUMN
           @lines_written -= c
         end
@@ -173,7 +173,7 @@ module NattyUI
 
       def initialize(...)
         super
-        @prefix = "#{Ansi::FRAME_COLOR}#{@prefix}#{Ansi::RESET}"
+        @prefix = "#{Ansi::FRAME_COLOR}▍#{Ansi::RESET} "
       end
     end
 

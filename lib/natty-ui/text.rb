@@ -7,10 +7,10 @@ module NattyUI
     class << self
       def plain_but_ansi(str)
         (str = str.to_s).empty? and return str
-        str.gsub(BBCODE) do
+        str.gsub(BBCODE) do |match_str|
           match = Regexp.last_match[1]
           next "[#{match[1..]}]" if match[0] == '\\'
-          match == '/' || Ansi.try_convert(match) ? nil : "[#{match}]"
+          match == '/' || Ansi.try_convert(match) ? nil : match_str
         end
       end
 
@@ -18,28 +18,26 @@ module NattyUI
         (str = str.to_s).empty? and return str
         reset = false
         str =
-          str.gsub(BBCODE) do
+          str.gsub(BBCODE) do |match_str|
             match = Regexp.last_match[1]
             next "[#{match[1..]}]" if match[0] == '\\'
             if match == '/'
               reset = false
               next Ansi::RESET
             end
-            ansi = Ansi.try_convert(match)
-            ansi ? reset = ansi : "[#{match}]"
+            (ansi = Ansi.try_convert(match)) ? reset = ansi : match_str
           end
-        reset ? "#{str}#{Ansi::RESET}" : str
+        reset ? str + Ansi::RESET : str
       end
 
-      def plain(str) = Ansi.blemish(plain_but_ansi(str))
+      def plain(str) = Ansi.undecorate(plain_but_ansi(str))
 
       # works for UTF-8 chars only!
       def char_width(char)
         ord = char.ord
         return WIDTH_CONTROL_CHARS[ord] || 2 if ord < 0x20
         return 1 if ord < 0xa1
-        size = CharWidth[ord]
-        return @ambiguous_char_width if size == -1
+        return @ambiguous_char_width if (size = CharWidth[ord]) == -1
         if size == 1 && char.size >= 2
           sco = char[1].ord
           # Halfwidth Dakuten Handakuten
@@ -153,7 +151,16 @@ module NattyUI
 
     UTF_8 = Encoding::UTF_8
     BBCODE = /(?:\[((?~[\[\]]))\])/
-    WIDTH_SCANNER = /\G(?:(\1)|(\2)|(#{Ansi::CSI})|(#{Ansi::OSC})|(\X))/
+
+    WIDTH_SCANNER =
+      /
+        \G(?:(\1)|(\2)
+        |
+        (\e\[[\d;:\?]*[ABCDEFGHJKSTfminsuhl])
+        |
+        (\e\]\d+(?:;[^;\a\e]+)*(?:\a|\e\\))|(\X))
+      /x
+
     WIDTH_CONTROL_CHARS = {
       0x00 => 0,
       0x01 => 1,
@@ -189,7 +196,7 @@ module NattyUI
       0x1f => 1
     }.compare_by_identity.freeze
 
-    autoload(:CharWidth, File.join(__dir__, 'text', 'char_width'))
+    autoload :CharWidth, File.join(__dir__, 'text', 'char_width')
     private_constant :CharWidth
 
     @ambiguous_char_width = 1

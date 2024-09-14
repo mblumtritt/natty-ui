@@ -9,7 +9,7 @@ def fixture(name) = File.read(File.join(__dir__, 'fixtures', name))
 def run_example(name, ansi: true) = ruby("./examples/#{name}.rb", ansi: ansi)
 
 def ruby(*args, ansi:)
-  cmd = ["#{ansi ? 'ANSI' : 'NO_COLOR'}=1", 'NO_WAIT=1', RUBY, '--disable-all']
+  cmd = ["#{ansi ? 'ANSI' : 'NO_COLOR'}=1", 'NO_WAIT=1', RUBY]
   `#{(cmd + args).join(' ')}`
 end
 

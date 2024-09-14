@@ -134,7 +134,10 @@ RSpec.describe NattyUI do
 
   describe '.plain' do
     let(:all_attributes) do
-      (NattyUI::Ansi.attribute_names + NattyUI::Ansi.color_names)
+      (
+        NattyUI::Ansi.attributes + NattyUI::Ansi.colors +
+          NattyUI::Ansi.named_colors
+      )
     end
 
     it 'removes embedded ANSI attributes' do

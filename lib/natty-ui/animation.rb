@@ -24,7 +24,7 @@ module NattyUI
         @prefix_width = kwargs[:prefix_width] || Text.width(@prefix)
         @lines =
           Text.as_lines(
-            args.map! { Ansi.blemish(_1) },
+            args.map! { Ansi.undecorate(_1) },
             kwargs[:max_width] ||
               (
                 wrapper.screen_columns - @prefix_width -
