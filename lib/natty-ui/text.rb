@@ -5,47 +5,12 @@ require_relative 'ansi'
 module NattyUI
   module Text
     class << self
-      def plain_but_ansi(str)
-        (str = str.to_s).empty? and return str
-        str.gsub(BBCODE) do
-          match = Regexp.last_match[1]
-          if match[0] == '/'
-            next if match.size == 1
-            next "[#{match[1..]}]" if match[1] == '/'
-          end
-          Ansi.try_convert(match) ? nil : "[#{match}]"
-        end
-      end
-
-      def plain(str) = Ansi.blemish(plain_but_ansi(str))
-
-      def embellish(str)
-        (str = str.to_s).empty? and return str
-        reset = false
-        str =
-          str.gsub(BBCODE) do
-            match = Regexp.last_match[1]
-            if match[0] == '/'
-              if match.size == 1
-                reset = false
-                next Ansi::RESET
-              end
-              next "[#{match[1..]}]" if match[1] == '/'
-            end
-
-            ansi = Ansi.try_convert(match)
-            ansi ? reset = ansi : "[#{match}]"
-          end
-        reset ? "#{str}#{Ansi::RESET}" : str
-      end
-
       # works for UTF-8 chars only!
       def char_width(char)
         ord = char.ord
         return WIDTH_CONTROL_CHARS[ord] || 2 if ord < 0x20
         return 1 if ord < 0xa1
-        size = EastAsianWidth[ord]
-        return @ambiguous_char_width if size == -1
+        return @ambiguous_char_width if (size = CharWidth[ord]) == -1
         if size == 1 && char.size >= 2
           sco = char[1].ord
           # Halfwidth Dakuten Handakuten
@@ -55,7 +20,7 @@ module NattyUI
       end
 
       def width(str)
-        return 0 if (str = plain_but_ansi(str)).empty?
+        return 0 if (str = Ansi.unbbcode(str)).empty?
         str = str.encode(UTF_8) if str.encoding != UTF_8
         width = 0
         in_zero_width = false
@@ -70,10 +35,12 @@ module NattyUI
         width
       end
 
-      def each_line_plain(strs, max_width)
+      def each_line_plain(strs, max_width, embellish = true)
         return if (max_width = max_width.to_i) < 1
         strs.each do |str|
-          plain_but_ansi(str).each_line(chomp: true) do |line|
+          (embellish ? Ansi.unbbcode(str) : str.to_s).each_line(
+            chomp: true
+          ) do |line|
             next yield(line, 0) if line.empty?
             empty = String.new(encoding: line.encoding)
             current = empty.dup
@@ -108,13 +75,13 @@ module NattyUI
         ret
       end
 
-      def each_line(strs, max_width)
+      def each_line(strs, max_width, embellish = true)
         return if (max_width = max_width.to_i) < 1
         strs.each do |str|
           str
             .to_s
             .each_line(chomp: true) do |line|
-              line = embellish(line)
+              line = Ansi.bbcode(line) if embellish
               next yield(line, 0) if line.empty?
               current = String.new(encoding: line.encoding)
               seq = current.dup
@@ -157,7 +124,16 @@ module NattyUI
 
     UTF_8 = Encoding::UTF_8
     BBCODE = /(?:\[((?~[\[\]]))\])/
-    WIDTH_SCANNER = /\G(?:(\1)|(\2)|(#{Ansi::CSI})|(#{Ansi::OSC})|(\X))/
+
+    WIDTH_SCANNER =
+      /
+        \G(?:(\1)|(\2)
+        |
+        (\e\[[\d;:\?]*[ABCDEFGHJKSTfminsuhl])
+        |
+        (\e\]\d+(?:;[^;\a\e]+)*(?:\a|\e\\))|(\X))
+      /x
+
     WIDTH_CONTROL_CHARS = {
       0x00 => 0,
       0x01 => 1,
@@ -193,8 +169,8 @@ module NattyUI
       0x1f => 1
     }.compare_by_identity.freeze
 
-    autoload(:EastAsianWidth, File.join(__dir__, 'text', 'east_asian_width'))
-    private_constant :EastAsianWidth
+    autoload :CharWidth, File.join(__dir__, 'text', 'char_width')
+    private_constant :CharWidth
 
     @ambiguous_char_width = 1
   end

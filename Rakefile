@@ -18,3 +18,8 @@ desc 'Run YARD development server'
 task('doc:dev' => :clobber) { exec('yard server --reload') }
 
 task(:default) { exec('rake --tasks') }
+
+def generate(fname, content = nil)
+  puts "generate: #{fname.inspect}"
+  File.write(fname, content || yield, mode: 'wx', textmode: true)
+end

@@ -4,6 +4,7 @@ require_relative 'ansi'
 
 module NattyUI
   # Helper class to select spinner types.
+  #
   # @see Features#progress
   module Spinner
     class << self
@@ -16,11 +17,17 @@ module NattyUI
       end
 
       # Defined spinner type names.
+      # Default values: `:bar`, `:blink`, `:blocks`, `:bounce`, `:bounce2`,
+      # `:bounce3`, `:bounce4`, `:circle`, `:colors`, `:dots`, `:dots2`,
+      # `:dots3`, `:dots4`, `:dots5`, `:move`, `:move2`, `:move3`, `:move4`,
+      # `:pulse`, `:slide`, `:slide2`, `:slide3`, `:slide4`, `:slide5`,
+      # `:snake`, `:stod`, `:swap`, `:vintage`
+      #
       # @see []
       #
       # @attribute [r] self.names
       # @return [Array<Symbol>] supported attribute names
-      def names = @all.keys
+      def names = @ll.keys
 
       # @param name [Symbol, #to_a, #to_s]
       #   defined type name (see {.names})
@@ -30,7 +37,7 @@ module NattyUI
         return @default if name == :default
         parts =
           if name.is_a?(Symbol)
-            @all[name] or raise(ArgumentError, "invalid spinner type - #{name}")
+            @ll[name] or raise(ArgumentError, "invalid spinner type - #{name}")
           else
             name
           end
@@ -84,7 +91,7 @@ module NattyUI
     end
 
     @style = Ansi[:bold, 220]
-    @all = {
+    @ll = {
       bar: '▁▂▃▄▅▆▇█▇▆▅▄▃▂',
       blink: '■□▪▫',
       blocks: '▖▘▝▗',

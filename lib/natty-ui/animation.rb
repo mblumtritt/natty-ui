@@ -2,32 +2,34 @@
 
 module NattyUI
   module Animation
-    def self.names = @all.keys
+    def self.names = @ll.keys
 
     def self.[](name)
       return if name.nil?
-      klass = @all[name] || @all[:default]
+      klass = @ll[name] || @ll[:default]
       return klass unless klass.is_a?(String)
       require(klass)
-      klass = @all[name] and return klass
+      klass = @ll[name] and return klass
       raise(LoadError, "unknown animation - #{name}")
     end
 
-    def self.define(**kwargs) = @all.merge!(kwargs)
+    def self.define(**kwargs) = @ll.merge!(kwargs)
 
     class Base
       attr_reader :lines_written
 
       def initialize(wrapper, args, kwargs)
-        @prefix = Text.embellish(kwargs[:prefix])
-        @suffix = Text.embellish(kwargs[:suffix])
+        @prefix = Ansi.bbcode(kwargs[:prefix])
+        @suffix = Ansi.bbcode(kwargs[:suffix])
         @prefix_width = kwargs[:prefix_width] || Text.width(@prefix)
         @lines =
           Text.as_lines(
-            args.map! { Ansi.blemish(_1) },
+            args.map! { Ansi.undecorate(_1) },
             kwargs[:max_width] ||
-              wrapper.screen_columns - @prefix_width -
-                (kwargs[:suffix_width] || Text.width(@suffix))
+              (
+                wrapper.screen_columns - @prefix_width -
+                  (kwargs[:suffix_width] || Text.width(@suffix))
+              )
           )
         diff = @lines.size - wrapper.screen_rows + 1
         @lines = @lines[diff, wrapper.screen_rows] if diff.positive?
@@ -58,7 +60,7 @@ module NattyUI
     private_constant :Base
 
     dir = __dir__
-    @all = {
+    @ll = {
       binary: "#{dir}/animation/binary",
       default: "#{dir}/animation/default",
       matrix: "#{dir}/animation/matrix",

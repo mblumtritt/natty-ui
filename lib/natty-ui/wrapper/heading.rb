@@ -53,11 +53,11 @@ module NattyUI
           @parent.space(before)
         @parent.puts(
           title,
-          prefix: "#{Ansi[39]}#{enclose} #{Ansi[:bold, 255]}",
+          prefix: "#{Ansi::FRAME_COLOR}#{enclose} #{Ansi[:bold, 255]}",
           suffix: " #{Ansi[:bold_off, 39]}#{enclose}#{Ansi::RESET}",
           max_width: available_width - 2 - (enclose.size * 2)
         )
-        @parent.space(space - before) if before
+        before ? @parent.space(space - before) : @parent
       end
     end
   end

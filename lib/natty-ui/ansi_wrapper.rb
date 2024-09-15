@@ -12,7 +12,7 @@ module NattyUI
         @cursor -= 1 if @cursor.positive?
         return
       end
-      (@stream << Ansi::CURSOR_HIDE).flush if @cursor.zero?
+      (@stream << Ansi::CURSOR_HIDE).flush if @cursor == 0
       @cursor += 1
     end
 
@@ -31,25 +31,26 @@ module NattyUI
         @stream.flush
         return self
       end
-      (@stream << Ansi::SCREEN_BLANK).flush
+      (@stream << Ansi::SCREEN_ALTERNATE).flush
       begin
         yield(self)
       ensure
-        (@stream << Ansi::SCREEN_UNBLANK).flush
+        (@stream << Ansi::SCREEN_ALTERNATE_OFF).flush
       end
     end
 
     def cls
-      (@stream << Ansi::CLS).flush
+      (@stream << CLS).flush
       self
     end
 
     protected
 
     def pprint(strs, opts)
-      prefix = opts[:prefix] and prefix = Text.embellish(prefix)
-      suffix = opts[:suffix] and suffix = Text.embellish(suffix)
+      prefix = opts[:prefix] and prefix = Ansi.bbcode(prefix)
+      suffix = opts[:suffix] and suffix = Ansi.bbcode(suffix)
       return yield("#{prefix}#{suffix}") if strs.empty?
+      embellish = opts[:embellish] != :skip
       max_width =
         opts.fetch(:max_width) do
           screen_columns - (opts[:prefix_width] || Text.width(prefix)) -
@@ -57,12 +58,12 @@ module NattyUI
         end
       case opts[:align]
       when :right
-        Text.each_line(strs, max_width) do |line, width|
+        Text.each_line(strs, max_width, embellish) do |line, width|
           width = max_width - width
           yield("#{prefix}#{' ' * width}#{line}#{suffix}")
         end
       when :center
-        Text.each_line(strs, max_width) do |line, width|
+        Text.each_line(strs, max_width, embellish) do |line, width|
           width = max_width - width
           right = width / 2
           yield(
@@ -70,7 +71,9 @@ module NattyUI
           )
         end
       else
-        Text.each_line(strs, max_width) { yield("#{prefix}#{_1}#{suffix}") }
+        Text.each_line(strs, max_width, embellish) do |line|
+          yield("#{prefix}#{line}#{suffix}")
+        end
       end
     end
 
@@ -78,7 +81,7 @@ module NattyUI
       count = @lines_written
       lambda do
         if (c = @lines_written - count).nonzero?
-          @stream << Ansi.cursor_prev_line(c) << Ansi.screen_erase(:below) <<
+          @stream << Ansi.cursor_prev_line(c) << Ansi.screen_erase_below <<
             Ansi::CURSOR_FIRST_COLUMN
           @lines_written -= c
         end
@@ -122,7 +125,7 @@ module NattyUI
 
       def render
         return "#{@title} #{@spinner.next}#{" #{@info}" if @info}" if @spinner
-        percent = @max_value.zero? ? 100.0 : @value / @max_value
+        percent = @max_value == 0 ? 100.0 : @value / @max_value
         count = [(30 * percent).round, 30].min
         mv = @max_value.round.to_s
         "#{@title} [27 on27]#{'█' * count}[ec onec]#{
@@ -170,19 +173,29 @@ module NattyUI
 
       def initialize(...)
         super
-        @prefix = "#{Ansi[39]}#{@prefix}#{Ansi::RESET}"
+        @prefix = "#{Ansi::FRAME_COLOR}▍#{Ansi::RESET} "
       end
     end
 
     class Framed < Framed
-      def color(str) = "#{Ansi[39]}#{str}#{Ansi::RESET}"
+      protected
 
-      def init(type)
-        @prefix = "#{color(type[4])} "
-        @suffix = "#{Ansi.cursor_column(parent.rcol)}#{color(type[4])}"
-        aw = @parent.available_width - 2
-        parent.puts(color("#{type[0]}#{type[5] * aw}#{type[1]}"))
-        @finish = color("#{type[2]}#{type[5] * aw}#{type[3]}")
+      def init(title, type)
+        @prefix = "#{col = "[27]#{type[4]}[/]"}#{' ' * @pl}"
+        @suffix = "#{Ansi.cursor_column(@parent.rcol)}#{col}"
+
+        width = parent.available_width - 2
+        @finish = "[27]#{type[2]}#{type[5] * width}#{type[3]}"
+
+        parent.puts(
+          if title
+            "[27]#{type[0]}#{type[5]}#{type[10]}[/]#{title}[27]#{type[9]}#{
+              type[5] * (width - 3 - Text.width(title))
+            }#{type[1]}"
+          else
+            "[27]#{type[0]}#{type[5] * width}#{type[1]}"
+          end
+        )
       end
     end
 
@@ -226,6 +239,8 @@ module NattyUI
       include ProgressAttributes
       include TaskMethods
     end
+
+    CLS = "#{Ansi::CURSOR_HOME}#{Ansi::SCREEN_ERASE}".freeze
   end
 
   private_constant :AnsiWrapper

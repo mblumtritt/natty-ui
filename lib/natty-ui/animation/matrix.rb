@@ -6,7 +6,7 @@ module NattyUI
       protected
 
       def write(stream)
-        plains = @lines.map { |line, _| Text.plain(line) }
+        plains = @lines.map { |line, _| Ansi.plain(line) }
         encs = @lines.map { Array.new(_2) { CHARS.sample }.join }
         poss = @lines.map { Array.new(_2, &:itself).shuffle }
         stream << attribute(:style, :default)
@@ -19,7 +19,7 @@ module NattyUI
               pos.clear
             else
               enc = encs[idx]
-              pos.pop(count).each { enc[_1] = line[_1] }
+              pos.pop(count).each { enc[_1] = line[_1] || ' ' }
               pos.sample(pos.size / 3).each { enc[_1] = CHARS.sample }
             end
             puts(stream, enc)
@@ -28,18 +28,6 @@ module NattyUI
           sleep(0.1)
         end
         super
-      end
-
-      def print2(line)
-        line = Text.plain(line)
-        str = Array.new(line.size) { CHARS.sample }.join
-        pos = Array.new(line.size, &:itself).shuffle
-        until pos.size < 4
-          pos.shift(pos.size / 4).each { str[_1] = line[_1] }
-          pos.sample(pos.size / 2).each { str[_1] = CHARS.sample }
-          (@stream << "#{@prefix}#{str}").flush
-          sleep(0.08)
-        end
       end
 
       CHARS = '2598Z*):.\=+-¦|_ｦｱｳｴｵｶｷｹｺｻｼｽｾｿﾀﾂﾃﾅﾆﾇﾈﾊﾋﾎﾏﾐﾑﾒﾓﾔﾕﾗﾘﾜ'.chars.freeze

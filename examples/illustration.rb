@@ -20,25 +20,25 @@ ui.table(type: :undecorated) do |table|
         dotted_underline
         dashed_underline
         blink
-      ].map { "[#{_1}]#{_1.tr('_', ' ')}[/]" }.join(', ')
+      ].map { "[#{_1}]#{_1.tr('_', ' ')}[/#{_1}]" }.join(', ')
     }, and even rarely supported like [fraktur]fraktur[/fraktur]."
   )
 
   table.add('Colors', <<~TEXT)
-    ✓ [green]3/4-bit color[/]         ✓ [ff7f50]Truecolor (16.7 million)
-    ✓ [1b]8-bit color[/]           ✓ [bright_yellow]Dumb terminals
-    ✓ [bright_blue]NO_COLOR convention
+    ✓ [palegreen]3/4-bit color[/fg]         ✓ [ff7f50]Truecolor (16.7 million)
+    ✓ [skyblue]8-bit color[/fg]           ✓ [gold]Dumb terminals
+    ✓ [tan1]NO_COLOR convention
   TEXT
 
   table.add(
     'Markup',
-    '[0c]You can style your text using a [i]BBCode[/i]-like syntax.'
+    '[deepskyblue]You can style your text using a [i]BBCode[/i]-like syntax.'
   )
 
   table.add('Layout', <<~TEXT)
     🎩 heading elements     📏 horizontal rulers
-    📝 messages             [yellow]🄵[/]  framed blocks
-    [blue]┼┼[/] tables
+    📝 messages             [yellow]🄵[/fg]  framed blocks
+    [blue]┼┼[/fg] tables
   TEXT
 
   table.add('Tools', <<~TEXT)
@@ -53,7 +53,7 @@ ui.table(type: :undecorated) do |table|
   TEXT
 
   table.align_column(0, :center)
-  table.style_column(0, :red)
+  table.style_column(0, 'indianred1')
 end
 
 ui.space

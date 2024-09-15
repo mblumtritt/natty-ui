@@ -36,7 +36,7 @@ module NattyUI
 
       def draw(question)
         wrapper = @parent.wrapper
-        glyph = NattyUI :Glyph[:query]
+        glyph = NattyUI::Glyph[:query]
         @parent.print(
           question,
           prefix: "#{glyph} #{Ansi[255]}",
@@ -46,7 +46,7 @@ module NattyUI
         (wrapper.stream << ANSI_PREFIX).flush if wrapper.ansi?
       end
 
-      ANSI_PREFIX = Ansi::RESET + Ansi::ITALIC
+      ANSI_PREFIX = Ansi[:reset, :italic].freeze
       ANSI_FINISH = Ansi::RESET + Ansi::LINE_PREVIOUS + Ansi::LINE_ERASE
       private_constant :ANSI_PREFIX, :ANSI_FINISH
     end

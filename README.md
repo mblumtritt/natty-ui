@@ -10,7 +10,7 @@ This is the beautiful, nice, nifty, fancy, neat, pretty, cool, rich, lovely, nat
 
 Here you find elegant, simple and beautiful tools that enhance your command line application functionally and look.
 
-You can style your text using a [BBCode](https://en.wikipedia.org/wiki/BBCode)-like syntax
+You can style your text using a [BBCode-like](https://en.wikipedia.org/wiki/BBCode) syntax
 
 ```ruby
  ui.puts '[b]Hello World![/b]' # bold

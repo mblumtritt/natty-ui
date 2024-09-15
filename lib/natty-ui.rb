@@ -15,6 +15,7 @@ require_relative 'natty-ui/ansi_wrapper'
 module NattyUI
   class << self
     # @see .valid_in?
+    #
     # @return [IO] IO stream used to read input
     # @raise [TypeError] when a non-readable stream will be assigned
     attr_reader :in_stream
@@ -72,7 +73,7 @@ module NattyUI
     #
     # @param [#to_s] str string to edit
     # @return [String] edited string
-    def embellish(str) = Text.embellish(str)
+    def embellish(str) = Ansi.bbcode(str)
 
     # Remove embedded attribute descriptions from given string.
     #
@@ -80,7 +81,7 @@ module NattyUI
     # @param [:keep,:remove] ansi keep or remove ANSI codes too
     # @return [String] edited string
     def plain(str, ansi: :keep)
-      ansi == :keep ? Text.plain_but_ansi(str) : Text.plain(str)
+      ansi == :keep ? Ansi.unbbcode(str) : Ansi.plain(str)
     end
 
     # Calculate monospace (display) width of given String.
@@ -159,13 +160,14 @@ module NattyUI
   StdErr = stderr_is_stdout? ? StdOut : new(STDERR)
 
   dir = __dir__
-  autoload(:Animation, File.join(dir, 'natty-ui', 'animation'))
-  autoload(:Frame, File.join(dir, 'natty-ui', 'frame'))
-  autoload(:Glyph, File.join(dir, 'natty-ui', 'glyph'))
-  autoload(:KEY_MAP, File.join(dir, 'natty-ui', 'key_map'))
-  autoload(:Spinner, File.join(dir, 'natty-ui', 'spinner'))
+  autoload :Animation, File.join(dir, 'natty-ui', 'animation')
+  autoload :Frame, File.join(dir, 'natty-ui', 'frame')
+  autoload :Glyph, File.join(dir, 'natty-ui', 'glyph')
+  autoload :KEY_MAP, File.join(dir, 'natty-ui', 'key_map')
+  autoload :Render, File.join(dir, 'natty-ui', 'render')
+  autoload :Spinner, File.join(dir, 'natty-ui', 'spinner')
 
-  private_constant :Animation, :KEY_MAP
+  private_constant :Animation, :KEY_MAP, :Render
 
   @element = StdOut
   self.in_stream = STDIN
@@ -174,6 +176,7 @@ end
 # @!visibility private
 module Kernel
   # @see NattyUI.element
+  #
   # @return [NattyUI::Wrapper, NattyUI::Wrapper::Element] active UI element
   def ui = NattyUI.element unless defined?(ui)
 end

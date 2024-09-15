@@ -6,7 +6,7 @@ module NattyUI
       protected
 
       def write(stream)
-        plain = @lines.map { |line, _| Text.plain(line) }
+        plain = @lines.map { |line, _| Ansi.plain(line) }
         11.upto(180) do |spread|
           spread /= 100.0
           plain.each do |line|

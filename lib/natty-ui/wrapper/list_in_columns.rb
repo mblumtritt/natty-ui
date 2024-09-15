@@ -69,27 +69,25 @@ module NattyUI
       def cvt(glyph, size)
         case glyph
         when nil, false
-          ->(s) { Text.embellish(s) }
+          ->(s) { s }
         when :hex
           pad = size.to_s(16).size
           glyph = 0
-          lambda do |s|
-            "#{(glyph += 1).to_s(16).rjust(pad, '0')} #{Text.embellish(s)}"
-          end
+          ->(s) { "#{(glyph += 1).to_s(16).rjust(pad, '0')} #{s}" }
         when Integer
           pad = (glyph + size).to_s.size
           glyph -= 1
-          ->(s) { "#{(glyph += 1).to_s.rjust(pad)} #{Text.embellish(s)}" }
+          ->(s) { "#{(glyph += 1).to_s.rjust(pad)} #{s}" }
         when Symbol
           lambda do |s|
             "#{
               t = glyph
               glyph = glyph.succ
               t
-            } #{Text.embellish(s)}"
+            } #{s}[/]"
           end
         else
-          ->(s) { "#{Text.embellish(glyph)} #{Text.embellish(s)}" }
+          ->(s) { "#{glyph} #{s}" }
         end
       end
 

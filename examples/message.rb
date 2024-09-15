@@ -20,11 +20,11 @@ ui.framed do
         align: :center
       )
     end
-    ui.puts('[italic f4]Ut enim ad minim veniam', align: :right)
+    ui.puts('[i f4]Ut enim ad minim veniam', align: :right)
   end
   ui.error 'Error Message', TEXT
   ui.failed 'Fail Message', TEXT
-  ui.message '[italic #fad]Custom Message', TEXT, glyph: '💡'
+  ui.message '[i #fad]Custom Message', TEXT, glyph: '💡'
 end
 
 ui.space
