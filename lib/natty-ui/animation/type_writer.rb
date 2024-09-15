@@ -10,7 +10,7 @@ module NattyUI
         @style = attribute(:style, :default)
         @cursor_style = attribute(:cursor_style, 0x2e)
         @lines.each do |line, size|
-          line = Text.plain(line)
+          line = Ansi.plain(line)
           if (num += 1).odd?
             stream << @pos1
             line.each_char { cursor(stream, _1).flush }

@@ -6,7 +6,7 @@ module NattyUI
       protected
 
       def write(stream)
-        plains = @lines.map { |line, _| Text.plain(line) }
+        plains = @lines.map { |line, _| Ansi.plain(line) }
         encs = @lines.map { Array.new(_2) { CHARS.sample }.join }
         poss = @lines.map { Array.new(_2, &:itself).shuffle }
         stream << attribute(:style, :default)

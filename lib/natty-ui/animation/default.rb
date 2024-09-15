@@ -11,7 +11,7 @@ module NattyUI
         @lines.each do |line, size|
           time = 0.25 / size
           stream << style
-          line = Text.plain(line)
+          line = Ansi.plain(line)
           if (num += 1).odd?
             stream << @pos1
             line.each_char do |char|

@@ -31,24 +31,24 @@ module NattyUI
         @stream.flush
         return self
       end
-      (@stream << Ansi::SCREEN_BLANK).flush
+      (@stream << Ansi::SCREEN_ALTERNATE).flush
       begin
         yield(self)
       ensure
-        (@stream << Ansi::SCREEN_UNBLANK).flush
+        (@stream << Ansi::SCREEN_ALTERNATE_OFF).flush
       end
     end
 
     def cls
-      (@stream << Ansi::CLS).flush
+      (@stream << CLS).flush
       self
     end
 
     protected
 
     def pprint(strs, opts)
-      prefix = opts[:prefix] and prefix = Text.embellish(prefix)
-      suffix = opts[:suffix] and suffix = Text.embellish(suffix)
+      prefix = opts[:prefix] and prefix = Ansi.bbcode(prefix)
+      suffix = opts[:suffix] and suffix = Ansi.bbcode(suffix)
       return yield("#{prefix}#{suffix}") if strs.empty?
       embellish = opts[:embellish] != :skip
       max_width =
@@ -239,6 +239,8 @@ module NattyUI
       include ProgressAttributes
       include TaskMethods
     end
+
+    CLS = "#{Ansi::CURSOR_HOME}#{Ansi::SCREEN_ERASE}".freeze
   end
 
   private_constant :AnsiWrapper

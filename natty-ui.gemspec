@@ -24,7 +24,7 @@ Gem::Specification.new do |spec|
   spec.metadata['rubygems_mfa_required'] = 'true'
 
   spec.required_ruby_version = '>= 3.0'
-  spec.add_dependency 'just-ansi'
+  spec.add_dependency 'just-ansi', '>= 0.2.0'
 
   spec.files = (Dir['lib/**/*'] + Dir['examples/**/*.rb']) << '.yardopts'
   spec.extra_rdoc_files = %w[README.md LICENSE]

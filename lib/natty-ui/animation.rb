@@ -19,8 +19,8 @@ module NattyUI
       attr_reader :lines_written
 
       def initialize(wrapper, args, kwargs)
-        @prefix = Text.embellish(kwargs[:prefix])
-        @suffix = Text.embellish(kwargs[:suffix])
+        @prefix = Ansi.bbcode(kwargs[:prefix])
+        @suffix = Ansi.bbcode(kwargs[:suffix])
         @prefix_width = kwargs[:prefix_width] || Text.width(@prefix)
         @lines =
           Text.as_lines(

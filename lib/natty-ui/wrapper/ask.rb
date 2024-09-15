@@ -52,7 +52,7 @@ module NattyUI
           return false if no.include?(char)
         end
       ensure
-        wrapper.ansi? ? (wrapper.stream << Ansi::CLL).flush : @parent.puts
+        wrapper.ansi? ? (wrapper.stream << CLL).flush : @parent.puts
       end
 
       def draw(question)
@@ -73,6 +73,9 @@ module NattyUI
         return yes, no if (yes & no).empty?
         raise(ArgumentError, 'chars in :yes and :no can not be intersect')
       end
+
+      CLL = "#{Ansi::CURSOR_FIRST_COLUMN}#{Ansi::LINE_ERASE}".freeze
+      private_constant :CLL
     end
   end
 end

@@ -73,7 +73,7 @@ module NattyUI
     #
     # @param [#to_s] str string to edit
     # @return [String] edited string
-    def embellish(str) = Text.embellish(str)
+    def embellish(str) = Ansi.bbcode(str)
 
     # Remove embedded attribute descriptions from given string.
     #
@@ -81,7 +81,7 @@ module NattyUI
     # @param [:keep,:remove] ansi keep or remove ANSI codes too
     # @return [String] edited string
     def plain(str, ansi: :keep)
-      ansi == :keep ? Text.plain_but_ansi(str) : Text.plain(str)
+      ansi == :keep ? Ansi.unbbcode(str) : Ansi.plain(str)
     end
 
     # Calculate monospace (display) width of given String.

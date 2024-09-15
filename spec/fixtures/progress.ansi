@@ -5,27 +5,27 @@
   [1;38;5;39m➔[m [38;5;39mAssemble assets[m
     [1;38;5;39m➔[m [38;5;39mInitialize[m
 [1F[0J[1G    [1;38;5;82m✓[m [38;5;82mInitialize[m
-[?25l    [1;38;5;39m➔[22m Connect to server... [1;38;5;220m•[m[m
-[1F[2K    [1;38;5;39m➔[22m Connect to server... [1;38;5;220m✺[m[m
-[1F[2K    [1;38;5;39m➔[22m Connect to server... [1;38;5;220m◉[m[m
-[1F[2K    [1;38;5;39m➔[22m Connect to server... [1;38;5;220m●[m[m
-[1F[2K    [1;38;5;39m➔[22m Connect to server... [1;38;5;220m◉[m[m
-[1F[2K    [1;38;5;39m➔[22m Connect to server... [1;38;5;220m✺[m[m
-[1F[2K    [1;38;5;39m➔[22m Connect to server... [1;38;5;220m•[m[m
-[1F[2K    [1;38;5;39m➔[22m Connect to server... [1;38;5;220m✺[m[m
-[1F[2K    [1;38;5;39m➔[22m Connect to server... [1;38;5;220m◉[m[m
-[1F[2K    [1;38;5;39m➔[22m Connect to server... [1;38;5;220m●[m[m
-[1F[2K    [1;38;5;39m➔[22m Connect to server... [1;38;5;220m◉[m[m
-[1F[2K    [1;38;5;39m➔[22m Connect to server... [1;38;5;220m✺[m[m
-[1F[2K    [1;38;5;39m➔[22m Connect to server... [1;38;5;220m•[m[m
-[1F[2K    [1;38;5;39m➔[22m Connect to server... [1;38;5;220m✺[m[m
-[1F[2K    [1;38;5;39m➔[22m Connect to server... [1;38;5;220m◉[m[m
-[1F[2K    [1;38;5;39m➔[22m Connect to server... [1;38;5;220m●[m[m
-[1F[2K    [1;38;5;39m➔[22m Connect to server... [1;38;5;220m◉[m[m
-[1F[2K    [1;38;5;39m➔[22m Connect to server... [1;38;5;220m✺[m[m
-[1F[2K    [1;38;5;39m➔[22m Connect to server... [1;38;5;220m•[m[m
-[1F[2K    [1;38;5;39m➔[22m Connect to server... [1;38;5;220m✺[m[m
-[1F[2K    [1;38;5;39m➔[22m Connect to server... [1;38;5;220m◉[m[m
+[?25l    [1;38;5;39m➔[22m Connect to server... [1;38;5;220m•[m
+[1F[2K    [1;38;5;39m➔[22m Connect to server... [1;38;5;220m✺[m
+[1F[2K    [1;38;5;39m➔[22m Connect to server... [1;38;5;220m◉[m
+[1F[2K    [1;38;5;39m➔[22m Connect to server... [1;38;5;220m●[m
+[1F[2K    [1;38;5;39m➔[22m Connect to server... [1;38;5;220m◉[m
+[1F[2K    [1;38;5;39m➔[22m Connect to server... [1;38;5;220m✺[m
+[1F[2K    [1;38;5;39m➔[22m Connect to server... [1;38;5;220m•[m
+[1F[2K    [1;38;5;39m➔[22m Connect to server... [1;38;5;220m✺[m
+[1F[2K    [1;38;5;39m➔[22m Connect to server... [1;38;5;220m◉[m
+[1F[2K    [1;38;5;39m➔[22m Connect to server... [1;38;5;220m●[m
+[1F[2K    [1;38;5;39m➔[22m Connect to server... [1;38;5;220m◉[m
+[1F[2K    [1;38;5;39m➔[22m Connect to server... [1;38;5;220m✺[m
+[1F[2K    [1;38;5;39m➔[22m Connect to server... [1;38;5;220m•[m
+[1F[2K    [1;38;5;39m➔[22m Connect to server... [1;38;5;220m✺[m
+[1F[2K    [1;38;5;39m➔[22m Connect to server... [1;38;5;220m◉[m
+[1F[2K    [1;38;5;39m➔[22m Connect to server... [1;38;5;220m●[m
+[1F[2K    [1;38;5;39m➔[22m Connect to server... [1;38;5;220m◉[m
+[1F[2K    [1;38;5;39m➔[22m Connect to server... [1;38;5;220m✺[m
+[1F[2K    [1;38;5;39m➔[22m Connect to server... [1;38;5;220m•[m
+[1F[2K    [1;38;5;39m➔[22m Connect to server... [1;38;5;220m✺[m
+[1F[2K    [1;38;5;39m➔[22m Connect to server... [1;38;5;220m◉[m
 [1F[2K[?25h    [1;38;5;82m✓[m [38;5;82mConnected[m
     [1;38;5;39m➔[m [38;5;39mCollect files...[m
 [1F[0J[1G    [1;38;5;82m✓[m [38;5;82mCollect files...[m
@@ -53,7 +53,7 @@
     [1;38;5;39m➔[m [38;5;39mStore assembled results[m
 [1F[0J[1G    [1;38;5;82m✓[m [38;5;82mStore assembled results[m
 [8F[0J[1G  [1;38;5;82m✓[m [38;5;82mAssemble assets[m
-  The details are removed ([3min ANSI version[23m) when the task[m
+  The details are removed ([3min ANSI version[23m) when the task
   ended sucessfully.
 [1;38;5;119m𝒊[m [38;5;255mDetails of failed tasks will not be cleaned.[m
   [1;38;5;39m➔[m [38;5;39mAssemble assets[m

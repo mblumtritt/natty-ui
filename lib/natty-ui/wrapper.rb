@@ -170,8 +170,8 @@ module NattyUI
     protected
 
     def pprint(strs, opts)
-      prefix = opts[:prefix] and prefix = Text.plain(prefix)
-      suffix = opts[:suffix] and suffix = Text.plain(suffix)
+      prefix = opts[:prefix] and prefix = Ansi.plain(prefix)
+      suffix = opts[:suffix] and suffix = Ansi.plain(suffix)
       return yield("#{prefix}#{suffix}") if strs.empty?
       embellish = opts[:embellish] != :skip
       max_width =

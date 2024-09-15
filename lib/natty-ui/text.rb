@@ -5,33 +5,6 @@ require_relative 'ansi'
 module NattyUI
   module Text
     class << self
-      def plain_but_ansi(str)
-        (str = str.to_s).empty? and return str
-        str.gsub(BBCODE) do |match_str|
-          match = Regexp.last_match[1]
-          next "[#{match[1..]}]" if match[0] == '\\'
-          match == '/' || Ansi.try_convert(match) ? nil : match_str
-        end
-      end
-
-      def embellish(str)
-        (str = str.to_s).empty? and return str
-        reset = false
-        str =
-          str.gsub(BBCODE) do |match_str|
-            match = Regexp.last_match[1]
-            next "[#{match[1..]}]" if match[0] == '\\'
-            if match == '/'
-              reset = false
-              next Ansi::RESET
-            end
-            (ansi = Ansi.try_convert(match)) ? reset = ansi : match_str
-          end
-        reset ? str + Ansi::RESET : str
-      end
-
-      def plain(str) = Ansi.undecorate(plain_but_ansi(str))
-
       # works for UTF-8 chars only!
       def char_width(char)
         ord = char.ord
@@ -47,7 +20,7 @@ module NattyUI
       end
 
       def width(str)
-        return 0 if (str = plain_but_ansi(str)).empty?
+        return 0 if (str = Ansi.unbbcode(str)).empty?
         str = str.encode(UTF_8) if str.encoding != UTF_8
         width = 0
         in_zero_width = false
@@ -65,7 +38,7 @@ module NattyUI
       def each_line_plain(strs, max_width, embellish = true)
         return if (max_width = max_width.to_i) < 1
         strs.each do |str|
-          (embellish ? plain_but_ansi(str) : str.to_s).each_line(
+          (embellish ? Ansi.unbbcode(str) : str.to_s).each_line(
             chomp: true
           ) do |line|
             next yield(line, 0) if line.empty?
@@ -108,7 +81,7 @@ module NattyUI
           str
             .to_s
             .each_line(chomp: true) do |line|
-              line = embellish(line) if embellish
+              line = Ansi.bbcode(line) if embellish
               next yield(line, 0) if line.empty?
               current = String.new(encoding: line.encoding)
               seq = current.dup

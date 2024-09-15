@@ -29,34 +29,23 @@ module NattyUI
     # @return [String] glyph definition
     def self.[](name)
       return @default if name == :default
-      return Text.embellish(name.to_s) unless name.is_a?(Symbol)
-      Text.embellish(
+      return Ansi.bbcode(name.to_s) unless name.is_a?(Symbol)
+      Ansi.bbcode(
         @ll[name] || raise(ArgumentError, "invalid glyph type - #{name}")
       )
     end
 
     @ll = {
-      completed: '[b 52]✓',
-      dot: '[27]•',
-      error: '[b d0]𝙓',
-      failed: '[b c4]𝑭',
-      information: '[b 77]𝒊',
-      point: '[27]◉',
-      query: '[b 27]▸',
-      task: '[b 27]➔',
-      warning: '[b dd]!'
+      completed: '[b 52]✓[/]',
+      dot: '[27]•[/]',
+      error: '[b d0]𝙓[/]',
+      failed: '[b c4]𝑭[/]',
+      information: '[b 77]𝒊[/]',
+      point: '[27]◉[/]',
+      query: '[b 27]▸[/]',
+      task: '[b 27]➔[/]',
+      warning: '[b dd]![/]'
     }.compare_by_identity
-
-    # GLYPH = {
-    #   default: '●',
-    #   information: '🅸 ',
-    #   warning: '🆆 ',
-    #   error: '🅴 ',
-    #   completed: '✓',
-    #   failed: '🅵 ',
-    #   task: '➔',
-    #   query: '🆀 '
-    # }.compare_by_identity.freeze
 
     self.default = nil
   end
