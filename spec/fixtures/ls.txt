@@ -1,25 +1,24 @@
-
-═══════ NattyUI: Print In Columns ═══════
-
-━━━━━ Compact Display ━━━━━
- 1 Lorem ipsum dolor sit           10 aute irure dolor in        
- 2 amet, consectetur adipisicing   11 reprehenderit in voluptate 
- 3 elit, sed do eiusmod tempor     12 velit esse cillum dolore eu
- 4 incididunt ut labore et         13 fugiat nulla pariatur.     
- 5 dolore magna aliqua. Ut         14 Excepteur sint occaecat    
- 6 enim ad minim veniam, quis      15 cupidatat non proident,    
- 7 nostrud exercitation ullamco    16 sunt in culpa qui officia  
- 8 laboris nisi ut aliquip ex      17 deserunt mollit anim id    
- 9 ea commodo consequat. Duis      18 est laborum.               
-
-━━━━━ Traditional Display ━━━━━
- 1 Lorem ipsum dolor sit            2 amet, consectetur adipisicing   
- 3 elit, sed do eiusmod tempor      4 incididunt ut labore et         
- 5 dolore magna aliqua. Ut          6 enim ad minim veniam, quis      
- 7 nostrud exercitation ullamco     8 laboris nisi ut aliquip ex      
- 9 ea commodo consequat. Duis      10 aute irure dolor in             
-11 reprehenderit in voluptate      12 velit esse cillum dolore eu     
-13 fugiat nulla pariatur.          14 Excepteur sint occaecat         
-15 cupidatat non proident,         16 sunt in culpa qui officia       
-17 deserunt mollit anim id         18 est laborum.                    
-
+╭── ​ᓚᕠᗢ NattyUI Print Lists ──╶╴╴
+│ 
+│ ╴╶╴╶─═══ Traditional Display ═══─╶╴╶╴
+│ 1 Lorem ipsum dolor sit amet,      2 consectetur adipisicing elit,   
+│ 3 sed do eiusmod tempor            4 incididunt ut labore et         
+│ 5 dolore magna aliqua.             6 Ut enim ad minim veniam, quis   
+│ 7 nostrud exercitation ullamco     8 laboris nisi ut aliquip ex      
+│ 9 ea commodo consequat.           10 Duis aute irure dolor in        
+│ 11 reprehenderit in voluptate      12 velit esse cillum dolore eu     
+│ 13 fugiat nulla pariatur.          14 Excepteur sint occaecat         
+│ 15 cupidatat non proident,         16 sunt in culpa qui officia       
+│ 17 deserunt mollit anim id         18 est laborum.                    
+│ 
+│ ╴╶╴╶─═══ Compact Display ═══─╶╴╶╴
+│ 1 Lorem ipsum dolor sit amet,     10 Duis aute irure dolor in   
+│ 2 consectetur adipisicing elit,   11 reprehenderit in voluptate 
+│ 3 sed do eiusmod tempor           12 velit esse cillum dolore eu
+│ 4 incididunt ut labore et         13 fugiat nulla pariatur.     
+│ 5 dolore magna aliqua.            14 Excepteur sint occaecat    
+│ 6 Ut enim ad minim veniam, quis   15 cupidatat non proident,    
+│ 7 nostrud exercitation ullamco    16 sunt in culpa qui officia  
+│ 8 laboris nisi ut aliquip ex      17 deserunt mollit anim id    
+│ 9 ea commodo consequat.           18 est laborum.               
+╰────╶╴╴

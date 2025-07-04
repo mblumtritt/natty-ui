@@ -1,0 +1,12 @@
+╭── ​ᓚᕠᗢ NattyUI Print Columns ──╶╴╴
+│ 
+│    Here we   │ have some  │  columns   │ which are  │  arranged  │and centered
+│ 
+│                                                                               
+│   This is a left aligned                                                      
+│   blue column with some     This is the middle red           This is a right  
+│   text but also with               column.               aligned blue column  
+│   with                                                     vertically bottom  
+│   a forced line break.                                              aligned.  
+│                                                                               
+╰────╶╴╴

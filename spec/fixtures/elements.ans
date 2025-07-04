@@ -1,0 +1,19 @@
+[94m╭──[m [1m​ᓚᕠᗢ NattyUI[22m [3;32mSimple Elements[m [94m──╶╴╴[m[m
+[94m│[m [m
+[94m│[m [94m╸╸╺╸╺━━━[m This is a [1mH1[22m heading element [94m━━━╺╸╺╸╸[m[m
+[94m│[m [m
+[94m│[m [94m╴╶╴╶─═══[m This is a [1mH2[22m heading element [94m═══─╶╴╶╴[m[m
+[94m│[m [m
+[94m│[m [94m▍[39m This is a[m
+[94m│[m [94m▍[39m multi-line quotation[m
+[94m│[m [m
+[94m│[m [94m╴╶╴╶───[m This is a [1mH3[22m heading element [94m───╶╴╶╴[m[m
+[94m│[m [92m✓[39m This is a multi-line message[m
+[94m│[m   with a leading checkmark.[m
+[94m│[m [m
+[94m│[m [94m════[m This is a [1mH4[22m heading element [94m════[m[m
+[94m│[m [m
+[94m│[m [94m━━━━[m This is a [1mH5[22m heading element [94m━━━━[m[m
+[94m│[m [m
+[94m│[m [94m────[m This is a [1mH6[22m heading element [94m────[m[m
+[94m╰────╶╴╴[m[m

@@ -1,0 +1,9 @@
+[94m╭──[m [1m​ᓚᕠᗢ NattyUI[22m [3;32mANSI Attributes[m [94m──╶╴╴[m[m
+[94m│[m [m
+[94m│[m NattyUI supports all well known attributes like [1mbold[22m, [3mitalic[23m, [4munderline[24m, [5mblink[25m[m
+[94m│[m [25m, [7minvert[27m and [9mstrike[29m. Other attributes like [2mfaint[22m, [21mdouble underline[m, [4:3mcurly[m
+[94m│[m [4:3munderline[m, [4:4mdotted underline[m, [4:5mdashed underline[m, [6mrapid_blink[m, [51mframed[m, [52mencircled[m,[m
+[94m│[m [53moverlined[m and [26mproportional[m are not widely used but also supported.[m
+[94m│[m Alternative fonts are mostly completely ignored: [10mprimary_font[m, [20mfraktur[m, [11mfont1[m,[m
+[94m│[m [12mfont2[m, [13mfont3[m, [14mfont4[m, [15mfont5[m, [16mfont6[m, [17mfont7[m, [18mfont8[m, [19mfont9[m.[m
+[94m╰────╶╴╴[m[m

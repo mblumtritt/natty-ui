@@ -1,10 +1,9 @@
-
-━━━━━ NattyUI: ANSI Attributes ━━━━━
-
-Some attributes are widely supported, such as bold, italic, underline, blink, in
-vert and strike, while others are rarely complete or correctly implemented, like
- faint, double underline, curly underline, dotted underline, dashed underline, r
-apid_blink, framed, encircled, overlined and proportional. 
-Alternative fonts are mostly completely ignored: primary_font, fraktur, font1, f
-ont2, font3, font4, font5, font6, font7, font8, font9. 
-
+╭── ​ᓚᕠᗢ NattyUI ANSI Attributes ──╶╴╴
+│ 
+│ NattyUI supports all well known attributes like bold, italic, underline,
+│ blink, invert and strike. Other attributes like faint, double underline, curly
+│ underline, dotted underline, dashed underline, rapid_blink, framed, encircled,
+│ overlined and proportional are not widely used but also supported.
+│ Alternative fonts are mostly completely ignored: primary_font, fraktur, font1,
+│ font2, font3, font4, font5, font6, font7, font8, font9.
+╰────╶╴╴

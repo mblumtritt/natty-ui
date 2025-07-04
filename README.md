@@ -1,4 +1,4 @@
-# NattyUI ![version](https://img.shields.io/gem/v/natty-ui?label=)
+# NattyUI ​ᓚᕠᗢ ![version](https://img.shields.io/gem/v/natty-ui?label=)
 
 This is the beautiful, nice, nifty, fancy, neat, pretty, cool, rich, lovely, natty user interface you like to have for your command line applications. It contains elegant, simple and beautiful tools that enhance your command line interfaces functionally and aesthetically.
 
@@ -6,28 +6,24 @@ This is the beautiful, nice, nifty, fancy, neat, pretty, cool, rich, lovely, nat
 - Source: [github.com](https://github.com/mblumtritt/natty-ui)
 - Help: [rubydoc.info](https://rubydoc.info/gems/natty-ui/NattyUI)
 
-## Description
+## Features
 
-Here you find elegant, simple and beautiful tools that enhance your command line application functionally and look.
+![illustration](./examples/illustration.png)
 
-You can style your text using a [BBCode](https://en.wikipedia.org/wiki/BBCode)-like syntax
-
-```ruby
- ui.puts '[b]Hello World![/b]' # bold
- ui.puts '[i]Hello World![/i]' # italic
- ui.puts '[u]Hello World![/u]' # underline
- ui.puts '[yellow on_blue]Hello World![/]'
-```
-
-which supports all ANSI attributes, colors in 3/4-bit, 8-bit and Truecolor. There are headers, rulers, diverse message types, framed blocks and tables to layout your text. You can organize the output of tasks, use progress bars and request and handle user input. And there are text animations for fame and fun!
-
-🚀 Have a look at the [features](https://rubydoc.info/gems/natty-ui/NattyUI/Features) or check the code [examples](./examples/)!
-
-![illustration](https://raw.githubusercontent.com/mblumtritt/natty-ui/main/examples/illustration.png)
-
-## NO_COLOR Convention
-
-NattyUI follows the [NO_COLOR convention](https://no-color.org).
+- automatic line break of all text output
+- markup of text attributes and colors using a [BBCode](https://en.wikipedia.org/wiki/BBCode) like syntax
+- automatic detection if ANSI is available
+- support of [NO_COLOR convention](https://no-color.org)
+- support of [CSIu input protocol](https://sw.kovidgoyal.net/kitty/keyboard-protocol)
+- headings
+- text separators
+- lists
+- various types of text blocks with automatic alignment
+- text columns
+- tables
+- task lists
+- progress indicators
+- and more!
 
 ## Help
 
@@ -35,16 +31,16 @@ NattyUI follows the [NO_COLOR convention](https://no-color.org).
 
 ### Run Examples
 
-You can execute the examples by
+You can execute all examples by
 
 ```sh
-ruby ./examples/demo.rb
+ruby ./examples/examples.rb
 ```
 
 or see the non-ANSI version
 
 ```sh
-NO_COLOR=1 ruby ./examples/demo.rb
+NO_COLOR=1 ruby ./examples/examples.rb
 ```
 
 ## Installation
