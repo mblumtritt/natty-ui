@@ -1,0 +1,19 @@
+╭── ​ᓚᕠᗢ NattyUI Simple Elements ──╶╴╴
+│ 
+│ ╸╸╺╸╺━━━ This is a H1 heading element ━━━╺╸╺╸╸
+│ 
+│ ╴╶╴╶─═══ This is a H2 heading element ═══─╶╴╶╴
+│ 
+│ ▍ This is a
+│ ▍ multi-line quotation
+│ 
+│ ╴╶╴╶─── This is a H3 heading element ───╶╴╶╴
+│ ✓ This is a multi-line message
+│   with a leading checkmark.
+│ 
+│ ════ This is a H4 heading element ════
+│ 
+│ ━━━━ This is a H5 heading element ━━━━
+│ 
+│ ──── This is a H6 heading element ────
+╰────╶╴╴

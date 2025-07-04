@@ -2,19 +2,17 @@
 
 require_relative '../lib/natty-ui'
 
-ui.h1 'NattyUI: Print In Columns', space: 2
-
-LOREM = <<~IPSUM.lines(chomp: true)
-  Lorem ipsum dolor sit
-  amet, consectetur adipisicing
-  elit, sed do eiusmod tempor
+lorem = <<~IPSUM.lines(chomp: true)
+  Lorem ipsum dolor sit amet,
+  consectetur adipisicing elit,
+  sed do eiusmod tempor
   incididunt ut labore et
-  dolore [red]magna[/] aliqua. Ut
-  enim ad minim veniam, quis
+  dolore [red]magna[/] aliqua.
+  Ut enim ad minim veniam, quis
   nostrud exercitation ullamco
   laboris nisi ut aliquip ex
-  ea commodo [b]consequat[/b]. Duis
-  aute irure [bold green]dolor[/fg] in[/]
+  ea commodo [b]consequat[/b].
+  Duis aute irure [bold green]dolor[/fg] in[/]
   reprehenderit in voluptate
   velit [underline]esse cillum[/] dolore eu
   fugiat nulla pariatur.
@@ -25,10 +23,12 @@ LOREM = <<~IPSUM.lines(chomp: true)
   est laborum.
 IPSUM
 
-ui.h2 'Compact Display'
-ui.ls LOREM, glyph: 1
-ui.space
+ui.message '[b]​ᓚᕠᗢ NattyUI[/b] [i green]Print Lists[/]' do
+  ui.space
+  ui.h2 'Traditional Display'
+  ui.ls lorem, glyph: 1, compact: false
 
-ui.h2 'Traditional Display'
-ui.ls LOREM, glyph: 1, compact: false
-ui.space
+  ui.space
+  ui.h2 'Compact Display'
+  ui.ls lorem, glyph: 1
+end

@@ -1,0 +1,23 @@
+╭── ​ᓚᕠᗢ NattyUI Sections ──╶╴╴
+│ 
+│ ╭── 𝒊 Informative Message ──╶╴╴
+│ │ Sections and messages are elements which support any other feature. This
+│ │ means they may contain text, other sections, titles, horizontal rules,
+│ │ lists, progress bars and much more!
+│ ╰────╶╴╴
+│ 
+│ ╭── ! Warning ──╶╴╴
+│ │ This is a warning message example.
+│ ╰────╶╴╴
+│ 
+│ ╭── 𝙓 Error Message ──╶╴╴
+│ │ 
+│ │ ()-()                                                                       
+│ │  \"/  You can add all other elements to a section.                          
+│ │   `                                                                         
+│ ╰────╶╴╴
+│ 
+│ ╭── 𝑭 Fail Message ──╶╴╴
+│ │ A sad failure message.
+│ ╰────╶╴╴
+╰────╶╴╴

@@ -2,11 +2,33 @@
 
 require_relative '../lib/natty-ui'
 
-ui.h1 'NattyUI: 3/4-bit Color Support', space: 2
+ui.message '[b]​ᓚᕠᗢ NattyUI[/b] [i green]3/4bit Color Support[/]' do
+  ui.space
+  ui.puts <<~INFO, ignore_newline: true
+    Terminals may support colors. You can colorize foreground text and
+    background. The very basic color palette consists of eight colors and may
+    be extended with eight colors which are much brighter.
+  INFO
 
-color = ->(n, j) { "[#{n}]#{n.ljust(j)}[/] [on_#{n}] sample text [/]" }
-%w[black red green yellow blue magenta cyan white].each do |name|
-  ui.puts "#{color[name, 7]}    #{color["bright_#{name}", 14]}"
+  ui.space
+  ui.ls(
+    %w[
+      black
+      red
+      green
+      yellow
+      blue
+      magenta
+      cyan
+      white
+      bright_black
+      bright_red
+      bright_green
+      bright_yellow
+      bright_blue
+      bright_magenta
+      bright_cyan
+      bright_white
+    ].map { |name| "[bg_#{name}]  [/bg] [#{name}]#{name}[/fg]" }
+  )
 end
-
-ui.space

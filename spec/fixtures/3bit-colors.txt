@@ -1,12 +1,11 @@
-
-═══════ NattyUI: 3/4-bit Color Support ═══════
-
-black    sample text     bright_black    sample text 
-red      sample text     bright_red      sample text 
-green    sample text     bright_green    sample text 
-yellow   sample text     bright_yellow   sample text 
-blue     sample text     bright_blue     sample text 
-magenta  sample text     bright_magenta  sample text 
-cyan     sample text     bright_cyan     sample text 
-white    sample text     bright_white    sample text 
-
+╭── ​ᓚᕠᗢ NattyUI 3/4bit Color Support ──╶╴╴
+│ 
+│ Terminals may support colors. You can colorize foreground text and background.
+│ The very basic color palette consists of eight colors and may be extended with
+│ eight colors which are much brighter.
+│ 
+│    black       blue         bright_black       bright_blue   
+│    red         magenta      bright_red         bright_magenta
+│    green       cyan         bright_green       bright_cyan   
+│    yellow      white        bright_yellow      bright_white  
+╰────╶╴╴
