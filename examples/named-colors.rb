@@ -18,6 +18,6 @@ ui.message '[b]​ᓚᕠᗢ NattyUI[/b] [i green]Named Colors Support[/]' do
     NattyUI::Ansi
       .named_colors
       .delete_if { /\d/.match?(_1) }
-      .map! { "[bg_#{_1}] [/bg] [#{_1}]#{_1.to_s.ljust(22)}[/fg]" }
+      .map! { "[bg_#{_1}] [/bg] [#{_1}]#{_1}[/fg]" }
   )
 end

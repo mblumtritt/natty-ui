@@ -33,7 +33,7 @@ module NattyUI
         when Integer
           pad = (glyph + size).to_s.size
           glyph -= 1
-          ->(s) { "#{(glyph += 1).to_s.rjust(pad)} #{s}" }
+          ->(s) { "#{(glyph += 1).to_s.rjust(pad, ' ')} #{s}" }
         when Symbol
           lambda do |s|
             "#{
