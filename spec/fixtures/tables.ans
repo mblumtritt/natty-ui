@@ -1,30 +1,27 @@
 [94m╭──[m [1m​ᓚᕠᗢ NattyUI[22m [3;32mPrint Tables[m [94m──╶╴╴[m[m
 [94m│[m [m
-[94m│[m ╭─────────────────────────┬─────────────────────────┬────────────────────────╮[m
-[94m│[m │[1;31m      Header Col 0       [m│[1;31m      Header Col 1       [m│[1;31m      Header Col 2      [m│[m
-[94m│[m ├─────────────────────────┼─────────────────────────┼────────────────────────┤[m
-[94m│[m │                         │            [34mRow 1 Col 1[m  │                        │[m
-[94m│[m │  [34mRow 1 Col 0          [m  │                 Line 2  │                        │[m
-[94m│[m │                         │                 Line 3  │      [34mRow 1 Col 2     [m  │[m
-[94m│[m ├─────────────────────────┼─────────────────────────┼────────────────────────┤[m
-[94m│[m │                         │                         │                        │[m
-[94m│[m │            [34mRow 2 Col 0[m  │       [34mRow 2 Col 1     [m  │  [34mRow 2 Col 2         [m  │[m
-[94m│[m │    This is some filler  │   This is some filler   │  This is some filler   │[m
-[94m│[m │    text to demonstrate  │   text to demonstrate   │  text to demonstrate   │[m
-[94m│[m │  word-wise line breaks  │  word-wise line breaks  │  word-wise line        │[m
-[94m│[m │   inside a table cell.  │  inside a table cell.   │  breaks inside a       │[m
-[94m│[m │    Please, just ignore  │   Please, just ignore   │  table cell. Please,   │[m
-[94m│[m │     this nonsense-text  │   this nonsense-text    │  just ignore this      │[m
-[94m│[m │                gently.  │         gently.         │  nonsense-text         │[m
-[94m│[m │                         │                         │  gently.               │[m
-[94m│[m │                         │                         │                        │[m
-[94m│[m ╰─────────────────────────┴─────────────────────────┴────────────────────────╯[m
+[94m│[m ╭────────────────────────────────┬───────────────────────────────┬───────────────────────────────╮[m
+[94m│[m │[1;31m          Header Col 0          [m│[1;31m         Header Col 1          [m│[1;31m         Header Col 2          [m│[m
+[94m│[m ├────────────────────────────────┼───────────────────────────────┼───────────────────────────────┤[m
+[94m│[m │                                │                  [34mRow 1 Col 1[m  │                               │[m
+[94m│[m │  [34mRow 1 Col 0                 [m  │                       Line 2  │                               │[m
+[94m│[m │                                │                       Line 3  │          [34mRow 1 Col 2        [m  │[m
+[94m│[m ├────────────────────────────────┼───────────────────────────────┼───────────────────────────────┤[m
+[94m│[m │                                │                               │                               │[m
+[94m│[m │                   [34mRow 2 Col 0[m  │          [34mRow 2 Col 1        [m  │  [34mRow 2 Col 2                [m  │[m
+[94m│[m │   This is some filler text to  │  This is some filler text to  │  This is some filler text to  │[m
+[94m│[m │    demonstrate word-wise line  │  demonstrate word-wise line   │  demonstrate word-wise line   │[m
+[94m│[m │   breaks inside a table cell.  │  breaks inside a table cell.  │  breaks inside a table cell.  │[m
+[94m│[m │      Please, just ignore this  │   Please, just ignore this    │  Please, just ignore this     │[m
+[94m│[m │         nonsense-text gently.  │     nonsense-text gently.     │  nonsense-text gently.        │[m
+[94m│[m │                                │                               │                               │[m
+[94m│[m ╰────────────────────────────────┴───────────────────────────────┴───────────────────────────────╯[m
 [94m│[m [m
-[94m│[m [93m  AB  [m[94m│[m[93m CD  [m[94m│[m[93m EF  [m[94m│[m[93m GH  [m[94m│[m[93m IJ  [m[94m│[m[93m KL  [m[94m│[m[93m MN  [m[94m│[m[93m OP  [m[94m│[m[93m QR  [m[94m│[m[93m ST  [m[94m│[m[93m UV  [m[94m│[m[93m WX  [m[94m│[m[93m YZ  [m[m
-[94m│[m [94m──────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────[m[m
-[94m│[m [93m  😀  [m[94m│[m[93m 😁  [m[94m│[m[93m 😂  [m[94m│[m[93m 😃  [m[94m│[m[93m 😄  [m[94m│[m[93m 😅  [m[94m│[m[93m 😆  [m[94m│[m[93m 😇  [m[94m│[m[93m 😈  [m[94m│[m[93m 😉  [m[94m│[m[93m 😊  [m[94m│[m[93m 😋  [m[94m│[m[93m 😌  [m[m
-[94m│[m [94m──────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────[m[m
-[94m│[m [93m  10  [m[94m│[m[93m 11  [m[94m│[m[93m 12  [m[94m│[m[93m 20  [m[94m│[m[93m 21  [m[94m│[m[93m 22  [m[94m│[m[93m 100 [m[94m│[m[93m 101 [m[94m│[m[93m 102 [m[94m│[m[93m 110 [m[94m│[m[93m 111 [m[94m│[m[93m 112 [m[94m│[m[93m 120 [m[m
+[94m│[m [93m  AB   [m[94m│[m[93m  CD   [m[94m│[m[93m  EF   [m[94m│[m[93m  GH   [m[94m│[m[93m  IJ   [m[94m│[m[93m  KL   [m[94m│[m[93m  MN   [m[94m│[m[93m  OP   [m[94m│[m[93m  QR  [m[94m│[m[93m  ST  [m[94m│[m[93m  UV  [m[94m│[m[93m  WX  [m[94m│[m[93m  YZ  [m[m
+[94m│[m [94m───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼──────┼──────┼──────┼──────┼──────[m[m
+[94m│[m [93m  😀   [m[94m│[m[93m  😁   [m[94m│[m[93m  😂   [m[94m│[m[93m  😃   [m[94m│[m[93m  😄   [m[94m│[m[93m  😅   [m[94m│[m[93m  😆   [m[94m│[m[93m  😇   [m[94m│[m[93m  😈  [m[94m│[m[93m  😉  [m[94m│[m[93m  😊  [m[94m│[m[93m  😋  [m[94m│[m[93m  😌  [m[m
+[94m│[m [94m───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼──────┼──────┼──────┼──────┼──────[m[m
+[94m│[m [93m  10   [m[94m│[m[93m  11   [m[94m│[m[93m  12   [m[94m│[m[93m  20   [m[94m│[m[93m  21   [m[94m│[m[93m  22   [m[94m│[m[93m  100  [m[94m│[m[93m  101  [m[94m│[m[93m 102  [m[94m│[m[93m 110  [m[94m│[m[93m 111  [m[94m│[m[93m 112  [m[94m│[m[93m 120  [m[m
 [94m│[m [m
 [94m│[m [42m     green     [m[44m     blue      [m[41m      red      [m[m
 [94m│[m [43m    yellow     [m[45m    magenta    [m[46m     cyan      [m[m

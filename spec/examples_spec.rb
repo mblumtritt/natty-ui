@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe 'examples' do
-  include_context 'with Terminal.rb'
+  include_context 'with Terminal.rb', size: [50, 100]
 
   EXAMPLES_NAMES.each do |name|
     it "renders the '#{name}.rb' example" do

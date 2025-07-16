@@ -1,11 +1,10 @@
 [94m╭──[m [1m​ᓚᕠᗢ NattyUI[22m [3;32m3/4bit Color Support[m [94m──╶╴╴[m[m
 [94m│[m [m
-[94m│[m Terminals may support colors. You can colorize foreground text and background.[m
-[94m│[m The very basic color palette consists of eight colors and may be extended with[m
-[94m│[m eight colors which are much brighter.[m
+[94m│[m Terminals may support colors. You can colorize foreground text and background. The very basic[m
+[94m│[m color palette consists of eight colors and may be extended with eight colors which are much[m
+[94m│[m brighter.[m
 [94m│[m [m
-[94m│[m [40m  [49m [30mblack[39m    [44m  [49m [34mblue[39m      [100m  [49m [90mbright_black[39m    [104m  [49m [94mbright_blue[39m   [m
-[94m│[m [41m  [49m [31mred[39m      [45m  [49m [35mmagenta[39m   [101m  [49m [91mbright_red[39m      [105m  [49m [95mbright_magenta[39m[m
-[94m│[m [42m  [49m [32mgreen[39m    [46m  [49m [36mcyan[39m      [102m  [49m [92mbright_green[39m    [106m  [49m [96mbright_cyan[39m   [m
-[94m│[m [43m  [49m [33myellow[39m   [47m  [49m [37mwhite[39m     [103m  [49m [93mbright_yellow[39m   [107m  [49m [97mbright_white[39m  [m
+[94m│[m [40m  [49m [30mblack[39m   [43m  [49m [33myellow[39m    [46m  [49m [36mcyan[39m           [101m  [49m [91mbright_red[39m      [104m  [49m [94mbright_blue[39m      [107m  [49m [97mbright_white[39m[m
+[94m│[m [41m  [49m [31mred[39m     [44m  [49m [34mblue[39m      [47m  [49m [37mwhite[39m          [102m  [49m [92mbright_green[39m    [105m  [49m [95mbright_magenta[39m   [m
+[94m│[m [42m  [49m [32mgreen[39m   [45m  [49m [35mmagenta[39m   [100m  [49m [90mbright_black[39m   [103m  [49m [93mbright_yellow[39m   [106m  [49m [96mbright_cyan[39m      [m
 [94m╰────╶╴╴[m[m

@@ -12,13 +12,26 @@
 [94m│[m 17 deserunt mollit anim id         18 est laborum.                    [m
 [94m│[m [m
 [94m│[m [94m╴╶╴╶─═══[m Compact Display [94m═══─╶╴╶╴[m[m
-[94m│[m  1 Lorem ipsum dolor sit amet,     10 Duis aute irure [1;32mdolor[39m in[m   [m
-[94m│[m  2 consectetur adipisicing elit,   11 reprehenderit in voluptate [m
-[94m│[m  3 sed do eiusmod tempor           12 velit [4messe cillum[m dolore eu[m
-[94m│[m  4 incididunt ut labore et         13 fugiat nulla pariatur.     [m
-[94m│[m  5 dolore [31mmagna[m aliqua.            14 Excepteur sint occaecat    [m
-[94m│[m  6 Ut enim ad minim veniam, quis   15 cupidatat non proident,    [m
-[94m│[m  7 nostrud exercitation ullamco    16 sunt in culpa qui officia  [m
-[94m│[m  8 laboris nisi ut aliquip ex      17 deserunt mollit anim id    [m
-[94m│[m  9 ea commodo [1mconsequat[22m.           18 est laborum.               [m
+[94m│[m  1 Lorem ipsum dolor sit amet,      7 nostrud exercitation ullamco   13 fugiat nulla pariatur.   [m
+[94m│[m  2 consectetur adipisicing elit,    8 laboris nisi ut aliquip ex     14 Excepteur sint occaecat  [m
+[94m│[m  3 sed do eiusmod tempor            9 ea commodo [1mconsequat[22m.          15 cupidatat non proident,  [m
+[94m│[m  4 incididunt ut labore et         10 Duis aute irure [1;32mdolor[39m in[m       16 sunt in culpa qui officia[m
+[94m│[m  5 dolore [31mmagna[m aliqua.            11 reprehenderit in voluptate     17 deserunt mollit anim id  [m
+[94m│[m  6 Ut enim ad minim veniam, quis   12 velit [4messe cillum[m dolore eu    18 est laborum.             [m
+[94m│[m [m
+[94m│[m [94m╴╶╴╶─═══[m Latin Char Glyph [94m═══─╶╴╶╴[m[m
+[94m│[m a Lorem ipsum dolor sit amet,     c sed do eiusmod tempor     e dolore [31mmagna[m aliqua.[m
+[94m│[m b consectetur adipisicing elit,   d incididunt ut labore et   [m
+[94m│[m [m
+[94m│[m [94m╴╶╴╶─═══[m Hex Numbers [94m═══─╶╴╶╴[m[m
+[94m│[m 0x08 Lorem ipsum dolor sit amet,     0x0a sed do eiusmod tempor     0x0c dolore [31mmagna[m aliqua.[m
+[94m│[m 0x09 consectetur adipisicing elit,   0x0b incididunt ut labore et   [m
+[94m│[m [m
+[94m│[m [94m╴╶╴╶─═══[m Chapter Numbering [94m═══─╶╴╶╴[m[m
+[94m│[m 1.8 Lorem ipsum dolor sit amet,     2.0 sed do eiusmod tempor     2.2 dolore [31mmagna[m aliqua.[m
+[94m│[m 1.9 consectetur adipisicing elit,   2.1 incididunt ut labore et   [m
+[94m│[m [m
+[94m│[m [94m╴╶╴╶─═══[m Custom Glyph [94m═══─╶╴╶╴[m[m
+[94m│[m [1;93m→[m Lorem ipsum dolor sit amet,     [1;93m→[m sed do eiusmod tempor     [1;93m→[m dolore [31mmagna[m aliqua.[m
+[94m│[m [1;93m→[m consectetur adipisicing elit,   [1;93m→[m incididunt ut labore et   [m
 [94m╰────╶╴╴[m[m

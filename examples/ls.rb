@@ -31,4 +31,20 @@ ui.message '[b]​ᓚᕠᗢ NattyUI[/b] [i green]Print Lists[/]' do
   ui.space
   ui.h2 'Compact Display'
   ui.ls lorem, glyph: 1
+
+  ui.space
+  ui.h2 'Latin Char Glyph'
+  ui.ls lorem.take(5), glyph: :a
+
+  ui.space
+  ui.h2 'Hex Numbers'
+  ui.ls lorem.take(5), glyph: '0x08'
+
+  ui.space
+  ui.h2 'Chapter Numbering'
+  ui.ls lorem.take(5), glyph: :'1.8'
+
+  ui.space
+  ui.h2 'Custom Glyph'
+  ui.ls lorem.take(5), glyph: '[b bright_yellow]→[/]'
 end

@@ -21,4 +21,32 @@
 │  7 nostrud exercitation ullamco    16 sunt in culpa qui officia  
 │  8 laboris nisi ut aliquip ex      17 deserunt mollit anim id    
 │  9 ea commodo consequat.           18 est laborum.               
+│ 
+│ ╴╶╴╶─═══ Latin Char Glyph ═══─╶╴╶╴
+│ a Lorem ipsum dolor sit amet,  
+│ b consectetur adipisicing elit,
+│ c sed do eiusmod tempor        
+│ d incididunt ut labore et      
+│ e dolore magna aliqua.         
+│ 
+│ ╴╶╴╶─═══ Hex Numbers ═══─╶╴╶╴
+│ 0x08 Lorem ipsum dolor sit amet,  
+│ 0x09 consectetur adipisicing elit,
+│ 0x0a sed do eiusmod tempor        
+│ 0x0b incididunt ut labore et      
+│ 0x0c dolore magna aliqua.         
+│ 
+│ ╴╶╴╶─═══ Chapter Numbering ═══─╶╴╶╴
+│ 1.8 Lorem ipsum dolor sit amet,  
+│ 1.9 consectetur adipisicing elit,
+│ 2.0 sed do eiusmod tempor        
+│ 2.1 incididunt ut labore et      
+│ 2.2 dolore magna aliqua.         
+│ 
+│ ╴╶╴╶─═══ Custom Glyph ═══─╶╴╶╴
+│ → Lorem ipsum dolor sit amet,  
+│ → consectetur adipisicing elit,
+│ → sed do eiusmod tempor        
+│ → incididunt ut labore et      
+│ → dolore magna aliqua.         
 ╰────╶╴╴

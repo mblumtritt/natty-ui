@@ -68,6 +68,8 @@ end
 
 rule '.ans' => Examples::FOR do |t|
   generate t.name do
-    `ANSI=force #{FileUtils::RUBY} #{t.prereqs.first}`.gsub!(/\e\[\?25[lh]/, '')
+    `ANSI=force LINES=50 COLUMNS=100 #{FileUtils::RUBY} #{
+      t.prereqs.first
+    }`.gsub!(/\e\[\?25[lh]/, '')
   end
 end
