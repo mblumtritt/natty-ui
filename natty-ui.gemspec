@@ -24,7 +24,7 @@ Gem::Specification.new do |spec|
   spec.metadata['bug_tracker_uri'] = "#{spec.homepage}/issues"
   spec.metadata[
     'documentation_uri'
-  ] = "https://rubydoc.info/gems/natty-ui/#{NattyUI::VERSION}/NattyUI/"
+  ] = "https://rubydoc.info/gems/natty-ui/#{NattyUI::VERSION}/NattyUI"
 
   spec.required_ruby_version = '>= 3.0'
   spec.add_dependency 'terminal_rb', '>= 0.10.0'

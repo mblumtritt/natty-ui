@@ -292,7 +292,7 @@ module NattyUI
     #
     # @return (see puts)
     def space(count = 1)
-      (count = count.to_i).positive? ? puts(*Array.new(count, "\n")) : self
+      puts("\n" * count) if (count = count.to_i).positive?
     end
 
     # Print given items as list (like 'ls' command).
@@ -327,7 +327,7 @@ module NattyUI
     # Generate and print a table.
     # See {Table} for much more details about table generation.
     #
-    # @example Draw a very simple table with three rows, four columns, complete borders
+    # @example Draw a very simple 3x4 table with complete borders
     #   ui.table(border: :default, border_around: true, padding: [0, 1]) do |table|
     #     table.add 1, 2, 3, 4
     #     table.add 5, 6, 7, 8

@@ -19,7 +19,7 @@ module NattyUI
       def as_items(items, glyph)
         items.flatten!
         glyph = as_glyph(glyph, items.size)
-        items.map! { |item| Item.new(item = glyph[item], Text.width(item)) }
+        items.map! { Item.new(glyph[_1]) }
       end
 
       def as_glyph(glyph, size)
@@ -27,30 +27,34 @@ module NattyUI
         when nil, false
           lambda(&:itself)
         when :hex
-          pad = size.to_s(16).size
+          pad = [2, size.to_s(16).size].max
           glyph = 0
           ->(s) { "#{(glyph += 1).to_s(16).rjust(pad, '0')} #{s}" }
+        when /\A0x(\h+)\z/
+          glyph = Regexp.last_match(1).hex - 1
+          pad = [2, (glyph + size).to_s(16).size].max
+          ->(s) { "0x#{(glyph += 1).to_s(16).rjust(pad, '0')} #{s}" }
         when Integer
           pad = (glyph + size).to_s.size
           glyph -= 1
           ->(s) { "#{(glyph += 1).to_s.rjust(pad, ' ')} #{s}" }
         when Symbol
-          lambda do |s|
-            "#{
-              t = glyph
-              glyph = glyph.succ
-              t
-            } #{s}[/]"
-          end
+          ->(s) { "#{[glyph, glyph = glyph.succ][0]} #{s}" }
         else
           ->(s) { "#{glyph} #{s}" }
         end
       end
 
-      Item =
-        Struct.new(:str, :width) do
-          def to_s(in_width) = "#{str}#{' ' * (in_width - width)}"
+      class Item
+        attr_reader :width
+
+        def to_s(in_width) = "#{@str}#{' ' * (in_width - @width)}"
+
+        def initialize(str)
+          @str = str
+          @width = Text.width(str)
         end
+      end
       private_constant :Item
     end
   end
