@@ -4,6 +4,8 @@ $stdout.sync = $stderr.sync = true
 
 require 'bundler/gem_tasks'
 
+CLEAN << '.ruby-lsp'
+
 require 'rspec/core/rake_task'
 RSpec::Core::RakeTask.new(:test) { _1.ruby_opts = %w[-w] }
 
@@ -25,23 +27,24 @@ def generate(fname, content = nil)
 end
 
 module Examples
-  DIR = './examples'
-  FOR = ->(ffn) { ffn.pathmap("#{DIR}/%n%{.*,.rb}x") }
-  NAMES = %w[
-    24bit-colors
-    3bit-colors
-    8bit-colors
-    attributes
-    cols
-    elements
-    ls
-    named-colors
-    sections
-    tables
-  ].freeze
+  FOR = ->(ffn) { ffn.pathmap('./examples/%n%{.*,.rb}x') }
 
   def self.files
-    @files ||= FileList.new(NAMES.map { "#{DIR}/#{_1}.rb" })
+    @files ||=
+      FileList.new(
+        %w[
+          ./examples/24bit-colors.rb
+          ./examples/3bit-colors.rb
+          ./examples/8bit-colors.rb
+          ./examples/attributes.rb
+          ./examples/cols.rb
+          ./examples/elements.rb
+          ./examples/ls.rb
+          ./examples/named-colors.rb
+          ./examples/sections.rb
+          ./examples/tables.rb
+        ]
+      )
   end
 end
 
