@@ -6,7 +6,7 @@
 [94m│[m [94m╰────╶╴╴[m[m
 [94m│[m [m
 [94m│[m [93m╭──[m [93m![39m Warning [93m──╶╴╴[m[m
-[94m│[m [93m│[m This is a warning message example.[m
+[94m│[m [93m│[m [39mThis is a warning message example.[m
 [94m│[m [93m╰────╶╴╴[m[m
 [94m│[m [m
 [94m│[m [31m╭──[m [31m𝙓[39m Error Message [31m──╶╴╴[m[m
@@ -15,8 +15,4 @@
 [94m│[m [31m│[m [33m \"/  [mYou can add all other elements to a section.                                              [m
 [94m│[m [31m│[m [33m  `   [m                                                                                          [m
 [94m│[m [31m╰────╶╴╴[m[m
-[94m│[m [m
-[94m│[m [91m╭──[m [91m𝑭[39m Fail Message [91m──╶╴╴[m[m
-[94m│[m [91m│[m [39mA sad failure message.[m
-[94m│[m [91m╰────╶╴╴[m[m
 [94m╰────╶╴╴[m[m

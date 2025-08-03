@@ -13,7 +13,7 @@ ui.message '[b]​ᓚᕠᗢ NattyUI[/b] [i green]Sections[/]' do
   end
 
   ui.space
-  ui.warning 'Warning', 'This is a warning message example.'
+  ui.warning "Warning\nThis is a warning message example."
 
   ui.space
   ui.error 'Error Message' do
@@ -23,7 +23,4 @@ ui.message '[b]​ᓚᕠᗢ NattyUI[/b] [i green]Sections[/]' do
       cc.add 'You can add all other elements to a section.', vertical: :middle
     end
   end
-
-  ui.space
-  ui.failed "Fail Message\nA sad failure message."
 end

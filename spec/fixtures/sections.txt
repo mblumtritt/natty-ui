@@ -16,8 +16,4 @@
 │ │  \"/  You can add all other elements to a section.                          
 │ │   `                                                                         
 │ ╰────╶╴╴
-│ 
-│ ╭── 𝑭 Fail Message ──╶╴╴
-│ │ A sad failure message.
-│ ╰────╶╴╴
 ╰────╶╴╴
