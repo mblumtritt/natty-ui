@@ -58,12 +58,12 @@ module NattyUI
     def title=(value)
       if value
         title = Ansi.plain(value).gsub(/\s+/, ' ')
-        _write(Ansi.tab_title(title)) if Terminal.ansi?
+        _write(Ansi.title(title)) if Terminal.ansi?
         @title_stack << title
       else
         @title_stack.pop
         last = @title_stack[-1]
-        _write(Ansi.tab_title(last)) if last && Terminal.ansi?
+        _write(Ansi.title(last)) if last && Terminal.ansi?
       end
     end
 
@@ -74,7 +74,13 @@ module NattyUI
     def back_to_line(number, erase: true)
       return @lines_written if (c = @lines_written - number) <= 0
       if Terminal.ansi?
-        _write(erase ? (Ansi::LINE_ERASE_PREV * c) : Ansi.cursor_prev_line(c))
+        _write(
+          if erase == :all
+            Ansi.cursor_prev_line(c) + Ansi::SCREEN_ERASE_BELOW
+          else
+            erase ? (Ansi::LINE_ERASE_PREV * c) : Ansi.cursor_prev_line(c)
+          end
+        )
       end
       @lines_written = number
     end

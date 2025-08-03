@@ -3,25 +3,28 @@
 require_relative 'element'
 
 module NattyUI
-  # {Element} implemting a task display section used by {Features.task}.
+  # Task display section used by {Features.task}.
   #
   class Task < Temporary
-    include StateMixin
+    include WithStatus
 
     private
 
-    def finish_ok(text)
-      NattyUI.back_to_line(@start_line)
+    def _done(text)
+      NattyUI.back_to_line(@start_line, erase: :all)
       @start_line = nil
       cm = Theme.current.mark(:checkmark)
-      text << @title if text.empty?
       @parent.puts(
         *text,
         first_line_prefix: cm,
         first_line_prefix_width: cm.width,
         pin: @pin
       )
-      super()
+      @pins&.each { |objects, options| puts(*objects, **options) }
+    end
+
+    def _failed
+      @start_line = nil
     end
 
     def initialize(parent, title, msg, pin)

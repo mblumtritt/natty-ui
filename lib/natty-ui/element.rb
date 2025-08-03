@@ -33,10 +33,10 @@ module NattyUI
     end
 
     alias _to_s to_s
+    private :_to_s
 
     # @!visibility private
     alias to_s inspect
-    private :_to_s
 
     private
 
@@ -46,33 +46,30 @@ module NattyUI
     end
   end
 
-  module StateMixin
-    attr_reader :state
+  module WithStatus
+    attr_reader :status
 
-    def closed? = @state ? true : false
+    def active? = @status.nil?
+    def closed? = !active?
     def ok? = @state == :ok
     def failed? = @state == :failed
 
-    # @return [Element] itself
-    def done(*text) = @state ? self : finish_ok(text)
-    alias ok done
-
-    # @!visibility private
-    def failed(title, *msg)
-      return if @state
-      super
-      finish_failed
+    def ok(*text)
+      return self if @state
+      text = [@title] if text.empty? && @title
+      _done(text)
+      @state = :ok
+      self
     end
+    alias done ok
 
-    # @!visibility private
-    def inspect = "#{_to_s.chop} state=#{@state.inspect}>"
-
-    protected
-
-    def finish_failed
+    def failed(*text, &block)
+      return self if @state
+      _failed
       @state = :failed
+      text = [@title] if text.empty? && @title
+      @parent.failed(*text, &block)
       self
     end
   end
-  private_constant :StateMixin
 end

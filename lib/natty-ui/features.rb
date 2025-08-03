@@ -444,7 +444,7 @@ module NattyUI
     #   @param pin [true, false]
     #     whether the final progress state should be "pinned" to parent element
     #
-    #   @return [Progress]
+    #   @return [ProgressHelper]
     #     itself
     #
     # @overload progress(title, max: nil, pin: false, &block)
@@ -455,7 +455,7 @@ module NattyUI
     #   @param pin [true, false]
     #     whether the final progress state should be "pinned" to parent element
     #
-    #   @yieldparam progress [Progress]
+    #   @yieldparam progress [ProgressHelper]
     #     itself
     #
     #   @return [Object]
@@ -555,7 +555,7 @@ module NattyUI
     # @param align [:left, :right, :centered]
     #   text alignment,
     #   see {Attributes::Align}
-    # @param border: [Symbol]
+    # @param border [Symbol]
     #   kind of border,
     #   see {Attributes::Border}
     # @param border_style [Enumerable<Symbol>]

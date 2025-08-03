@@ -1,11 +1,15 @@
 # frozen_string_literal: true
 
+require_relative 'element'
+
 module NattyUI
   # @todo This chapter needs more documentation.
   #
   # Progress indictaor helper used by {Features.progress}.
   #
   module ProgressHelper
+    include WithStatus
+
     # @return [String]
     attr_reader :title
 
@@ -40,20 +44,11 @@ module NattyUI
       redraw
     end
 
-    def active? = @status.nil?
-    def ok? = @status == :ok
-    def failed? = @status == :failed
-
     def step(count: 1, title: nil)
       @title = title if title
       self.value += count
       self
     end
-
-    def done(title = nil) = finish(:ok, title)
-    alias ok done
-
-    def failed(title = nil) = finish(:failed, title)
 
     alias _to_s to_s
     private :_to_s
@@ -80,27 +75,26 @@ module NattyUI
 
     private
 
-    def finish(status, title)
-      return if @status
-      @status = status
+    def _done(text)
       NattyUI.back_to_line(@pin_line)
-      if status == :failed
-        @parent.failed(title || @title)
-      else
-        cm = Theme.current.mark(:checkmark)
-        @parent.puts(
-          title || @title,
-          pin: @pin,
-          first_line_prefix: cm,
-          first_line_prefix_width: cm.width
-        )
-      end
-      self
+      @pin_line = nil
+      cm = Theme.current.mark(:checkmark)
+      @parent.puts(
+        *text,
+        pin: @pin,
+        first_line_prefix: cm,
+        first_line_prefix_width: cm.width
+      )
+    end
+
+    def _failed
+      NattyUI.back_to_line(NattyUI.lines_written - 1) if @last&.size == 2
+      @pin_line = nil
     end
 
     def initialize(parent, title, max, pin)
       @parent = parent
-      @value = 0.0
+      @value = 0
       @title = title
       @pin = pin
       @pin_line = NattyUI.lines_written
@@ -123,7 +117,7 @@ module NattyUI
     end
 
     def moving_bar
-      "#{@style}#{'·' * @value}" if @value >= 1
+      "#{@style}#{'•' * @value}" if @value >= 1
     end
 
     def bar(diff)
@@ -143,20 +137,18 @@ module NattyUI
 
     private
 
-    def finish(status, title)
-      return if @status
-      @status = status
-      if status == :failed
-        @parent.failed(title || @title)
-      else
-        cm = Theme.current.mark(:checkmark)
-        @parent.puts(
-          title || @title,
-          first_line_prefix: cm,
-          first_line_prefix_width: cm.width
-        )
-      end
-      self
+    def _done(text)
+      cm = Theme.current.mark(:checkmark)
+      @parent.puts(
+        *text,
+        pin: @pin,
+        first_line_prefix: cm,
+        first_line_prefix_width: cm.width
+      )
+    end
+
+    def _failed
+      # nop
     end
 
     def initialize(parent, title, max)

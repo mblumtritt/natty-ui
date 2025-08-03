@@ -3,7 +3,7 @@
 require_relative 'element'
 
 module NattyUI
-  # {Element} implemting a display section used by
+  # Display section used by
   #
   # - {Features.section}
   # - {Features.message}
@@ -13,23 +13,20 @@ module NattyUI
   # - {Features.failed}
   #
   class Section < Element
-    include StateMixin
+    include WithStatus
 
     # @!visibility private
     def puts(*objects, **options) = @state ? self : super
 
     private
 
-    def finish_ok(text)
+    def _done(text)
       puts(*text) unless text.empty?
-      @state = :ok
       @parent.puts(@border.bottom)
-      self
     end
 
-    def finish_failed
+    def _failed
       @parent.puts(@border.bottom)
-      super
     end
 
     def show_title(title)
