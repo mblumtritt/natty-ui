@@ -25,12 +25,19 @@ module NattyUI
       @max_width, @columns = WidthFinder.find(columns, max_width)
       init_borders(attributes)
       @columns = @columns.each.with_index
+
       @lines = render(rows.shift)
       @lines.unshift(@b_top) if @b_top
-      rows.each do |row|
-        @lines << @b_between if @b_between
-        @lines += render(row)
+
+      if @b_between
+        rows.each do |row|
+          @lines << @b_between
+          @lines += render(row)
+        end
+      else
+        rows.each { |row| @lines += render(row) }
       end
+
       @lines << @b_bottom if @b_bottom
     end
 
@@ -47,6 +54,7 @@ module NattyUI
       chars = attributes.border_chars or return
       style = border_style(attributes)
       @b_inner = style[chars[9]]
+      return if chars[10] == ' '
       return init_borders_around(chars, style) if attributes.border_around
       @b_between = chars[10] * (@max_width + @columns.size - 1)
       i = -1
