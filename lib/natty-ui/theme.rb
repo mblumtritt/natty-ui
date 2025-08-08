@@ -67,6 +67,35 @@ module NattyUI
           )
         end
       end
+
+      def emoji
+        create do |theme|
+          theme.heading_sytle = :bright_blue
+          theme.task_style = %i[bright_green b]
+          # theme.choice_style =
+          theme.choice_current_style = %i[bright_white on_blue b]
+          theme.define_marker(
+            bullet: '▫️',
+            checkmark: '✅',
+            quote: '[bright_blue]▍[/fg]',
+            information: '📌',
+            warning: '⚠️',
+            error: '❗️',
+            failed: '‼️',
+            current: '➡️',
+            choice: '[bright_white]•[/fg]',
+            current_choice: '[bright_green]●[/fg]'
+          )
+          theme.define_section(
+            default: :bright_blue,
+            message: :bright_blue,
+            information: :bright_blue,
+            warning: :bright_yellow,
+            error: :red,
+            failed: :bright_red
+          )
+        end
+      end
     end
 
     attr_accessor :section_border
