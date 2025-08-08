@@ -469,30 +469,6 @@ module NattyUI
       end
     end
 
-    module BorderAround
-      # Whether the border is around an element.
-      #
-      # @return [true, false]
-      attr_reader :border_around
-
-      # @attribute [w]  border_around
-      def border_around=(value)
-        @border_around = value ? true : false
-      end
-
-      protected
-
-      def _assign(opt)
-        @border_around = opt[:border_around]
-        super
-      end
-
-      def _store(opt)
-        opt[:border_around] = true if @border_around
-        super
-      end
-    end
-
     module Border
       # Border type.
       #

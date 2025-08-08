@@ -181,7 +181,45 @@ module NattyUI
     class Attributes < NattyUI::Attributes::Base
       prepend NattyUI::Attributes::Border
       prepend NattyUI::Attributes::BorderStyle
-      prepend NattyUI::Attributes::BorderAround
+
+      # Whether the table has a border around.
+      #
+      # @return [true, false]
+      attr_reader :border_around
+
+      # @attribute [w]  border_around
+      def border_around=(value)
+        @border_around = value ? true : false
+      end
+
+      # Maximum table width.
+      #
+      # @return [Integer, nil]
+      attr_reader :max_width
+
+      # @attribute [w] max_width
+      def max_width=(value)
+        if value.is_a?(Float)
+          return @max_width = nil if value < 0
+          return @max_width = value if value < 1
+        end
+        value = value.to_i
+        @max_width = value <= 0 ? nil : value
+      end
+
+      protected
+
+      def _assign(opt)
+        @border_around = opt[:border_around]
+        self.max_width = opt[:max_width]
+        super
+      end
+
+      def _store(opt)
+        opt[:border_around] = true if @border_around
+        opt[:max_width] = @max_width if @max_width
+        super
+      end
     end
 
     include Enumerable
@@ -207,10 +245,20 @@ module NattyUI
 
     # @return [Row] created row
     def add(*text, **attributes)
-      nr = Row.new
-      @rows << nr
-      text.each { nr.add(_1, **attributes) }
-      block_given? ? yield(nr) : nr
+      unless text[0].is_a?(Hash)
+        @rows << (nr = Row.new)
+        text.each { nr.add(_1, **attributes) }
+        return block_given? ? yield(nr) : nr
+      end
+      new_rows = []
+      text[0].each_pair do |key, value|
+        new_rows << (nr = Row.new)
+        @rows << nr
+        nr.add(key, **attributes)
+        nr.add(value, **attributes)
+        yield(nr) if block_given?
+      end
+      new_rows
     end
 
     def delete(row)
