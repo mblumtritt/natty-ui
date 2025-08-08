@@ -8,7 +8,7 @@ RSpec.describe 'NattyUI feature task' do
       NattyUI.task('title') { |task| task.puts('content') }
       expect(stdout).to eq(
         [
-          "\e[92;1m➔ ",
+          "\e[92m➔\e[39m \e[92;1m",
           'title',
           "\e[m\n",
           '  ',
