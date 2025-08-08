@@ -41,16 +41,21 @@ module NattyUI
 
       def as_wh(value)
         return unless value
-        return (value = value.to_i) > 0 ? value : nil if value.is_a?(Numeric)
-        value.is_a?(Range) ? wh_from(value.begin.to_i, value.end.to_i) : nil
+        return value > 0 ? value : nil if value.is_a?(Numeric)
+        value.is_a?(Range) ? wh_from(value.begin, value.end) : nil
       end
 
       def wh_from(min, max)
-        min = nil if min < 1
-        max = nil if max < 1
+        min = normalized(min)
+        max = normalized(max)
         return max ? (..max) : nil unless min
-        return(min..) unless max
+        return Range.new(min, nil) unless max
         min == max ? min : Range.new(*[min, max].minmax)
+      end
+
+      def normalized(value)
+        return value < 0 ? nil : value if value.is_a?(Float) && value < 1
+        (value = value.to_i) < 1 ? nil : value
       end
     end
 
@@ -135,7 +140,7 @@ module NattyUI
 
       # @attribute [w] min_width
       def min_width=(value)
-        @width = wh_from(value.to_i, max_width.to_i)
+        @width = wh_from(value, max_width)
       end
 
       # Maximum element width.
@@ -148,7 +153,7 @@ module NattyUI
 
       # @attribute [w] max_width
       def max_width=(value)
-        @width = wh_from(min_width.to_i, value.to_i)
+        @width = wh_from(min_width, value)
       end
 
       protected

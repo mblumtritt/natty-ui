@@ -43,14 +43,24 @@ module NattyUI
 
     def fit_max_width(columns, max_width, saving_by_column)
       ret = max_width - columns.size + 1
+      columns = columns.map { normalized(_1, max_width) }
       return columns, ret if ret >= 1
       saving_by_column += 1
-      columns = columns.dup
       until ret >= 1
         columns.pop
         ret += saving_by_column
       end
       [columns, ret]
+    end
+
+    def normalized(value, max_width)
+      return (max_width * value).to_i if value.is_a?(Float)
+      return value unless value.is_a?(Range)
+      min = value.begin
+      max = value.end
+      min = (max_width * min).to_i if min.is_a?(Float)
+      max = (max_width * max).to_i if max.is_a?(Float)
+      (min..max)
     end
 
     def expand(sum)

@@ -33,7 +33,7 @@ module NattyUI
           m = cell.attributes.max_width
           max = m if m && (max.nil? || max < m)
         end
-        wh_from(min.to_i, max.to_i)
+        wh_from(min, max)
       end
 
       def respond_to_missing?(name, _)
