@@ -39,7 +39,7 @@ module NattyUI
         when 0
           [0, 0, 0, 0]
         when 1
-          [value[0], 0, 0, 0]
+          Array.new(4, value[0])
         when 2
           value * 2
         when 3
