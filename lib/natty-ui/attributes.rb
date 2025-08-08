@@ -11,19 +11,13 @@ module NattyUI
       end
 
       # @return [Attributes] itself
-      def merge!(**attributes)
-        attributes.empty? ? self : _assign(attributes)
-      end
+      def merge!(**attributes) = attributes.empty? ? self : _assign(attributes)
 
       # @!visibility private
-      def to_hash
-        _store({})
-      end
+      def to_hash = _store({})
 
       # @!visibility private
-      def to_h(&block)
-        block ? _store({}).to_h(&block) : _store({})
-      end
+      def to_h(&block) = block ? _store({}).to_h(&block) : _store({})
 
       private
 
@@ -158,9 +152,7 @@ module NattyUI
       #
       # @attribute [r] min_width
       # @return [Integer, nil]
-      def min_width
-        width.is_a?(Range) ? @width.begin : @width
-      end
+      def min_width = width.is_a?(Range) ? @width.begin : @width
 
       # @attribute [w] min_width
       def min_width=(value)
@@ -171,9 +163,7 @@ module NattyUI
       #
       # @attribute [r] max_width
       # @return [Integer, nil]
-      def max_width
-        width.is_a?(Range) ? @width.end : @width
-      end
+      def max_width = width.is_a?(Range) ? @width.end : @width
 
       # @attribute [w] max_width
       def max_width=(value)
@@ -212,9 +202,7 @@ module NattyUI
       #
       # @attribute [r] min_height
       # @return [Integer, nil]
-      def min_height
-        @height.is_a?(Range) ? @height.begin : @height
-      end
+      def min_height = @height.is_a?(Range) ? @height.begin : @height
 
       # @attribute [w] min_height
       def min_height=(value)
@@ -225,9 +213,7 @@ module NattyUI
       #
       # @attribute [r] max_height
       # @return [Integer, nil]
-      def max_height
-        @height.is_a?(Range) ? @height.begin : @height
-      end
+      def max_height = @height.is_a?(Range) ? @height.begin : @height
 
       # @attribute [w] max_height
       def max_height=(value)
@@ -573,10 +559,8 @@ module NattyUI
     attr_reader :text
 
     def empty? = @text.empty?
-
     alias _to_s to_s
     private :_to_s
-
     def to_str = @text.join("\n")
     alias to_s to_str
 

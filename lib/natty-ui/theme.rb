@@ -245,7 +245,7 @@ module NattyUI
           right = Ansi.decorate(left.reverse, *style)
           [
             left = Str.new("#{Ansi.decorate(left, *style)} ", true),
-            Str.new(" #{right}", left.size)
+            Str.new(" #{right}", left.width)
           ]
         end
       end

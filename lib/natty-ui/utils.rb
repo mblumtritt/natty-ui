@@ -68,23 +68,21 @@ module NattyUI
 
   class Str
     attr_reader :to_s
-
     alias to_str to_s
+    def empty? = width == 0
     def inspect = @to_s.inspect
-    def empty? = size == 0
 
-    def size
-      return @size if @size
-      @size = Text.width(self)
+    def width
+      return @width if @width
+      @width = Text.width(self)
       freeze
-      @size
+      @width
     end
-    alias width size
 
-    def initialize(str, size = nil)
+    def initialize(str, width = nil)
       @to_s = Ansi.bbcode(str).freeze
-      return unless size
-      @size = @size.is_a?(Integer) ? size : Text.width(self)
+      return unless width
+      @width = @width.is_a?(Integer) ? width : Text.width(self)
       freeze
     end
   end
