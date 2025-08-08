@@ -24,12 +24,22 @@ module NattyUI
 
       # @!visibility private
       def align(value)
-        value == :right || value == :centered ? value : :left
+        POS_ALI.include?(value) ? value : :left
+      end
+
+      # @!visibility private
+      def position(value)
+        value if POS_ALI.include?(value)
       end
 
       # @!visibility private
       def vertical(value)
-        value == :bottom || value == :middle ? value : :top
+        VERT.include?(value) ? value : :top
+      end
+
+      # @!visibility private
+      def split_table_attr(values)
+        [values.slice(*TAB_ATTR), values.except(*TAB_ATTR)]
       end
 
       # @!visibility private
@@ -50,13 +60,17 @@ module NattyUI
       end
       alias margin padding
     end
+
+    POS_ALI = %i[right centered].freeze
+    VERT = %i[bottom middle].freeze
+    TAB_ATTR = %i[border_around border border_style position].freeze
   end
 
   class Str
     attr_reader :to_s
 
     alias to_str to_s
-    def inspect = to_s.inspect
+    def inspect = @to_s.inspect
     def empty? = size == 0
 
     def size

@@ -181,6 +181,7 @@ module NattyUI
     class Attributes < NattyUI::Attributes::Base
       prepend NattyUI::Attributes::Border
       prepend NattyUI::Attributes::BorderStyle
+      prepend NattyUI::Attributes::Position
 
       # Whether the table has a border around.
       #

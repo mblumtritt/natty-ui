@@ -345,8 +345,8 @@ module NattyUI
     # @option attributes [true, false] :border_around (false)
     #   whether the table should have a border around,
     #   see {Table::Attributes}
-    # @option attributes [true, false] :border_around (false)
-    #   whether the table should have a border around,
+    # @option attributes [:left, :right, :centered] :position (false)
+    #   where to align the table,
     #   see {Table::Attributes}
     #
     # @yieldparam table [Table]
@@ -356,7 +356,11 @@ module NattyUI
     def table(**attributes)
       return self unless block_given?
       yield(table = Table.new(**attributes))
-      puts(*TableRenderer[table, columns])
+      puts(
+        *TableRenderer[table, columns],
+        align: table.attributes.position,
+        expand: true
+      )
     end
 
     # Print text in columns.
@@ -375,13 +379,10 @@ module NattyUI
     #
     # @return (see puts)
     def cols(*columns, **attributes)
-      table(
-        border_around: attributes.delete(:border_around),
-        border: attributes.delete(:border),
-        border_style: attributes.delete(:border_style)
-      ) do |table|
+      tab_att, att = Utils.split_table_attr(attributes)
+      table(**tab_att) do |table|
         table.add do |row|
-          columns.each { row.add(_1, **attributes) }
+          columns.each { row.add(_1, **att) }
           yield(row) if block_given?
         end
       end
@@ -410,11 +411,9 @@ module NattyUI
     # @return (see puts)
     def div(*text, **attributes)
       return self if text.empty?
-      table(
-        border_around: true,
-        border: attributes.delete(:border),
-        border_style: attributes.delete(:border_style)
-      ) { |table| table.add { _1.add(*text, **attributes) } }
+      tab_att, att = Utils.split_table_attr(attributes)
+      tab_att[:border_around] = true
+      table(**tab_att) { |table| table.add { _1.add(*text, **att) } }
     end
 
     # Dynamically display a task progress.

@@ -88,6 +88,30 @@ module NattyUI
       end
     end
 
+    module Position
+      # Horizontal element position.
+      #
+      # @return [nil, :right, :centered]
+      attr_reader :position
+
+      # @attribute [w] position
+      def position=(value)
+        @position = Utils.position(value)
+      end
+
+      protected
+
+      def _assign(opt)
+        self.position = opt[:position] if opt.key?(:position)
+        super
+      end
+
+      def _store(opt)
+        opt[:position] = @position if @position
+        super
+      end
+    end
+
     module Vertical
       # Vertical element alignment.
       #
