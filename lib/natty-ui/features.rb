@@ -31,8 +31,8 @@ module NattyUI
     # @param options [{Symbol => Object}]
     # @option options [:left, :right, :centered] :align (:left)
     #   text alignment
-    # @option options [true, false] :ignore_newline (false)
-    #   whether to igniore newline characters
+    # @option options [true, false] :eol (true)
+    #   whether to respect newline characters
     #
     # @return [Features]
     #   itself
@@ -84,7 +84,7 @@ module NattyUI
           limit: max_width,
           bbcode: bbcode,
           ansi: Terminal.ansi?,
-          ignore_newline: options[:ignore_newline]
+          ignore_newline: options[:eol] == false || options[:ignore_newline]
         )
 
       if (align = options[:align]).nil?

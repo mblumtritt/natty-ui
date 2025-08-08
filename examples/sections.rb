@@ -5,7 +5,7 @@ require_relative '../lib/natty-ui'
 ui.message '[b]​ᓚᕠᗢ NattyUI[/b] [i green]Sections[/]' do
   ui.space
   ui.information 'Informative Message' do
-    ui.puts <<~TEXT, ignore_newline: true
+    ui.puts <<~TEXT, eol: false
       Sections and messages are elements which support any other feature. This
       means they may contain text, other sections, titles, horizontal rules,
       lists, progress bars and much more!

@@ -22,7 +22,7 @@ RSpec.describe NattyUI do
     end
 
     it 'can ignore newline' do
-      NattyUI.puts("hello\n\nworld!\n\n", ignore_newline: true)
+      NattyUI.puts("hello\n\nworld!\n\n", eol: false)
       expect(stdout).to eq ['hello world!', "\e[m\n"]
     end
 
@@ -88,7 +88,7 @@ RSpec.describe NattyUI do
     end
 
     it 'can ignore newline' do
-      NattyUI.puts("hello\n\nworld!\n\n", ignore_newline: true)
+      NattyUI.puts("hello\n\nworld!\n\n", eol: false)
       expect(stdoutstr).to eq "hello world!\n"
     end
 

@@ -4,7 +4,7 @@ require_relative '../lib/natty-ui'
 
 ui.message '[b]​ᓚᕠᗢ NattyUI[/b] [i green]ANSI Attributes[/]' do
   ui.space
-  ui.puts <<~INFO_1, <<~INFO_2, ignore_newline: true
+  ui.puts <<~INFO_1, <<~INFO_2, eol: false
     NattyUI supports all well known attributes like
     [b]bold[/b],
     [i]italic[/i],

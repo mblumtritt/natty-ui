@@ -4,7 +4,7 @@ require_relative '../lib/natty-ui'
 
 ui.message '[b]​ᓚᕠᗢ NattyUI[/b] [i green]3/4bit Color Support[/]' do
   ui.space
-  ui.puts <<~INFO, ignore_newline: true
+  ui.puts <<~INFO, eol: false
     Terminals may support colors. You can colorize foreground text and
     background. The very basic color palette consists of eight colors and may
     be extended with eight colors which are much brighter.
