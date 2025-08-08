@@ -53,6 +53,7 @@ module NattyUI
             warning: '[bright_yellow]![/fg]',
             error: '[red]𝙓[/fg]',
             failed: '[bright_red]𝑭[/fg]',
+            current: '[bright_green]➔[/fg]',
             choice: '[bright_white]◦[/fg]',
             current_choice: '[bright_green]◉[/fg]'
           )
@@ -278,6 +279,7 @@ module NattyUI
         warning: '!',
         error: '𝙓',
         failed: '𝑭',
+        current: '➔',
         choice: '◦',
         current_choice: '◉'
       }

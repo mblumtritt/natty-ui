@@ -34,12 +34,14 @@ module NattyUI
       @prefix_width = 2
       @pin = pin
       style = Theme.current.task_style
+      cm = Theme.current.mark(:current)
+      cmw = cm.width + 1
       parent.puts(
         title,
-        first_line_prefix: "#{style}➔ ",
-        first_line_prefix_width: 2,
-        prefix: "#{style}  ",
-        prefix_width: 2
+        first_line_prefix: "#{cm} #{style}",
+        first_line_prefix_width: cmw,
+        prefix: "#{style}#{' ' * cmw}",
+        prefix_width: cmw
       )
       puts(*msg) unless msg.empty?
     end

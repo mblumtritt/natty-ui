@@ -99,6 +99,9 @@ module NattyUI
       @pin = pin
       @pin_line = NattyUI.lines_written
       @style = Theme.current.task_style
+      cm = Theme.current.mark(:current)
+      @flp = "#{cm} #{@style}"
+      @flpw = cm.width + 1
       max ? self.max = max : redraw
     end
 
@@ -110,8 +113,8 @@ module NattyUI
       @pin_line = NattyUI.back_to_line(@pin_line) if @last
       @parent.puts(
         *curr,
-        first_line_prefix: "#{@style}➔ ",
-        first_line_prefix_width: 2
+        first_line_prefix: @flp,
+        first_line_prefix_width: @flpw
       )
       @last = curr
     end
