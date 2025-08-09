@@ -3,6 +3,7 @@
 require_relative '../lib/natty-ui'
 
 EXAMPLES = {
+  'info' => 'Terminal Information',
   'attributes' => 'ANSI Attributes',
   '3bit-colors' => '3/4bit Color Support',
   '8bit-colors' => '8bit Color Support',
