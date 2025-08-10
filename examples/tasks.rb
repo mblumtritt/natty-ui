@@ -4,7 +4,7 @@ require_relative '../lib/natty-ui'
 
 ui.message '[b]​ᓚᕠᗢ NattyUI[/b] [i green]Tasks[/]' do
   ui.space
-  ui.puts <<~TEXT, ignore_newline: true
+  ui.puts <<~TEXT, eol: false
     Tasks are sections that are closed either successfully or with an error message.
     If successful, their content is only displayed temporarily and can consist of all
     other features, in particular further (sub)tasks. As an exception to this, some

@@ -8,22 +8,28 @@ module NattyUI
     def self.[](table, max_width)
       columns = table.columns.map(&:width)
       return [] if columns.empty?
-      attributes = table.attributes
-      unless attributes.border_chars.nil?
+      att = table.attributes
+      case att.max_width
+      when Float
+        max_width *= att.max_width
+      when Integer
+        max_width = [max_width, att.max_width].min
+      end
+      unless att.border_chars.nil?
         max_width -= (columns.size - 1)
-        max_width -= 2 if attributes.border_around
+        max_width -= 2 if att.border_around
       end
       return [] if max_width < columns.size
-      new(columns, table.each.to_a, attributes, max_width).lines
+      new(columns, table.each.to_a, att, max_width).lines
     end
 
     attr_reader :lines
 
     private
 
-    def initialize(columns, rows, attributes, max_width)
+    def initialize(columns, rows, att, max_width)
       @max_width, @columns = WidthFinder.find(columns, max_width)
-      init_borders(attributes)
+      init_borders(att)
       @columns = @columns.each.with_index
 
       @lines = render(rows.shift)
@@ -50,12 +56,12 @@ module NattyUI
       end
     end
 
-    def init_borders(attributes)
-      chars = attributes.border_chars or return
-      style = border_style(attributes)
+    def init_borders(att)
+      chars = att.border_chars or return
+      style = border_style(att)
       @b_inner = style[chars[9]]
       return if chars[10] == ' '
-      return init_borders_around(chars, style) if attributes.border_around
+      return init_borders_around(chars, style) if att.border_around
       @b_between = chars[10] * (@max_width + @columns.size - 1)
       i = -1
       @columns[0..-2].each { |w| @b_between[i += w + 1] = chars[4] }
@@ -79,8 +85,8 @@ module NattyUI
       @b_outer = @b_inner
     end
 
-    def border_style(attributes)
-      style = attributes.border_style_bbcode
+    def border_style(att)
+      style = att.border_style_bbcode
       style ? ->(line) { "#{style}#{line}[/]" } : lambda(&:itself)
     end
 

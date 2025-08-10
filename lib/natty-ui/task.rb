@@ -30,16 +30,17 @@ module NattyUI
     def initialize(parent, title, msg, pin)
       super(parent)
       @title = title
-      @prefix = '  '
-      @prefix_width = 2
       @pin = pin
       style = Theme.current.task_style
+      cm = Theme.current.mark(:current)
+      @prefix = ' ' * cm.width
+      @prefix_width = cm.width
       parent.puts(
         title,
-        first_line_prefix: "#{style}➔ ",
-        first_line_prefix_width: 2,
-        prefix: "#{style}  ",
-        prefix_width: 2
+        first_line_prefix: "#{cm}#{style}",
+        first_line_prefix_width: cm.width,
+        prefix: "#{@prefix}#{style}",
+        prefix_width: cm.width
       )
       puts(*msg) unless msg.empty?
     end

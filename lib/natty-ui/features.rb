@@ -31,8 +31,8 @@ module NattyUI
     # @param options [{Symbol => Object}]
     # @option options [:left, :right, :centered] :align (:left)
     #   text alignment
-    # @option options [true, false] :ignore_newline (false)
-    #   whether to igniore newline characters
+    # @option options [true, false] :eol (true)
+    #   whether to respect newline characters
     #
     # @return [Features]
     #   itself
@@ -84,7 +84,7 @@ module NattyUI
           limit: max_width,
           bbcode: bbcode,
           ansi: Terminal.ansi?,
-          ignore_newline: options[:ignore_newline]
+          ignore_newline: options[:eol] == false || options[:ignore_newline]
         )
 
       if (align = options[:align]).nil?
@@ -338,13 +338,16 @@ module NattyUI
     #   attributes for the table and default attributes for table cells
     # @option attributes [Symbol] :border (nil)
     #   kind of border,
-    #   see {Attributes::Border}
-    # @option attributes [true, false] :border_around (false)
-    #   whether the table should have a border around,
-    #   see {Attributes::BorderAround}
+    #   see {Table::Attributes}
     # @option attributes [Enumerable<Symbol>] :border_style (nil)
     #   style of border,
-    #   see {Attributes::BorderStyle}
+    #   see {Table::Attributes}
+    # @option attributes [true, false] :border_around (false)
+    #   whether the table should have a border around,
+    #   see {Table::Attributes}
+    # @option attributes [:left, :right, :centered] :position (false)
+    #   where to align the table,
+    #   see {Table::Attributes}
     #
     # @yieldparam table [Table]
     #   helper to define the table layout
@@ -353,7 +356,11 @@ module NattyUI
     def table(**attributes)
       return self unless block_given?
       yield(table = Table.new(**attributes))
-      puts(*TableRenderer[table, columns])
+      puts(
+        *TableRenderer[table, columns],
+        align: table.attributes.position,
+        expand: true
+      )
     end
 
     # Print text in columns.
@@ -372,9 +379,10 @@ module NattyUI
     #
     # @return (see puts)
     def cols(*columns, **attributes)
-      table(**attributes) do |table|
+      tab_att, att = Utils.split_table_attr(attributes)
+      table(**tab_att) do |table|
         table.add do |row|
-          columns.each { row.add(_1, **attributes) }
+          columns.each { row.add(_1, **att) }
           yield(row) if block_given?
         end
       end
@@ -403,9 +411,9 @@ module NattyUI
     # @return (see puts)
     def div(*text, **attributes)
       return self if text.empty?
-      table(border_around: true, **attributes) do |table|
-        table.add { _1.add(*text, **attributes) }
-      end
+      tab_att, att = Utils.split_table_attr(attributes)
+      tab_att[:border_around] = true
+      table(**tab_att) { |table| table.add { _1.add(*text, **att) } }
     end
 
     # Dynamically display a task progress.

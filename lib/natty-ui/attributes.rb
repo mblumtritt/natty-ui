@@ -11,19 +11,13 @@ module NattyUI
       end
 
       # @return [Attributes] itself
-      def merge!(**attributes)
-        attributes.empty? ? self : _assign(attributes)
-      end
+      def merge!(**attributes) = attributes.empty? ? self : _assign(attributes)
 
       # @!visibility private
-      def to_hash
-        _store({})
-      end
+      def to_hash = _store({})
 
       # @!visibility private
-      def to_h(&block)
-        block ? _store({}).to_h(&block) : _store({})
-      end
+      def to_h(&block) = block ? _store({}).to_h(&block) : _store({})
 
       private
 
@@ -41,16 +35,21 @@ module NattyUI
 
       def as_wh(value)
         return unless value
-        return (value = value.to_i) > 0 ? value : nil if value.is_a?(Numeric)
-        value.is_a?(Range) ? wh_from(value.begin.to_i, value.end.to_i) : nil
+        return value > 0 ? value : nil if value.is_a?(Numeric)
+        value.is_a?(Range) ? wh_from(value.begin, value.end) : nil
       end
 
       def wh_from(min, max)
-        min = nil if min < 1
-        max = nil if max < 1
+        min = normalized(min)
+        max = normalized(max)
         return max ? (..max) : nil unless min
-        return(min..) unless max
+        return Range.new(min, nil) unless max
         min == max ? min : Range.new(*[min, max].minmax)
+      end
+
+      def normalized(value)
+        return value < 0 ? nil : value if value.is_a?(Float) && value < 1
+        (value = value.to_i) < 1 ? nil : value
       end
     end
 
@@ -79,6 +78,30 @@ module NattyUI
 
       def _store(opt)
         opt[:align] = @align if @align != :left
+        super
+      end
+    end
+
+    module Position
+      # Horizontal element position.
+      #
+      # @return [nil, :right, :centered]
+      attr_reader :position
+
+      # @attribute [w] position
+      def position=(value)
+        @position = Utils.position(value)
+      end
+
+      protected
+
+      def _assign(opt)
+        self.position = opt[:position] if opt.key?(:position)
+        super
+      end
+
+      def _store(opt)
+        opt[:position] = @position if @position
         super
       end
     end
@@ -129,26 +152,22 @@ module NattyUI
       #
       # @attribute [r] min_width
       # @return [Integer, nil]
-      def min_width
-        width.is_a?(Range) ? @width.begin : @width
-      end
+      def min_width = width.is_a?(Range) ? @width.begin : @width
 
       # @attribute [w] min_width
       def min_width=(value)
-        @width = wh_from(value.to_i, max_width.to_i)
+        @width = wh_from(value, max_width)
       end
 
       # Maximum element width.
       #
       # @attribute [r] max_width
       # @return [Integer, nil]
-      def max_width
-        width.is_a?(Range) ? @width.end : @width
-      end
+      def max_width = width.is_a?(Range) ? @width.end : @width
 
       # @attribute [w] max_width
       def max_width=(value)
-        @width = wh_from(min_width.to_i, value.to_i)
+        @width = wh_from(min_width, value)
       end
 
       protected
@@ -183,9 +202,7 @@ module NattyUI
       #
       # @attribute [r] min_height
       # @return [Integer, nil]
-      def min_height
-        @height.is_a?(Range) ? @height.begin : @height
-      end
+      def min_height = @height.is_a?(Range) ? @height.begin : @height
 
       # @attribute [w] min_height
       def min_height=(value)
@@ -196,9 +213,7 @@ module NattyUI
       #
       # @attribute [r] max_height
       # @return [Integer, nil]
-      def max_height
-        @height.is_a?(Range) ? @height.begin : @height
-      end
+      def max_height = @height.is_a?(Range) ? @height.begin : @height
 
       # @attribute [w] max_height
       def max_height=(value)
@@ -464,30 +479,6 @@ module NattyUI
       end
     end
 
-    module BorderAround
-      # Whether the border is around an element.
-      #
-      # @return [true, false]
-      attr_reader :border_around
-
-      # @attribute [w]  border_around
-      def border_around=(value)
-        @border_around = value ? true : false
-      end
-
-      protected
-
-      def _assign(opt)
-        @border_around = opt[:border_around]
-        super
-      end
-
-      def _store(opt)
-        opt[:border_around] = true if @border_around
-        super
-      end
-    end
-
     module Border
       # Border type.
       #
@@ -568,10 +559,8 @@ module NattyUI
     attr_reader :text
 
     def empty? = @text.empty?
-
     alias _to_s to_s
     private :_to_s
-
     def to_str = @text.join("\n")
     alias to_s to_str
 

@@ -24,12 +24,22 @@ module NattyUI
 
       # @!visibility private
       def align(value)
-        value == :right || value == :centered ? value : :left
+        POS_ALI.include?(value) ? value : :left
+      end
+
+      # @!visibility private
+      def position(value)
+        value if POS_ALI.include?(value)
       end
 
       # @!visibility private
       def vertical(value)
-        value == :bottom || value == :middle ? value : :top
+        VERT.include?(value) ? value : :top
+      end
+
+      # @!visibility private
+      def split_table_attr(values)
+        [values.slice(*TAB_ATTR), values.except(*TAB_ATTR)]
       end
 
       # @!visibility private
@@ -39,7 +49,7 @@ module NattyUI
         when 0
           [0, 0, 0, 0]
         when 1
-          [value[0], 0, 0, 0]
+          Array.new(4, value[0])
         when 2
           value * 2
         when 3
@@ -50,27 +60,29 @@ module NattyUI
       end
       alias margin padding
     end
+
+    POS_ALI = %i[right centered].freeze
+    VERT = %i[bottom middle].freeze
+    TAB_ATTR = %i[border_around border border_style position].freeze
   end
 
   class Str
     attr_reader :to_s
-
     alias to_str to_s
-    def inspect = to_s.inspect
-    def empty? = size == 0
+    def empty? = width == 0
+    def inspect = @to_s.inspect
 
-    def size
-      return @size if @size
-      @size = Text.width(self)
+    def width
+      return @width if @width
+      @width = Text.width(self)
       freeze
-      @size
+      @width
     end
-    alias width size
 
-    def initialize(str, size = nil)
+    def initialize(str, width = nil)
       @to_s = Ansi.bbcode(str).freeze
-      return unless size
-      @size = @size.is_a?(Integer) ? size : Text.width(self)
+      return unless width
+      @width = @width.is_a?(Integer) ? width : Text.width(self)
       freeze
     end
   end

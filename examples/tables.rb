@@ -46,10 +46,9 @@ ui.message '[b]​ᓚᕠᗢ NattyUI[/b] [i green]Print Tables[/]' do
   ui.space
   ui.table do |table|
     table.add do |row|
-      row.add 'green', style: :on_green
-      row.add 'blue', style: :on_blue
-      row.add 'red', style: :on_red
-      row.width = 15
+      row.add 'green', style: :on_green, max_width: 0.1
+      row.add 'blue', style: :on_blue, max_width: 0.25
+      row.add 'red', style: :on_red, max_width: 0.1
       row.align = :centered
     end
     table.add do |row|

@@ -53,8 +53,38 @@ module NattyUI
             warning: '[bright_yellow]![/fg]',
             error: '[red]𝙓[/fg]',
             failed: '[bright_red]𝑭[/fg]',
+            current: '[bright_green]➔[/fg]',
             choice: '[bright_white]◦[/fg]',
             current_choice: '[bright_green]◉[/fg]'
+          )
+          theme.define_section(
+            default: :bright_blue,
+            message: :bright_blue,
+            information: :bright_blue,
+            warning: :bright_yellow,
+            error: :red,
+            failed: :bright_red
+          )
+        end
+      end
+
+      def emoji
+        create do |theme|
+          theme.heading_sytle = :bright_blue
+          theme.task_style = %i[bright_green b]
+          # theme.choice_style =
+          theme.choice_current_style = %i[bright_white on_blue b]
+          theme.define_marker(
+            bullet: '▫️',
+            checkmark: '✅',
+            quote: '[bright_blue]▍[/fg]',
+            information: '📌',
+            warning: '⚠️',
+            error: '❗️',
+            failed: '‼️',
+            current: '➡️',
+            choice: '[bright_white]•[/fg]',
+            current_choice: '[bright_green]●[/fg]'
           )
           theme.define_section(
             default: :bright_blue,
@@ -206,7 +236,7 @@ module NattyUI
         return create_styled_heading(heading, style) if style
         heading.map do |left|
           right = " #{left.reverse}"
-          [left = Str.new("#{left} ", true), Str.new(right, left.size)]
+          [left = Str.new("#{left} ", true), Str.new(right, left.width)]
         end
       end
 
@@ -215,7 +245,7 @@ module NattyUI
           right = Ansi.decorate(left.reverse, *style)
           [
             left = Str.new("#{Ansi.decorate(left, *style)} ", true),
-            Str.new(" #{right}", left.size)
+            Str.new(" #{right}", left.width)
           ]
         end
       end
@@ -278,6 +308,7 @@ module NattyUI
         warning: '!',
         error: '𝙓',
         failed: '𝑭',
+        current: '➔',
         choice: '◦',
         current_choice: '◉'
       }

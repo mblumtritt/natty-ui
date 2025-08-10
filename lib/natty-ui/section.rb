@@ -48,7 +48,7 @@ module NattyUI
       @border = Theme.current.section_border(kind)
       show_title(title)
       @prefix = @border.prefix
-      @prefix_width = @prefix.size
+      @prefix_width = @prefix.width
       puts(*rest) if rest && !rest.empty?
       puts(*msg) unless msg.empty?
     end
