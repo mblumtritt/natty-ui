@@ -236,7 +236,7 @@ module NattyUI
         return create_styled_heading(heading, style) if style
         heading.map do |left|
           right = " #{left.reverse}"
-          [left = Str.new("#{left} ", true), Str.new(right, left.size)]
+          [left = Str.new("#{left} ", true), Str.new(right, left.width)]
         end
       end
 
