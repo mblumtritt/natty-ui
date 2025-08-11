@@ -27,7 +27,7 @@ Gem::Specification.new do |spec|
   ] = "https://rubydoc.info/gems/natty-ui/#{NattyUI::VERSION}/NattyUI"
 
   spec.required_ruby_version = '>= 3.0'
-  spec.add_dependency 'terminal_rb', '>= 0.11.0'
+  spec.add_dependency 'terminal_rb', '>= 0.11.1'
 
   spec.files = (Dir['lib/**/*'] + Dir['examples/**/*.rb']) << '.yardopts'
   spec.extra_rdoc_files = %w[README.md LICENSE]
