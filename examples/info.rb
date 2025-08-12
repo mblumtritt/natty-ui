@@ -17,11 +17,11 @@ end
 ui.message '[b]​ᓚᕠᗢ NattyUI[/b] [i green]Terminal Information[/]' do
   ui.space
   ui.table do |table|
-    table.add('Identifier', Terminal.application || 'unidentified')
-    table.add('ANSI support', Terminal.ansi? ? 'yes' : 'no')
-    table.add('Input mode', Terminal.input_mode)
-    table.add('Colors', colors)
-    table.add('Screen size', Terminal.size.join(' x '))
+    table.add 'Identifier', Terminal.application || 'unidentified'
+    table.add 'ANSI support', Terminal.ansi? ? 'yes' : 'no'
+    table.add 'Input mode', Terminal.input_mode
+    table.add 'Colors', colors
+    table.add 'Screen size', Terminal.size.join(' x ')
     fc = table.columns[0]
     fc.width = 14
     fc.padding_right = 2
