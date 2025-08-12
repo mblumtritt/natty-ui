@@ -445,7 +445,16 @@ module NattyUI
       if values.any?(&:negative?)
         raise(ArgumentError, 'values can not be negative')
       end
-      puts(*VBarsRenderer[values, columns, height, normalize, bar_width, style])
+      puts(
+        *VBarsRenderer.lines(
+          values,
+          columns,
+          height,
+          normalize,
+          bar_width,
+          Terminal.ansi? ? style : nil
+        )
+      )
     end
 
     def hbars(
@@ -459,7 +468,16 @@ module NattyUI
       if values.any?(&:negative?)
         raise(ArgumentError, 'values can not be negative')
       end
-      puts(*HBarsRenderer[values, columns, width, normalize, style, text_style])
+      style = text_style = nil unless Terminal.ansi?
+      puts(
+        *HBarsRenderer.lines(
+          values,
+          Utils.as_size(3..columns, width),
+          normalize,
+          style,
+          text_style
+        )
+      )
     end
 
     # Dynamically display a task progress.
