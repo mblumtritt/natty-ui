@@ -7,7 +7,7 @@ module NattyUI
     def select
       yield(self) if block_given?
       pin_line = NattyUI.lines_written
-      draw(current = 0)
+      draw(current = @ret.index(@selected) || 0)
       while (key = Terminal.read_key)
         case key
         when 'Esc', 'Ctrl+c'
@@ -30,12 +30,13 @@ module NattyUI
 
     private
 
-    def initialize(parent, args, kwargs, abortable)
+    def initialize(parent, args, kwargs, abortable, selected)
       super(parent)
       @start_line = NattyUI.lines_written
       @texts = args + kwargs.values
       @ret = Array.new(args.size, &:itself) + kwargs.keys
       @abortable = abortable
+      @selected = selected
       theme = Theme.current
       @mark = [theme.mark(:choice), theme.choice_style]
       @mark_current = [theme.mark(:current_choice), theme.choice_current_style]
