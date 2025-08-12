@@ -13,6 +13,8 @@ EXAMPLES = {
   'ls' => 'Print Lists',
   'tables' => 'Print Tables',
   'cols' => 'Print Columns',
+  'vbars' => 'Print Vertical Bars',
+  'hbars' => 'Print Horizontal Bars',
   'sections' => 'Sections',
   'tasks' => 'Tasks'
 }.freeze
@@ -23,7 +25,7 @@ ui.space
 
 while true
   selected =
-    ui.choice(**EXAMPLES, abortable: true) do
+    ui.choice(**EXAMPLES, abortable: true, selected: selected) do
       ui.cols(
         "[red] /\\_/\\\n( o.o )\n > ^ <",
         '[bright_green b]Select a natty example:',

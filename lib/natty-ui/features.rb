@@ -39,6 +39,7 @@ module NattyUI
     def puts(*text, **options)
       bbcode = true if (bbcode = options[:bbcode]).nil?
       max_width = options[:max_width] || Terminal.columns
+      max_width = Terminal.columns + max_width if max_width < 0
 
       prefix_width =
         if (prefix = options[:prefix])
@@ -416,6 +417,51 @@ module NattyUI
       table(**tab_att) { |table| table.add { _1.add(*text, **att) } }
     end
 
+    # Dump given values as vertical bars.
+    #
+    # @example Draw green bars
+    #   ui.bars(1..10, style: :green)
+    #
+    # @example Draw very big bars
+    #   ui.bars(1..10, bar_width: 5, height: 20)
+    #
+    # @param values [#to_a, Array<Numeric>] values to print
+    # @param normalize [true, false] whether the values should be normalized
+    # @param height [Integer] output height
+    # @param bar_width [:auto, :min, Integer] with of each bar
+    # @param style [Symbol, Array<Symbol>, nil] drawing style
+    #
+    # @raise [ArgumentError] if any value is negative
+    #
+    # @return (see puts)
+    def vbars(
+      values,
+      normalize: false,
+      height: 10,
+      bar_width: :auto,
+      style: nil
+    )
+      return self if (values = values.to_a).empty?
+      if values.any?(&:negative?)
+        raise(ArgumentError, 'values can not be negative')
+      end
+      puts(*VBarsRenderer[values, columns, height, normalize, bar_width, style])
+    end
+
+    def hbars(
+      values,
+      normalize: false,
+      width: :auto,
+      style: nil,
+      text_style: nil
+    )
+      return self if (values = values.to_a).empty?
+      if values.any?(&:negative?)
+        raise(ArgumentError, 'values can not be negative')
+      end
+      puts(*HBarsRenderer[values, columns, width, normalize, style, text_style])
+    end
+
     # Dynamically display a task progress.
     # When a `max` parameter is given the progress will be displayed as a
     # progress bar below the `title`. Otherwise the progress is displayed just
@@ -727,12 +773,12 @@ module NattyUI
     #   @return [nil]
     #     when user aborted the selection
     #
-    def choice(*choices, abortable: false, **kwchoices, &block)
+    def choice(*choices, abortable: false, selected: nil, **kwchoices, &block)
       return if choices.empty? && kwchoices.empty?
       choice =
         case NattyUI.input_mode
         when :default
-          Choice.new(self, choices, kwchoices, abortable)
+          Choice.new(self, choices, kwchoices, abortable, selected)
         when :dumb
           DumbChoice.new(self, choices, kwchoices, abortable)
         else
@@ -789,9 +835,10 @@ module NattyUI
 
   dir = __dir__
   autoload :Choice, "#{dir}/choice.rb"
-  autoload :CompactLSRenderer, "#{dir}/ls_renderer.rb"
   autoload :DumbChoice, "#{dir}/dumb_choice.rb"
+  autoload :CompactLSRenderer, "#{dir}/ls_renderer.rb"
   autoload :Framed, "#{dir}/framed.rb"
+  autoload :HBarsRenderer, "#{dir}/hbars_renderer.rb"
   autoload :LSRenderer, "#{dir}/ls_renderer.rb"
   autoload :Progress, "#{dir}/progress.rb"
   autoload :DumbProgress, "#{dir}/progress.rb"
@@ -801,6 +848,18 @@ module NattyUI
   autoload :Temporary, "#{dir}/temporary.rb"
   autoload :Theme, "#{dir}/theme.rb"
   autoload :Utils, "#{dir}/utils.rb"
+  autoload :VBarsRenderer, "#{dir}/vbars_renderer.rb"
 
-  private_constant :Choice, :DumbChoice, :LSRenderer, :CompactLSRenderer
+  private_constant(
+    :Choice,
+    :DumbChoice,
+    :CompactLSRenderer,
+    :Framed,
+    :HBarsRenderer,
+    :LSRenderer,
+    :Progress,
+    :DumbProgress,
+    :Utils,
+    :VBarsRenderer
+  )
 end
