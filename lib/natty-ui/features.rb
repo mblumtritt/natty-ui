@@ -15,12 +15,12 @@ module NattyUI
     # Print given text as lines.
     #
     # @example Print two lines text, right aligned
-    #   ui.puts("Two lines", "of nice text", align: :right)
+    #   ui.puts "Two lines", "of nice text", align: :right
     #   # =>    Two lines
     #   # => of nice text
     #
     # @example Print two lines text, with a prefix
-    #   ui.puts("Two lines", "of nice text", prefix: ': ')
+    #   ui.puts "Two lines", "of nice text", prefix: ': '
     #   # => : Two lines
     #   # => : of nice text
     #
@@ -273,8 +273,8 @@ module NattyUI
 
     # Print a horizontal rule.
     #
-    # @example
-    #   ui.hr(:heavy)
+    # @example Print double line
+    #   ui.hr :double
     #
     # @param type [Symbol]
     #   border type
@@ -306,10 +306,10 @@ module NattyUI
     # - any text as prefix
     #
     # @example Print all Ruby files as a numbered list
-    #   ui.ls(Dir['*/**/*.rb'], glyph: 1)
+    #   ui.ls Dir['*/**/*.rb'], glyph: 1
     #
     # @example Print all Ruby files as a bullet point list (with green bullets)
-    #   ui.ls(Dir['*/**/*.rb'], glyph: '[green]•[/fg]')
+    #   ui.ls Dir['*/**/*.rb'], glyph: '[green]•[/fg]'
     #
     # @param items [#to_s]
     #   one or more convertible objects to list
@@ -420,10 +420,10 @@ module NattyUI
     # Dump given values as vertical bars.
     #
     # @example Draw green bars
-    #   ui.bars(1..10, style: :green)
+    #   ui.vbars 1..10, style: :green
     #
     # @example Draw very big bars
-    #   ui.bars(1..10, bar_width: 5, height: 20)
+    #   ui.vbars 1..10, bar_width: 5, height: 20
     #
     # @param values [#to_a, Array<Numeric>] values to print
     # @param normalize [true, false] whether the values should be normalized
@@ -457,8 +457,28 @@ module NattyUI
       )
     end
 
+    # Dump given values as horizontal bars.
+    #
+    # @example Draw green bars
+    #   ui.hbars 1..10, style: :green
+    #
+    # @example Draw bars in half sreen width
+    #   ui.hbars 1..10, style: :blue, width: 0.5
+    #
+    # @param values [#to_a, Array<Numeric>] values to print
+    # @param with_values [true, false] whether the values should be printed too
+    # @param normalize [true, false] whether the values should be normalized
+    # @param height [Integer] output height
+    # @param bar_width [:auto, :min, Integer] with of each bar
+    # @param style [Symbol, Array<Symbol>, nil] bar drawing style
+    # @param text_style [Symbol, Array<Symbol>, nil] text style
+    #
+    # @raise [ArgumentError] if any value is negative
+    #
+    # @return (see puts)
     def hbars(
       values,
+      with_values: true,
       normalize: false,
       width: :auto,
       style: nil,
@@ -469,15 +489,12 @@ module NattyUI
         raise(ArgumentError, 'values can not be negative')
       end
       style = text_style = nil unless Terminal.ansi?
-      puts(
-        *HBarsRenderer.lines(
-          values,
-          Utils.as_size(3..columns, width),
-          normalize,
-          style,
-          text_style
-        )
-      )
+      size = Utils.as_size(3..columns, width)
+      if with_values
+        puts(*HBarsRenderer.lines(values, size, normalize, style, text_style))
+      else
+        puts(*HBarsRenderer.lines_bars_only(values, size, normalize, style))
+      end
     end
 
     # Dynamically display a task progress.
@@ -498,15 +515,15 @@ module NattyUI
     #   end
     #
     # @example Display simple progress
-    #   progress = ui.progress('Check some stuff')
+    #   progress = ui.progress 'Check some stuff'
     #   10.times do
     #     # simulate some work
-    #     sleep(0.1)
+    #     sleep 0.1
     #
     #     # here we actualize the progress
     #     progress.step
     #   end
-    #   progress.ok('Stuff checked ok')
+    #   progress.ok 'Stuff checked ok'
     #
     # @overload progress(title, max: nil, pin: false)
     #   @param title [#to_s]
@@ -555,10 +572,10 @@ module NattyUI
     #
     # @example
     #   ui.section do |section|
-    #     section.h1('About Sections')
+    #     section.h1 'About Sections'
     #     section.space
-    #     section.puts('Sections are areas of text elements.')
-    #     section.puts('You can use any other feature inside such an area.')
+    #     section.puts 'Sections are areas of text elements.'
+    #     section.puts 'You can use any other feature inside such an area.'
     #   end
     #   # => ╭────╶╶╶
     #   # => │ ╴╶╴╶─═══ About Sections ═══─╴╶╴╶
@@ -821,7 +838,7 @@ module NattyUI
     #
     # @example Show tempoary information
     #   ui.temporary do
-    #     ui.info('Information', 'This text will disappear when you pressed ENTER.')
+    #     ui.info 'Information', 'This text will disappear when you pressed ENTER.'
     #     ui.await
     #   end
     #
