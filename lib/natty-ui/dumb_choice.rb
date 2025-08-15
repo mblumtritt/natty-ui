@@ -7,10 +7,10 @@ module NattyUI
     def select
       yield(self) if block_given?
       draw
-      while (code = Terminal.read_key)
-        return if @abortable && (code == 'Esc' || code == 'Ctrl+c')
-        next if code.size > 1
-        code = code[0].upcase
+      while (event = Terminal.read_key_event)
+        return if @abortable && %w[Esc Ctrl+c].include?(event.name)
+        next unless event.simple?
+        code = event.raw.upcase
         if @ret.size <= 9 && ('1'..'9').include?(code)
           code = @ret[code.ord - 49] and break code
         elsif ('A'..'Z').include?(code)

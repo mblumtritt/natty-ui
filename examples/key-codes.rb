@@ -2,27 +2,29 @@
 
 require_relative '../lib/natty-ui'
 
-raw = name = :start
-while name != 'Esc'
+event = nil
+while true
   ui.temporary do
     ui.message '[b]​ᓚᕠᗢ NattyUI[/b] [i green]Keyboard Key Codes[/]' do
       ui.puts(
-        "\n#{
-          case name
-          when :start
-            "Your terminal uses [i]#{
-              Terminal.input_mode
-            }[/i] mode. Press a key!"
-          when nil
-            "[green]#{raw.inspect}[/fg] → [bold bright_green][\\#{raw}]"
+        "
+        #{
+          if event
+            "#{event.to_a.size < 2 ? ' Key' : 'Keys'}: [bold bright_green]#{
+              event.to_a.map { "[\\#{_1}]" }.join(' ')
+            }[/]
+            Code: [bright_blue]#{event.raw.inspect}[/]"
           else
-            "[green]#{raw.inspect}[/fg] → [bold bright_green]#{
-              name.split('+').map! { "[\\#{_1}]" }.join(' ')
-            }"
+            "Your terminal uses [bright_blue]#{
+              Terminal.input_mode
+            }[/] mode. Press a key!"
           end
-        }\n\n[bright_black](Exit with ESC)"
+        }
+
+        [faint](Exit with ESC)"
       )
     end
-    raw, name = Terminal.read_key(mode: :both)
+    event = Terminal.read_key_event
+    exit if event.nil? || event.name == 'Esc'
   end
 end

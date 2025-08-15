@@ -724,18 +724,14 @@ module NattyUI
     #
     #   @return [true, false]
     #     wheter the user inputs a positive result
+    #   @return nil
+    #     in error case
     #
     def await(yes: 'Enter', no: 'Esc')
-      temporary do |arg|
-        yield(arg) if block_given?
-        while (key = Terminal.read_key)
-          if (no == key) || (no.is_a?(Enumerable) && no.include?(key))
-            return false
-          end
-          if (yes == key) || (yes.is_a?(Enumerable) && yes.include?(key))
-            return true
-          end
-        end
+      return __await(yes, no) unless block_given?
+      temporary do |temp|
+        yield(temp)
+        __await(yes, no)
       end
     end
 
@@ -862,6 +858,17 @@ module NattyUI
 
     def __tsec(color, title, text, &block)
       __sec(color, "#{Theme.current.mark(color)}#{title}", text, &block)
+    end
+
+    def __await(yes, no)
+      while (event = Terminal.read_key_event&.name)
+        if (no == event) || (no.is_a?(Enumerable) && no.include?(event))
+          return false
+        end
+        if (yes == event) || (yes.is_a?(Enumerable) && yes.include?(event))
+          return true
+        end
+      end
     end
 
     EOL__ = Terminal.ansi? ? "\e[m\n" : "\n"
