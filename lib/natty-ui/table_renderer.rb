@@ -156,6 +156,7 @@ module NattyUI
         ["#{@style}#{' ' * @padding[3]}", "#{' ' * @padding[1]}[/]"]
       end
     end
+    private_constant :Cell
   end
   private_constant :TableRenderer
 end

@@ -15,12 +15,12 @@ module NattyUI
     # Print given text as lines.
     #
     # @example Print two lines text, right aligned
-    #   ui.puts("Two lines", "of nice text", align: :right)
+    #   ui.puts "Two lines", "of nice text", align: :right
     #   # =>    Two lines
     #   # => of nice text
     #
     # @example Print two lines text, with a prefix
-    #   ui.puts("Two lines", "of nice text", prefix: ': ')
+    #   ui.puts "Two lines", "of nice text", prefix: ': '
     #   # => : Two lines
     #   # => : of nice text
     #
@@ -39,6 +39,7 @@ module NattyUI
     def puts(*text, **options)
       bbcode = true if (bbcode = options[:bbcode]).nil?
       max_width = options[:max_width] || Terminal.columns
+      max_width = Terminal.columns + max_width if max_width < 0
 
       prefix_width =
         if (prefix = options[:prefix])
@@ -272,8 +273,8 @@ module NattyUI
 
     # Print a horizontal rule.
     #
-    # @example
-    #   ui.hr(:heavy)
+    # @example Print double line
+    #   ui.hr :double
     #
     # @param type [Symbol]
     #   border type
@@ -305,10 +306,10 @@ module NattyUI
     # - any text as prefix
     #
     # @example Print all Ruby files as a numbered list
-    #   ui.ls(Dir['*/**/*.rb'], glyph: 1)
+    #   ui.ls Dir['*/**/*.rb'], glyph: 1
     #
     # @example Print all Ruby files as a bullet point list (with green bullets)
-    #   ui.ls(Dir['*/**/*.rb'], glyph: '[green]•[/fg]')
+    #   ui.ls Dir['*/**/*.rb'], glyph: '[green]•[/fg]'
     #
     # @param items [#to_s]
     #   one or more convertible objects to list
@@ -416,6 +417,86 @@ module NattyUI
       table(**tab_att) { |table| table.add { _1.add(*text, **att) } }
     end
 
+    # Dump given values as vertical bars.
+    #
+    # @example Draw green bars
+    #   ui.vbars 1..10, style: :green
+    #
+    # @example Draw very big bars
+    #   ui.vbars 1..10, bar_width: 5, height: 20
+    #
+    # @param values [#to_a, Array<Numeric>] values to print
+    # @param normalize [true, false] whether the values should be normalized
+    # @param height [Integer] output height
+    # @param bar_width [:auto, :min, Integer] with of each bar
+    # @param style [Symbol, Array<Symbol>, nil] drawing style
+    #
+    # @raise [ArgumentError] if any value is negative
+    #
+    # @return (see puts)
+    def vbars(
+      values,
+      normalize: false,
+      height: 10,
+      bar_width: :auto,
+      style: nil
+    )
+      return self if (values = values.to_a).empty?
+      if values.any?(&:negative?)
+        raise(ArgumentError, 'values can not be negative')
+      end
+      puts(
+        *VBarsRenderer.lines(
+          values,
+          columns,
+          height,
+          normalize,
+          bar_width,
+          Terminal.ansi? ? style : nil
+        )
+      )
+    end
+
+    # Dump given values as horizontal bars.
+    #
+    # @example Draw green bars
+    #   ui.hbars 1..10, style: :green
+    #
+    # @example Draw bars in half sreen width
+    #   ui.hbars 1..10, style: :blue, width: 0.5
+    #
+    # @param values [#to_a, Array<Numeric>] values to print
+    # @param with_values [true, false] whether the values should be printed too
+    # @param normalize [true, false] whether the values should be normalized
+    # @param height [Integer] output height
+    # @param bar_width [:auto, :min, Integer] with of each bar
+    # @param style [Symbol, Array<Symbol>, nil] bar drawing style
+    # @param text_style [Symbol, Array<Symbol>, nil] text style
+    #
+    # @raise [ArgumentError] if any value is negative
+    #
+    # @return (see puts)
+    def hbars(
+      values,
+      with_values: true,
+      normalize: false,
+      width: :auto,
+      style: nil,
+      text_style: nil
+    )
+      return self if (values = values.to_a).empty?
+      if values.any?(&:negative?)
+        raise(ArgumentError, 'values can not be negative')
+      end
+      style = text_style = nil unless Terminal.ansi?
+      size = Utils.as_size(3..columns, width)
+      if with_values
+        puts(*HBarsRenderer.lines(values, size, normalize, style, text_style))
+      else
+        puts(*HBarsRenderer.lines_bars_only(values, size, normalize, style))
+      end
+    end
+
     # Dynamically display a task progress.
     # When a `max` parameter is given the progress will be displayed as a
     # progress bar below the `title`. Otherwise the progress is displayed just
@@ -434,15 +515,15 @@ module NattyUI
     #   end
     #
     # @example Display simple progress
-    #   progress = ui.progress('Check some stuff')
+    #   progress = ui.progress 'Check some stuff'
     #   10.times do
     #     # simulate some work
-    #     sleep(0.1)
+    #     sleep 0.1
     #
     #     # here we actualize the progress
     #     progress.step
     #   end
-    #   progress.ok('Stuff checked ok')
+    #   progress.ok 'Stuff checked ok'
     #
     # @overload progress(title, max: nil, pin: false)
     #   @param title [#to_s]
@@ -491,10 +572,10 @@ module NattyUI
     #
     # @example
     #   ui.section do |section|
-    #     section.h1('About Sections')
+    #     section.h1 'About Sections'
     #     section.space
-    #     section.puts('Sections are areas of text elements.')
-    #     section.puts('You can use any other feature inside such an area.')
+    #     section.puts 'Sections are areas of text elements.'
+    #     section.puts 'You can use any other feature inside such an area.'
     #   end
     #   # => ╭────╶╶╶
     #   # => │ ╴╶╴╶─═══ About Sections ═══─╴╶╴╶
@@ -643,18 +724,14 @@ module NattyUI
     #
     #   @return [true, false]
     #     wheter the user inputs a positive result
+    #   @return nil
+    #     in error case
     #
     def await(yes: 'Enter', no: 'Esc')
-      temporary do |arg|
-        yield(arg) if block_given?
-        while (key = Terminal.read_key)
-          if (no == key) || (no.is_a?(Enumerable) && no.include?(key))
-            return false
-          end
-          if (yes == key) || (yes.is_a?(Enumerable) && yes.include?(key))
-            return true
-          end
-        end
+      return __await(yes, no) unless block_given?
+      temporary do |temp|
+        yield(temp)
+        __await(yes, no)
       end
     end
 
@@ -727,12 +804,12 @@ module NattyUI
     #   @return [nil]
     #     when user aborted the selection
     #
-    def choice(*choices, abortable: false, **kwchoices, &block)
+    def choice(*choices, abortable: false, selected: nil, **kwchoices, &block)
       return if choices.empty? && kwchoices.empty?
       choice =
         case NattyUI.input_mode
         when :default
-          Choice.new(self, choices, kwchoices, abortable)
+          Choice.new(self, choices, kwchoices, abortable, selected)
         when :dumb
           DumbChoice.new(self, choices, kwchoices, abortable)
         else
@@ -757,7 +834,7 @@ module NattyUI
     #
     # @example Show tempoary information
     #   ui.temporary do
-    #     ui.info('Information', 'This text will disappear when you pressed ENTER.')
+    #     ui.info 'Information', 'This text will disappear when you pressed ENTER.'
     #     ui.await
     #   end
     #
@@ -783,15 +860,27 @@ module NattyUI
       __sec(color, "#{Theme.current.mark(color)}#{title}", text, &block)
     end
 
+    def __await(yes, no)
+      while (event = Terminal.read_key_event&.name)
+        if (no == event) || (no.is_a?(Enumerable) && no.include?(event))
+          return false
+        end
+        if (yes == event) || (yes.is_a?(Enumerable) && yes.include?(event))
+          return true
+        end
+      end
+    end
+
     EOL__ = Terminal.ansi? ? "\e[m\n" : "\n"
     private_constant :EOL__
   end
 
   dir = __dir__
   autoload :Choice, "#{dir}/choice.rb"
-  autoload :CompactLSRenderer, "#{dir}/ls_renderer.rb"
   autoload :DumbChoice, "#{dir}/dumb_choice.rb"
+  autoload :CompactLSRenderer, "#{dir}/ls_renderer.rb"
   autoload :Framed, "#{dir}/framed.rb"
+  autoload :HBarsRenderer, "#{dir}/hbars_renderer.rb"
   autoload :LSRenderer, "#{dir}/ls_renderer.rb"
   autoload :Progress, "#{dir}/progress.rb"
   autoload :DumbProgress, "#{dir}/progress.rb"
@@ -801,6 +890,18 @@ module NattyUI
   autoload :Temporary, "#{dir}/temporary.rb"
   autoload :Theme, "#{dir}/theme.rb"
   autoload :Utils, "#{dir}/utils.rb"
+  autoload :VBarsRenderer, "#{dir}/vbars_renderer.rb"
 
-  private_constant :Choice, :DumbChoice, :LSRenderer, :CompactLSRenderer
+  private_constant(
+    :Choice,
+    :DumbChoice,
+    :CompactLSRenderer,
+    :Framed,
+    :HBarsRenderer,
+    :LSRenderer,
+    :Progress,
+    :DumbProgress,
+    :Utils,
+    :VBarsRenderer
+  )
 end

@@ -59,6 +59,19 @@ module NattyUI
         end
       end
       alias margin padding
+
+      # @!visibility private
+      def as_size(range, value)
+        return range.begin if value == :min
+        return range.end if value.nil? || value.is_a?(Symbol)
+        (
+          if value.is_a?(Numeric)
+            (value > 0 && value < 1 ? (range.end * value) : value).round
+          else
+            value.to_i
+          end
+        ).clamp(range)
+      end
     end
 
     POS_ALI = %i[right centered].freeze
@@ -79,11 +92,25 @@ module NattyUI
       @width
     end
 
-    def initialize(str, width = nil)
-      @to_s = Ansi.bbcode(str).freeze
-      return unless width
-      @width = @width.is_a?(Integer) ? width : Text.width(self)
-      freeze
+    def +(other)
+      other = Str.new(other) unless other.is_a?(Str)
+      Str.new(@to_s + other.to_s, width + other.width)
+    end
+
+    if Terminal.ansi?
+      def initialize(str, width = nil)
+        @to_s = Ansi.bbcode(str).freeze
+        return unless width
+        @width = @width.is_a?(Integer) ? width : Text.width(self)
+        freeze
+      end
+    else
+      def initialize(str, width = nil)
+        @to_s = Ansi.plain(str).freeze
+        return unless width
+        @width = @width.is_a?(Integer) ? width : Text.width(self)
+        freeze
+      end
     end
   end
 

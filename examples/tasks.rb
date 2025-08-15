@@ -21,7 +21,7 @@ ui.message '[b]​ᓚᕠᗢ NattyUI[/b] [i green]Tasks[/]' do
 
     ui.task('Connect to Library') do
       foo
-      ui.mark('Server Found', mark: :checkmark)
+      ui.mark 'Server Found', mark: :checkmark
       ui.task('Login...') { some }
     end
 

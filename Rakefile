@@ -39,10 +39,12 @@ module Examples
           ./examples/attributes.rb
           ./examples/cols.rb
           ./examples/elements.rb
+          ./examples/hbars.rb
           ./examples/ls.rb
           ./examples/named-colors.rb
           ./examples/sections.rb
           ./examples/tables.rb
+          ./examples/vbars.rb
         ]
       )
   end

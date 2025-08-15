@@ -7,22 +7,24 @@ module NattyUI
     def select
       yield(self) if block_given?
       pin_line = NattyUI.lines_written
-      draw(current = 0)
-      while (key = Terminal.read_key)
-        case key
+      draw(current = @ret.index(@selected) || 0)
+      while (event = Terminal.read_key_event)
+        case event.name
         when 'Esc', 'Ctrl+c'
           break nil if @abortable
         when 'Enter', ' '
           break @ret[current]
-        when 'Up', 'Left', 'Back', 'Shift+Tab'
+        when 'Home'
+          current = 0
+        when 'End'
+          current = @texts.size - 1
+        when 'Up', 'Back', 'Shift+Tab', 'i'
           current = @texts.size - 1 if (current -= 1) < 0
-          pin_line = NattyUI.back_to_line(pin_line, erase: false)
-          draw(current)
-        when 'Down', 'Right', 'Tab'
+        when 'Down', 'Tab', 'k'
           current = 0 if (current += 1) == @texts.size
-          pin_line = NattyUI.back_to_line(pin_line, erase: false)
-          draw(current)
         end
+        pin_line = NattyUI.back_to_line(pin_line, erase: false)
+        draw(current)
       end
     ensure
       NattyUI.back_to_line(@start_line)
@@ -30,12 +32,13 @@ module NattyUI
 
     private
 
-    def initialize(parent, args, kwargs, abortable)
+    def initialize(parent, args, kwargs, abortable, selected)
       super(parent)
       @start_line = NattyUI.lines_written
       @texts = args + kwargs.values
       @ret = Array.new(args.size, &:itself) + kwargs.keys
       @abortable = abortable
+      @selected = selected
       theme = Theme.current
       @mark = [theme.mark(:choice), theme.choice_style]
       @mark_current = [theme.mark(:current_choice), theme.choice_current_style]

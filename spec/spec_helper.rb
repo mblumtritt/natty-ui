@@ -15,10 +15,12 @@ EXAMPLES_NAMES = %w[
   attributes
   cols
   elements
+  hbars
   ls
   named-colors
   sections
   tables
+  vbars
 ].freeze
 
 def fixture(name) = File.read("#{FIXTURES_DIR}/#{name}")
