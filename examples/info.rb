@@ -26,6 +26,6 @@ ui.message '[b]​ᓚᕠᗢ NattyUI[/b] [i green]Terminal Information[/]' do
     fc.width = 14
     fc.padding_right = 2
     fc.align = :right
-    table.columns[1].style = :bold
+    table.columns[1].style = %i[bold bright_yellow]
   end
 end

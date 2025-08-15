@@ -92,6 +92,11 @@ module NattyUI
       @width
     end
 
+    def +(other)
+      other = Str.new(other) unless other.is_a?(Str)
+      Str.new(@to_s + other.to_s, width + other.width)
+    end
+
     if Terminal.ansi?
       def initialize(str, width = nil)
         @to_s = Ansi.bbcode(str).freeze

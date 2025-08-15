@@ -39,7 +39,7 @@ ui.message '[b]​ᓚᕠᗢ NattyUI[/b]' do
     table.add do |row|
       row.add 'Layout'
       row.add <<~TEXT.chomp
-        🎩 heading elements     📝 messages
+        🎩 heading elements     📝 messages    📊 bar graphs
         📏 horizontal rulers    [blue]┼┼[/] tables
         📋 lists                [b green]✓✓[/] tasks
       TEXT
