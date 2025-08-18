@@ -47,7 +47,6 @@ module NattyUI
 
       class Item
         attr_reader :width
-
         def to_s(in_width) = "#{@str}#{' ' * (in_width - @width)}"
 
         def initialize(str)

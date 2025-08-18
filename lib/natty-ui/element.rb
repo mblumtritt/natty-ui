@@ -32,11 +32,11 @@ module NattyUI
       self
     end
 
-    alias _to_s to_s
-    private :_to_s
-
     # @!visibility private
     alias to_s inspect
+
+    alias _to_s to_s
+    private :_to_s
 
     private
 
@@ -48,7 +48,6 @@ module NattyUI
 
   module WithStatus
     attr_reader :status
-
     def active? = @status.nil?
     def closed? = !active?
     def ok? = @state == :ok

@@ -167,10 +167,8 @@ module NattyUI
 
     class Compiled
       attr_reader :task_style, :choice_current_style, :choice_style
-
       def defined_marks = @mark.keys.sort!
       def defined_borders = @border.keys.sort!
-
       def heading(index) = @heading[index.to_i.clamp(1, 6) - 1]
 
       def mark(value)
@@ -294,6 +292,7 @@ module NattyUI
 
       private_constant :SectionBorder
     end
+    # private_constant :Compiled
 
     private
 
