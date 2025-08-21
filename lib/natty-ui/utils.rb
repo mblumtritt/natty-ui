@@ -3,7 +3,6 @@
 module NattyUI
   module Utils
     class << self
-      # @!visibility private
       def style(value)
         value =
           case value
@@ -22,27 +21,22 @@ module NattyUI
         value.keep_if { Ansi.valid?(_1) }.empty? ? nil : value
       end
 
-      # @!visibility private
       def align(value)
         POS_ALI.include?(value) ? value : :left
       end
 
-      # @!visibility private
       def position(value)
         value if POS_ALI.include?(value)
       end
 
-      # @!visibility private
       def vertical(value)
         VERT.include?(value) ? value : :top
       end
 
-      # @!visibility private
       def split_table_attr(values)
         [values.slice(*TAB_ATTR), values.except(*TAB_ATTR)]
       end
 
-      # @!visibility private
       def padding(*value)
         value = value.flatten.take(4).map! { [0, _1.to_i].max }
         case value.size
@@ -60,7 +54,6 @@ module NattyUI
       end
       alias margin padding
 
-      # @!visibility private
       def as_size(range, value)
         return range.begin if value == :min
         return range.end if value.nil? || value.is_a?(Symbol)

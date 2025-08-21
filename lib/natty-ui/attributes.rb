@@ -29,7 +29,6 @@ module NattyUI
       def _init = nil
       def _assign(_opt) = self
       def _store(opt) = opt
-
       def as_uint(value) = [0, value.to_i].max
       def as_nint(value) = ([0, value.to_i].max if value)
 
@@ -555,9 +554,7 @@ module NattyUI
 
   module TextWithAttributes
     include WithAttributes
-
     attr_reader :text
-
     def empty? = @text.empty?
     alias _to_s to_s
     private :_to_s

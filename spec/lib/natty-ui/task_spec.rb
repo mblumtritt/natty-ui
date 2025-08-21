@@ -4,7 +4,7 @@ RSpec.describe 'NattyUI feature task' do
   context 'when ANSI is supported' do
     include_context 'with Terminal.rb'
 
-    it 'out' do
+    it 'produces correct output' do
       NattyUI.task('title') { |task| task.puts('content') }
       expect(stdout).to eq(
         [

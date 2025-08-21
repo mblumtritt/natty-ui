@@ -16,10 +16,9 @@ EXAMPLES = {
   'vbars' => 'Print Vertical Bars',
   'hbars' => 'Print Horizontal Bars',
   'sections' => 'Sections',
-  'tasks' => 'Tasks'
+  'tasks' => 'Tasks',
+  'options' => 'Options and Selections'
 }.freeze
-
-DEFAULT_MODE = NattyUI.input_mode == :default
 
 ui.space
 
@@ -34,12 +33,12 @@ while true
       ui.div('[faint](Abort with [\\ESC])', padding: [1, 0, 1])
     end
 
-  ui.space unless DEFAULT_MODE
+  ui.space unless Terminal.ansi?
   break unless selected
 
   ui.temporary do
     load("#{__dir__}/#{selected}.rb")
-    if DEFAULT_MODE
+    if Terminal.ansi?
       ui.await { ui.puts '[faint][\\Press ENTER to continue...]' }
     else
       ui.space
