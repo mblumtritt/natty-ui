@@ -743,7 +743,8 @@ module NattyUI
       end
     end
 
-    # Request a user's chocie.
+    # Allows the user to select an option from a selection.
+    # The selected option is returned.
     #
     # @overload choice(*choices, abortable: false)
     #   @param [#to_s] choices
@@ -781,6 +782,8 @@ module NattyUI
     #     one or more alternatives to select from
     #   @param [true, false] abortable
     #     whether the user is allowed to abort with 'Esc' or 'Ctrl+c'
+    #   @param [#to_s, nil] selected
+    #     optionally pre-selected option
     #
     #   @return [Object]
     #     key for selected choice
@@ -803,6 +806,8 @@ module NattyUI
     #     one or more alternatives to select from
     #   @param [true, false] abortable
     #     whether the user is allowed to abort with 'Esc' or 'Ctrl+c'
+    #   @param [Integer] selected
+    #     pre-selected option index
     #
     #   @yieldparam temp [Temporary]
     #     temporary displayed section (section will be erased after input)
@@ -815,13 +820,10 @@ module NattyUI
     def choice(*choices, abortable: false, selected: nil, **kwchoices, &block)
       return if choices.empty? && kwchoices.empty?
       choice =
-        case NattyUI.input_mode
-        when :default
+        if Terminal.ansi?
           Choice.new(self, choices, kwchoices, abortable, selected)
-        when :dumb
-          DumbChoice.new(self, choices, kwchoices, abortable)
         else
-          return
+          DumbChoice.new(self, choices, kwchoices, abortable)
         end
       __with(choice) { choice.select(&block) }
     end
