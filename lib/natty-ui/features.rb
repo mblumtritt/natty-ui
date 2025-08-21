@@ -38,8 +38,16 @@ module NattyUI
     #   itself
     def puts(*text, **options)
       bbcode = true if (bbcode = options[:bbcode]).nil?
+
       max_width = options[:max_width] || Terminal.columns
-      max_width = Terminal.columns + max_width if max_width < 0
+      return self if max_width == 0
+      if max_width < 1
+        if max_width > 0
+          max_width *= Terminal.columns
+        elsif max_width < 0
+          max_width += Terminal.columns
+        end
+      end
 
       prefix_width =
         if (prefix = options[:prefix])
