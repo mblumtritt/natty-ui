@@ -55,7 +55,7 @@ module NattyUI
             failed: '[bright_red]𝑭[/fg]',
             current: '[bright_green]➔[/fg]',
             choice: '[bright_white]◦[/fg]',
-            current_choice: '[bright_green]◉[/fg]'
+            current_choice: '[bright_green]➔[/fg]'
           )
           theme.define_section(
             default: :bright_blue,
@@ -166,7 +166,11 @@ module NattyUI
     end
 
     class Compiled
-      attr_reader :task_style, :choice_current_style, :choice_style
+      attr_reader :task_style,
+                  :choice_current_style,
+                  :choice_style,
+                  :option_states
+
       def defined_marks = @mark.keys.sort!
       def defined_borders = @border.keys.sort!
       def heading(index) = @heading[index.to_i.clamp(1, 6) - 1]
@@ -206,11 +210,24 @@ module NattyUI
             SectionBorder.create(border(theme.section_border)),
             theme.section_styles.dup.compare_by_identity
           )
+        @option_states = create_option_states
       end
 
       private
 
       def as_style(value) = (Ansi[*value].freeze if value)
+
+      def create_option_states
+        # [current?][selected?]
+        c = @mark[:current_choice]
+        n = @mark[:none]
+        sel = @mark[:checkmark]
+        uns = @mark[:choice]
+        {
+          false => { false => n + uns, true => n + sel }.compare_by_identity,
+          true => { false => c + uns, true => c + sel }.compare_by_identity
+        }.compare_by_identity.freeze
+      end
 
       def create_sections(template, styles)
         Hash
@@ -222,7 +239,9 @@ module NattyUI
 
       def create_mark(mark)
         return {} if mark.empty?
-        with_default(mark.to_h { |n, e| [n.to_sym, Str.new("#{e} ")] })
+        mark = mark.to_h { |n, e| [n.to_sym, Str.new("#{e} ")] }
+        mark[:none] ||= Str.new('  ', 2)
+        with_default(mark)
       end
 
       def create_border(border)

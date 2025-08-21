@@ -828,6 +828,71 @@ module NattyUI
       __with(choice) { choice.select(&block) }
     end
 
+    # Allows the user to select from several options.
+    # All options are returned with their selection status.
+    #
+    # @param [{#to_s => [true,false]}] choices
+    #   Hash of options and their selection state
+    # @param [true, false] abortable
+    #   whether the user is allowed to abort with 'Esc' or 'Ctrl+c'
+    # @param [#to_s, nil] selected
+    #   optionally pre-selected key
+    #
+    # @yieldparam temp [Temporary]
+    #   temporary displayed section (section will be erased after input)
+    #
+    # @return [{#to_s => [true,false]}]
+    #   Hash of options and their selection state
+    # @return [nil]
+    #   when user aborted the selection
+    def options(abortable: false, selected: nil, **choices, &block)
+      return {} if choices.empty?
+      options =
+        if Terminal.ansi?
+          Options.new(self, choices, abortable, selected)
+        else
+          DumbOptions.new(self, choices, abortable, selected)
+        end
+      __with(options) { options.select(&block) }
+    end
+
+    # Allows the user to select from several options.
+    # The selected options are returned.
+    #
+    # @example Select a terminal
+    #   ui.select %w[Kitty iTerm2 Ghostty Tabby Rio] do
+    #    ui.puts '[i]Which terminal applications did you already tested?[/i]'
+    #   end
+    #
+    # @param [Array<#to_s>] choices
+    #   selectable options
+    # @param [true, false] abortable
+    #   whether the user is allowed to abort with 'Esc' or 'Ctrl+c'
+    # @param [Integer, :all, nil] selected
+    #   optionally pre-selected option index or `:all` to pre-select all items
+    # @yieldparam temp [Temporary]
+    #   temporary displayed section (section will be erased after input)
+    #
+    # @return [Array<#to_s>]
+    #   selected options
+    # @return [nil]
+    #   when user aborted the selection
+    def select(*choices, abortable: false, selected: nil, &block)
+      return [] if choices.empty?
+      choices = choices[0] if choices.size == 1 && choices[0].is_a?(Enumerable)
+      if selected == :all
+        sel = true
+      elsif selected
+        selected = choices[selected.to_i]
+      end
+      options(
+        abortable: abortable,
+        selected: selected,
+        **choices.to_h { [_1, sel] },
+        &block
+      ).filter_map { |key, selected| key if selected }
+    end
+
     #
     # @!endgroup
     #
@@ -883,15 +948,18 @@ module NattyUI
 
     def __eol
       @__eol ||= Terminal.ansi? ? "\e[m\n" : "\n"
+    end
   end
 
   dir = __dir__
   autoload :Choice, "#{dir}/choice.rb"
   autoload :DumbChoice, "#{dir}/dumb_choice.rb"
+  autoload :DumbOptions, "#{dir}/dumb_options.rb"
   autoload :CompactLSRenderer, "#{dir}/ls_renderer.rb"
   autoload :Framed, "#{dir}/framed.rb"
   autoload :HBarsRenderer, "#{dir}/hbars_renderer.rb"
   autoload :LSRenderer, "#{dir}/ls_renderer.rb"
+  autoload :Options, "#{dir}/options.rb"
   autoload :Progress, "#{dir}/progress.rb"
   autoload :DumbProgress, "#{dir}/progress.rb"
   autoload :Section, "#{dir}/section.rb"
@@ -905,10 +973,12 @@ module NattyUI
   private_constant(
     :Choice,
     :DumbChoice,
+    :DumbOptions,
     :CompactLSRenderer,
     :Framed,
     :HBarsRenderer,
     :LSRenderer,
+    :Options,
     :Progress,
     :DumbProgress,
     :Utils,
