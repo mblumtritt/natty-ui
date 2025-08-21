@@ -98,7 +98,7 @@ module NattyUI
 
       if (align = options[:align]).nil?
         lines.each do |line|
-          Terminal.print(prefix, line, suffix, EOL__, bbcode: false)
+          Terminal.print(prefix, line, suffix, __eol, bbcode: false)
           @lines_written += 1
           prefix, prefix_next = prefix_next, nil if prefix_next
         end
@@ -118,7 +118,7 @@ module NattyUI
             ' ' * (max_width - width),
             line,
             suffix,
-            EOL__,
+            __eol,
             bbcode: false
           )
           @lines_written += 1
@@ -133,7 +133,7 @@ module NattyUI
             line,
             ' ' * (space - lw),
             suffix,
-            EOL__,
+            __eol,
             bbcode: false
           )
           @lines_written += 1
@@ -146,7 +146,7 @@ module NattyUI
             line,
             ' ' * (max_width - width),
             suffix,
-            EOL__,
+            __eol,
             bbcode: false
           )
           @lines_written += 1
@@ -879,8 +879,8 @@ module NattyUI
       end
     end
 
-    EOL__ = Terminal.ansi? ? "\e[m\n" : "\n"
-    private_constant :EOL__
+    def __eol
+      @__eol ||= Terminal.ansi? ? "\e[m\n" : "\n"
   end
 
   dir = __dir__
