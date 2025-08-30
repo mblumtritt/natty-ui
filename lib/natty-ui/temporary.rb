@@ -8,11 +8,10 @@ module NattyUI
   #
   class Temporary < Element
     # @!visibility private
-    def puts(*objects, **options)
+    def puts(*objects, **opts)
       return self if @state
-      if options.delete(:pin)
-        @pins ||= []
-        @pins << [objects, options.except(:prefix_width, :suffix_width)]
+      if opts.delete(:pin)
+        (@pins ||= []) << [objects, opts.except(:prefix_width, :suffix_width)]
       end
       super
     end
@@ -20,8 +19,8 @@ module NattyUI
     # @!visibility private
     def done
       return self if @state
-      NattyUI.back_to_line(@start_line, erase: :all) if @start_line
-      @pins&.each { |objects, options| puts(*objects, **options) }
+      NattyUI.back_to_line(@start_line) if @start_line
+      @pins&.each { |objects, opts| puts(*objects, **opts) }
       @state = :ok
       self
     end

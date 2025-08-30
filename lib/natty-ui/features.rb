@@ -156,6 +156,20 @@ module NattyUI
       self
     end
 
+    # Print given text with a decoration mark.
+    #
+    # @param text (see puts)
+    # @param mark [Symbol, #to_s]
+    #   marker type
+    #
+    # @return (see puts)
+    def mark(*text, mark: :default, **options)
+      mark = Theme.current.mark(mark)
+      options[:first_line_prefix] = mark
+      options[:first_line_prefix_width] = mark.width
+      puts(*text, **options)
+    end
+
     # Print given text as lines like {#puts}. Used in elements with temporary
     # output like {#task} the text will be kept ("pinned").
     #
@@ -177,21 +191,7 @@ module NattyUI
     #
     # @return (see puts)
     def pin(*text, mark: nil, **options)
-      options[:pin] = true
-      options[:first_line_prefix] = Theme.current.mark(mark) if mark
-      puts(*text, **options)
-    end
-
-    # Print given text with a decoration mark.
-    #
-    # @param text (see puts)
-    # @param mark [Symbol, #to_s]
-    #   marker type
-    #
-    # @return (see puts)
-    def mark(*text, mark: :default)
-      mark = Theme.current.mark(mark)
-      puts(*text, first_line_prefix: mark, first_line_prefix_width: mark.width)
+      mark(*text, mark: mark, pin: true, **options)
     end
 
     # Print given text as a quotation.
@@ -206,7 +206,7 @@ module NattyUI
         *text,
         prefix: quote,
         prefix_width: quote.width,
-        max_width: width < 20 ? nil : width.to_i
+        max_width: width < 20 ? nil : width.round
       )
     end
 
