@@ -14,8 +14,8 @@ RSpec.describe 'NattyUI feature await' do
       expect(NattyUI.await).to be false
     end
 
-    it 'allows customizing' do
-      stdin << '1' << '2'
+    it 'allows to specify dirrent keys' do
+      stdin << 'x' << '1' << 'x' << '2'
       expect(NattyUI.await(yes: '1')).to be true
       expect(NattyUI.await(no: '2')).to be false
     end
