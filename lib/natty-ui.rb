@@ -36,10 +36,8 @@ module NattyUI
     #   when terminal inoput is not supported
     def input_mode
       case Terminal.input_mode
-      when :csi_u
+      when :csi_u, :legacy
         :default
-      when :legacy
-        Terminal.ansi? ? :default : :dumb
       when :dumb
         :dumb
       end

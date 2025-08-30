@@ -7,24 +7,31 @@ module NattyUI
     def select
       yield(self) if block_given?
       pin_line = NattyUI.lines_written
-      draw(current = @ret.index(@selected) || 0)
+      draw
+      last = @current
       while (event = Terminal.read_key_event)
         case event.name
         when 'Esc', 'Ctrl+c'
           break nil if @abortable
-        when 'Enter', ' '
-          break @ret[current]
+        when 'Enter', 'Space'
+          break @ret[@current]
         when 'Home'
-          current = 0
+          @current = 0
         when 'End'
-          current = @texts.size - 1
-        when 'Up', 'Back', 'Shift+Tab', 'i'
-          current = @texts.size - 1 if (current -= 1) < 0
-        when 'Down', 'Tab', 'k'
-          current = 0 if (current += 1) == @texts.size
+          @current = @texts.size - 1
+        when 'Up', 'Back', 'Shift+Tab', 'i', 'w'
+          @current = @texts.size - 1 if (@current -= 1) < 0
+        when 'Down', 'Tab', 'k', 's'
+          @current = 0 if (@current += 1) == @texts.size
+        else
+          next unless event.simple?
+          c = event.key.ord
+          @current = (c - 48).clamp(0, @texts.size - 1) if c.between?(48, 57)
         end
+        next if last == @current
         pin_line = NattyUI.back_to_line(pin_line, erase: false)
-        draw(current)
+        draw
+        last = @current
       end
     ensure
       NattyUI.back_to_line(@start_line)
@@ -38,17 +45,17 @@ module NattyUI
       @texts = args + kwargs.values
       @ret = Array.new(args.size, &:itself) + kwargs.keys
       @abortable = abortable
-      @selected = selected
+      @current = @ret.index(selected) || 0
       theme = Theme.current
       @mark = [theme.mark(:choice), theme.choice_style]
       @mark_current = [theme.mark(:current_choice), theme.choice_current_style]
     end
 
-    def draw(current)
+    def draw
       @texts.each_with_index do |str, idx|
-        mark, decor = idx == current ? @mark_current : @mark
+        mark, style = idx == @current ? @mark_current : @mark
         @parent.puts(
-          "#{decor}#{str}",
+          "#{style}#{str}",
           first_line_prefix: mark,
           first_line_prefix_width: mark.width
         )

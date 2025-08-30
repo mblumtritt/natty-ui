@@ -19,16 +19,14 @@ Gem::Specification.new do |spec|
   spec.author = 'Mike Blumtritt'
   spec.license = 'BSD-3-Clause'
   spec.homepage = 'https://github.com/mblumtritt/natty-ui'
-  spec.metadata['rubygems_mfa_required'] = 'true'
-  spec.metadata['yard.run'] = 'yard'
   spec.metadata['source_code_uri'] = spec.homepage
   spec.metadata['bug_tracker_uri'] = "#{spec.homepage}/issues"
-  spec.metadata[
-    'documentation_uri'
-  ] = 'https://rubydoc.info/gems/natty-ui/NattyUI'
+  spec.metadata['documentation_uri'] = 'https://rubydoc.info/gems/natty-ui'
+  spec.metadata['rubygems_mfa_required'] = 'true'
+  spec.metadata['yard.run'] = 'yard'
 
   spec.required_ruby_version = '>= 3.0'
-  spec.add_dependency 'terminal_rb', '>= 0.12'
+  spec.add_dependency 'terminal_rb', '>= 0.12.1'
 
   spec.files = (Dir['lib/**/*'] + Dir['examples/**/*.rb']) << '.yardopts'
   spec.extra_rdoc_files = %w[README.md LICENSE]

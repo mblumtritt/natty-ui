@@ -11,7 +11,8 @@ module NattyUI
         return if @abortable && %w[Esc Ctrl+c].include?(event.name)
         next unless event.simple?
         code = event.raw.upcase
-        if @ret.size <= 9 && ('1'..'9').include?(code)
+        if @ret.size <= 9
+          next unless ('1'..'9').include?(code)
           code = @ret[code.ord - 49] and break code
         elsif ('A'..'Z').include?(code)
           code = @ret[code.ord - 65] and break code

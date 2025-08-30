@@ -38,8 +38,16 @@ module NattyUI
     #   itself
     def puts(*text, **options)
       bbcode = true if (bbcode = options[:bbcode]).nil?
+
       max_width = options[:max_width] || Terminal.columns
-      max_width = Terminal.columns + max_width if max_width < 0
+      return self if max_width == 0
+      if max_width < 1
+        if max_width > 0
+          max_width *= Terminal.columns
+        elsif max_width < 0
+          max_width += Terminal.columns
+        end
+      end
 
       prefix_width =
         if (prefix = options[:prefix])
@@ -90,7 +98,7 @@ module NattyUI
 
       if (align = options[:align]).nil?
         lines.each do |line|
-          Terminal.print(prefix, line, suffix, EOL__, bbcode: false)
+          Terminal.print(prefix, line, suffix, __eol, bbcode: false)
           @lines_written += 1
           prefix, prefix_next = prefix_next, nil if prefix_next
         end
@@ -110,7 +118,7 @@ module NattyUI
             ' ' * (max_width - width),
             line,
             suffix,
-            EOL__,
+            __eol,
             bbcode: false
           )
           @lines_written += 1
@@ -125,7 +133,7 @@ module NattyUI
             line,
             ' ' * (space - lw),
             suffix,
-            EOL__,
+            __eol,
             bbcode: false
           )
           @lines_written += 1
@@ -138,7 +146,7 @@ module NattyUI
             line,
             ' ' * (max_width - width),
             suffix,
-            EOL__,
+            __eol,
             bbcode: false
           )
           @lines_written += 1
@@ -146,6 +154,20 @@ module NattyUI
         end
       end
       self
+    end
+
+    # Print given text with a decoration mark.
+    #
+    # @param text (see puts)
+    # @param mark [Symbol, #to_s]
+    #   marker type
+    #
+    # @return (see puts)
+    def mark(*text, mark: :default, **options)
+      mark = Theme.current.mark(mark)
+      options[:first_line_prefix] = mark
+      options[:first_line_prefix_width] = mark.width
+      puts(*text, **options)
     end
 
     # Print given text as lines like {#puts}. Used in elements with temporary
@@ -169,21 +191,7 @@ module NattyUI
     #
     # @return (see puts)
     def pin(*text, mark: nil, **options)
-      options[:pin] = true
-      options[:first_line_prefix] = Theme.current.mark(mark) if mark
-      puts(*text, **options)
-    end
-
-    # Print given text with a decoration mark.
-    #
-    # @param text (see puts)
-    # @param mark [Symbol, #to_s]
-    #   marker type
-    #
-    # @return (see puts)
-    def mark(*text, mark: :default)
-      mark = Theme.current.mark(mark)
-      puts(*text, first_line_prefix: mark, first_line_prefix_width: mark.width)
+      mark(*text, mark: mark, pin: true, **options)
     end
 
     # Print given text as a quotation.
@@ -198,7 +206,7 @@ module NattyUI
         *text,
         prefix: quote,
         prefix_width: quote.width,
-        max_width: width < 20 ? nil : width.to_i
+        max_width: width < 20 ? nil : width.round
       )
     end
 
@@ -735,7 +743,8 @@ module NattyUI
       end
     end
 
-    # Request a user's chocie.
+    # Allows the user to select an option from a selection.
+    # The selected option is returned.
     #
     # @overload choice(*choices, abortable: false)
     #   @param [#to_s] choices
@@ -773,6 +782,8 @@ module NattyUI
     #     one or more alternatives to select from
     #   @param [true, false] abortable
     #     whether the user is allowed to abort with 'Esc' or 'Ctrl+c'
+    #   @param [#to_s, nil] selected
+    #     optionally pre-selected option
     #
     #   @return [Object]
     #     key for selected choice
@@ -795,6 +806,8 @@ module NattyUI
     #     one or more alternatives to select from
     #   @param [true, false] abortable
     #     whether the user is allowed to abort with 'Esc' or 'Ctrl+c'
+    #   @param [Integer] selected
+    #     pre-selected option index
     #
     #   @yieldparam temp [Temporary]
     #     temporary displayed section (section will be erased after input)
@@ -807,15 +820,77 @@ module NattyUI
     def choice(*choices, abortable: false, selected: nil, **kwchoices, &block)
       return if choices.empty? && kwchoices.empty?
       choice =
-        case NattyUI.input_mode
-        when :default
+        if Terminal.ansi?
           Choice.new(self, choices, kwchoices, abortable, selected)
-        when :dumb
-          DumbChoice.new(self, choices, kwchoices, abortable)
         else
-          return
+          DumbChoice.new(self, choices, kwchoices, abortable)
         end
       __with(choice) { choice.select(&block) }
+    end
+
+    # Allows the user to select from several options.
+    # All options are returned with their selection status.
+    #
+    # @param [{#to_s => [true,false]}] choices
+    #   Hash of options and their selection state
+    # @param [true, false] abortable
+    #   whether the user is allowed to abort with 'Esc' or 'Ctrl+c'
+    # @param [#to_s, nil] selected
+    #   optionally pre-selected key
+    #
+    # @yieldparam temp [Temporary]
+    #   temporary displayed section (section will be erased after input)
+    #
+    # @return [{#to_s => [true,false]}]
+    #   Hash of options and their selection state
+    # @return [nil]
+    #   when user aborted the selection
+    def options(abortable: false, selected: nil, **choices, &block)
+      return {} if choices.empty?
+      options =
+        if Terminal.ansi?
+          Options.new(self, choices, abortable, selected)
+        else
+          DumbOptions.new(self, choices, abortable, selected)
+        end
+      __with(options) { options.select(&block) }
+    end
+
+    # Allows the user to select from several options.
+    # The selected options are returned.
+    #
+    # @example Select a terminal
+    #   ui.select %w[Kitty iTerm2 Ghostty Tabby Rio] do
+    #    ui.puts '[i]Which terminal applications did you already tested?[/i]'
+    #   end
+    #
+    # @param [Array<#to_s>] choices
+    #   selectable options
+    # @param [true, false] abortable
+    #   whether the user is allowed to abort with 'Esc' or 'Ctrl+c'
+    # @param [Integer, :all, nil] selected
+    #   optionally pre-selected option index or `:all` to pre-select all items
+    # @yieldparam temp [Temporary]
+    #   temporary displayed section (section will be erased after input)
+    #
+    # @return [Array<#to_s>]
+    #   selected options
+    # @return [nil]
+    #   when user aborted the selection
+    def select(*choices, abortable: false, selected: nil, &block)
+      return [] if choices.empty?
+      choices = choices[0] if choices.size == 1 && choices[0].is_a?(Enumerable)
+      if selected == :all
+        sel = true
+      elsif selected
+        selected = choices[selected.to_i]
+      end
+      options(
+        abortable: abortable,
+        selected: selected,
+        **choices.to_h { [_1, sel] },
+        &block
+      ).filter_map { |key, selected| key if selected }
     end
 
     #
@@ -871,17 +946,20 @@ module NattyUI
       end
     end
 
-    EOL__ = Terminal.ansi? ? "\e[m\n" : "\n"
-    private_constant :EOL__
+    def __eol
+      @__eol ||= Terminal.ansi? ? "\e[m\n" : "\n"
+    end
   end
 
   dir = __dir__
   autoload :Choice, "#{dir}/choice.rb"
   autoload :DumbChoice, "#{dir}/dumb_choice.rb"
+  autoload :DumbOptions, "#{dir}/dumb_options.rb"
   autoload :CompactLSRenderer, "#{dir}/ls_renderer.rb"
   autoload :Framed, "#{dir}/framed.rb"
   autoload :HBarsRenderer, "#{dir}/hbars_renderer.rb"
   autoload :LSRenderer, "#{dir}/ls_renderer.rb"
+  autoload :Options, "#{dir}/options.rb"
   autoload :Progress, "#{dir}/progress.rb"
   autoload :DumbProgress, "#{dir}/progress.rb"
   autoload :Section, "#{dir}/section.rb"
@@ -895,10 +973,12 @@ module NattyUI
   private_constant(
     :Choice,
     :DumbChoice,
+    :DumbOptions,
     :CompactLSRenderer,
     :Framed,
     :HBarsRenderer,
     :LSRenderer,
+    :Options,
     :Progress,
     :DumbProgress,
     :Utils,

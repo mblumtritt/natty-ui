@@ -11,7 +11,7 @@ module NattyUI
     private
 
     def _done(text)
-      NattyUI.back_to_line(@start_line, erase: :all)
+      NattyUI.back_to_line(@start_line)
       @start_line = nil
       cm = Theme.current.mark(:checkmark)
       @parent.puts(

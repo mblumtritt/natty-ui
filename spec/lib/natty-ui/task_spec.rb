@@ -4,7 +4,7 @@ RSpec.describe 'NattyUI feature task' do
   context 'when ANSI is supported' do
     include_context 'with Terminal.rb'
 
-    it 'out' do
+    it 'produces correct output' do
       NattyUI.task('title') { |task| task.puts('content') }
       expect(stdout).to eq(
         [
@@ -14,7 +14,7 @@ RSpec.describe 'NattyUI feature task' do
           '  ',
           'content',
           "\e[m\n",
-          "\e[2F\e[J",
+          "\e[F\e[2K\e[F\e[2K",
           "\e[92m✓\e[39m ",
           'title',
           "\e[m\n"
