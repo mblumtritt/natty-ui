@@ -11,13 +11,15 @@ RSpec.describe 'NattyUI feature task' do
           "\e[92m➔\e[39m \e[92;1m",
           'title',
           "\e[m\n",
+          "\e[?25l",
           '  ',
           'content',
           "\e[m\n",
           "\e[F\e[2K\e[F\e[2K",
           "\e[92m✓\e[39m ",
           'title',
-          "\e[m\n"
+          "\e[m\n",
+          "\e[?25h"
         ]
       )
     end

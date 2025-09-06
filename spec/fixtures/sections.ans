@@ -1,5 +1,5 @@
 [94m╭──[m [1m​ᓚᕠᗢ NattyUI[22m [3;32mSections[m [94m──╶╴╴[m[m
-[94m│[m [m
+[?25l[94m│[m [m
 [94m│[m [94m╭──[m [93m𝒊[39m Informative Message [94m──╶╴╴[m[m
 [94m│[m [94m│[m Sections and messages are elements which support any other feature. This means they may contain[m
 [94m│[m [94m│[m text, other sections, titles, horizontal rules, lists, progress bars and much more![m
@@ -16,3 +16,4 @@
 [94m│[m [31m│[m [33m  `   [m                                                                                          [m
 [94m│[m [31m╰────╶╴╴[m[m
 [94m╰────╶╴╴[m[m
+[?25h

@@ -23,7 +23,7 @@ RSpec.describe 'NattyUI feature await' do
     it 'allows temporary output' do
       stdin << "\r"
       NattyUI.await { |temp| temp.puts 'TestBlock' }
-      expect(stdoutstr).to eq "TestBlock\e[m\n\e[F\e[2K"
+      expect(stdoutstr).to eq "\e[?25lTestBlock\e[m\n\e[F\e[2K\e[?25h"
     end
   end
 end
