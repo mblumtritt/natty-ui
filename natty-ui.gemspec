@@ -18,7 +18,7 @@ Gem::Specification.new do |spec|
 
   spec.author = 'Mike Blumtritt'
   spec.license = 'BSD-3-Clause'
-  spec.homepage = 'https://github.com/mblumtritt/natty-ui'
+  spec.homepage = 'https://codeberg.org/mblumtritt/natty-ui'
   spec.metadata['source_code_uri'] = spec.homepage
   spec.metadata['bug_tracker_uri'] = "#{spec.homepage}/issues"
   spec.metadata['documentation_uri'] = 'https://rubydoc.info/gems/natty-ui'

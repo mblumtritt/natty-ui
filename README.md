@@ -3,7 +3,7 @@
 This is the beautiful, nice, nifty, fancy, neat, pretty, cool, rich, lovely, natty user interface you like to have for your command line applications. It contains elegant, simple and beautiful tools that enhance your command line interfaces functionally and aesthetically.
 
 - Gem: [rubygems.org](https://rubygems.org/gems/natty-ui)
-- Source: [github.com](https://github.com/mblumtritt/natty-ui)
+- Source: [codeberg.org](https://codeberg.org/mblumtritt/natty-ui)
 - Help: [rubydoc.info](https://rubydoc.info/gems/natty-ui/NattyUI)
 
 ## Features
