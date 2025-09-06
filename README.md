@@ -1,3 +1,7 @@
+> [!IMPORTANT]  
+> I archived this repo here and moved it to [Codeberg](https://codeberg.org/mblumtritt/natty-ui) for several reasons.
+> <br/>🛠️ It's still active there!
+
 # NattyUI ​ᓚᕠᗢ ![version](https://img.shields.io/gem/v/natty-ui?label=)
 
 This is the beautiful, nice, nifty, fancy, neat, pretty, cool, rich, lovely, natty user interface you like to have for your command line applications. It contains elegant, simple and beautiful tools that enhance your command line interfaces functionally and aesthetically.
