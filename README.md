@@ -33,13 +33,13 @@ This is the beautiful, nice, nifty, fancy, neat, pretty, cool, rich, lovely, nat
 
 You can execute all examples by
 
-```sh
+```shell
 ruby ./examples/examples.rb
 ```
 
 or see the non-ANSI version
 
-```sh
+```shell
 NO_COLOR=1 ruby ./examples/examples.rb
 ```
 
