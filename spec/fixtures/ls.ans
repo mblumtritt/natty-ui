@@ -1,5 +1,5 @@
 [94m╭──[m [1m​ᓚᕠᗢ NattyUI[22m [3;32mPrint Lists[m [94m──╶╴╴[m[m
-[94m│[m [m
+[?25l[94m│[m [m
 [94m│[m [94m╴╶╴╶─═══[m Traditional Display [94m═══─╶╴╶╴[m[m
 [94m│[m  1 Lorem ipsum dolor sit amet,      2 consectetur adipisicing elit,   [m
 [94m│[m  3 sed do eiusmod tempor            4 incididunt ut labore et         [m
@@ -35,3 +35,4 @@
 [94m│[m [1;93m→[m Lorem ipsum dolor sit amet,     [1;93m→[m sed do eiusmod tempor     [1;93m→[m dolore [31mmagna[m aliqua.[m
 [94m│[m [1;93m→[m consectetur adipisicing elit,   [1;93m→[m incididunt ut labore et   [m
 [94m╰────╶╴╴[m[m
+[?25h
