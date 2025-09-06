@@ -37,52 +37,67 @@ module NattyUI
     # @return [Features]
     #   itself
     def puts(*text, **options)
-      bbcode = true if (bbcode = options[:bbcode]).nil?
-
-      max_width = options[:max_width] || Terminal.columns
-      return self if max_width == 0
-      if max_width < 1
-        if max_width > 0
-          max_width *= Terminal.columns
-        elsif max_width < 0
-          max_width += Terminal.columns
-        end
+      if (ansi = Terminal.ansi?)
+        @__eol ||= "\e[m\n"
+      else
+        @__eol ||= "\n"
       end
 
-      prefix_width =
-        if (prefix = options[:prefix])
-          prefix = Ansi.bbcode(prefix) if bbcode
-          options[:prefix_width] || Text.width(prefix, bbcode: false)
-        else
-          0
+      if options.empty?
+        bbcode = true
+        max_width = Terminal.columns
+      else
+        bbcode = true if (bbcode = options[:bbcode]).nil?
+        ignore_newline = options[:eol] == false || options[:ignore_newline]
+
+        if (max_width = options[:max_width]).nil?
+          return self if (max_width = Terminal.columns).zero?
+        elsif max_width < 1
+          if max_width > 0
+            max_width *= Terminal.columns
+          elsif max_width < 0
+            max_width += Terminal.columns
+          else
+            return self
+          end
         end
 
-      if (first_line = options[:first_line_prefix])
-        first_line = Ansi.bbcode(first_line) if bbcode
-        first_line_width =
-          options[:first_line_prefix_width] ||
-            Text.width(first_line, bbcode: false)
+        prefix_width =
+          if (prefix = options[:prefix])
+            prefix = Ansi.bbcode(prefix) if bbcode
+            options[:prefix_width] || Text.width(prefix, bbcode: false)
+          else
+            0
+          end
 
-        if prefix_width < first_line_width
-          prefix_next = "#{prefix}#{' ' * (first_line_width - prefix_width)}"
-          prefix = first_line
-          prefix_width = first_line_width
-        else
-          prefix_next = prefix
-          prefix =
-            if first_line_width < prefix_width
-              first_line + (' ' * (prefix_width - first_line_width))
-            else
-              first_line
-            end
+        if (first_line = options[:first_line_prefix])
+          first_line = Ansi.bbcode(first_line) if bbcode
+          first_line_width =
+            options[:first_line_prefix_width] ||
+              Text.width(first_line, bbcode: false)
+
+          if prefix_width < first_line_width
+            prefix_next = "#{prefix}#{' ' * (first_line_width - prefix_width)}"
+            prefix = first_line
+            prefix_width = first_line_width
+          else
+            prefix_next = prefix
+            prefix =
+              if first_line_width < prefix_width
+                first_line + (' ' * (prefix_width - first_line_width))
+              else
+                first_line
+              end
+          end
         end
-      end
 
-      max_width -= prefix_width
+        max_width -= prefix_width
 
-      if (suffix = options[:suffix])
-        suffix = Ansi.bbcode(suffix) if bbcode
-        max_width -= options[:suffix_width] || Text.width(suffix, bbcode: false)
+        if (suffix = options[:suffix])
+          suffix = Ansi.bbcode(suffix) if bbcode
+          max_width -=
+            options[:suffix_width] || Text.width(suffix, bbcode: false)
+        end
       end
 
       return self if max_width <= 0
@@ -92,13 +107,13 @@ module NattyUI
           *text,
           limit: max_width,
           bbcode: bbcode,
-          ansi: Terminal.ansi?,
-          ignore_newline: options[:eol] == false || options[:ignore_newline]
+          ansi: ansi,
+          ignore_newline: ignore_newline
         )
 
       if (align = options[:align]).nil?
         lines.each do |line|
-          Terminal.print(prefix, line, suffix, __eol, bbcode: false)
+          Terminal.print(prefix, line, suffix, @__eol, bbcode: false)
           @lines_written += 1
           prefix, prefix_next = prefix_next, nil if prefix_next
         end
@@ -118,7 +133,7 @@ module NattyUI
             ' ' * (max_width - width),
             line,
             suffix,
-            __eol,
+            @__eol,
             bbcode: false
           )
           @lines_written += 1
@@ -133,7 +148,7 @@ module NattyUI
             line,
             ' ' * (space - lw),
             suffix,
-            __eol,
+            @__eol,
             bbcode: false
           )
           @lines_written += 1
@@ -146,7 +161,7 @@ module NattyUI
             line,
             ' ' * (max_width - width),
             suffix,
-            __eol,
+            @__eol,
             bbcode: false
           )
           @lines_written += 1
@@ -301,7 +316,7 @@ module NattyUI
     #
     # @return (see puts)
     def space(count = 1)
-      puts("\n" * count) if (count = count.to_i).positive?
+      (count = count.to_i).positive? ? puts("\n" * count) : self
     end
 
     # Print given items as list (like 'ls' command).
@@ -944,10 +959,6 @@ module NattyUI
           return true
         end
       end
-    end
-
-    def __eol
-      @__eol ||= Terminal.ansi? ? "\e[m\n" : "\n"
     end
   end
 
